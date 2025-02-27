@@ -19,40 +19,54 @@ function getNameNumber(name: string): number {
 }
 
 function getBirthNumber(date: Date): number {
-  // Parse individual components while preserving master numbers
+  // Parse individual components
   const day = date.getDate().toString();
   const month = (date.getMonth() + 1).toString();
   const year = date.getFullYear().toString();
 
   console.log(`Date components: Day=${day}, Month=${month}, Year=${year}`);
 
-  // Handle master numbers in day
+  // Calculate day sum (preserve master numbers)
   let dayNum = day === "11" || day === "22" ? parseInt(day) :
     day.split('').reduce((sum, digit) => sum + parseInt(digit), 0);
 
-  // Handle master numbers in month
+  // Calculate month sum (preserve master numbers)
   let monthNum = month === "11" ? 11 :
     month.split('').reduce((sum, digit) => sum + parseInt(digit), 0);
 
-  // Calculate year sum while checking for master numbers in partial sums
-  let yearSum = 0;
-  for (const digit of year) {
-    yearSum += parseInt(digit);
-  }
-  console.log(`Initial year sum: ${yearSum}`);
+  // Calculate year sum without early reduction
+  let yearNum = year.split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+
+  console.log(`Initial sums: Day=${dayNum}, Month=${monthNum}, Year=${yearNum}`);
 
   // Get the total sum
-  let total = dayNum + monthNum + yearSum;
-  console.log(`Total before final check: ${total}`);
+  let total = dayNum + monthNum + yearNum;
+  console.log(`First total: ${total}`);
 
-  // Check if the total is 44 specifically
-  if (total === 44) {
-    console.log('Found master number 44, preserving');
-    return 44;
+  // Special handling for potential 44
+  let reducedTotal = total;
+  while (reducedTotal > 9 && reducedTotal !== 11 && reducedTotal !== 22 && reducedTotal !== 33) {
+    reducedTotal = reducedTotal.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+  }
+  console.log(`Reduced total: ${reducedTotal}`);
+
+  // Check for special case where reduced number * 11 = 44
+  if (reducedTotal === 8) {
+    // For birthdate that reduces to 8, check if it's actually a 44
+    const universalProduct = reducedTotal * 11;
+    if (universalProduct === 44) {
+      console.log('Found master number 44 through universal number calculation');
+      return 44;
+    }
   }
 
-  // If not 44, check for other master numbers or reduce
-  return reduceToSingleDigit(total);
+  // If not 44, proceed with normal master number checks
+  if (total === 11 || total === 22 || total === 33 || total === 44) {
+    console.log(`Preserving master number: ${total}`);
+    return total;
+  }
+
+  return reducedTotal;
 }
 
 function getBirthDateNumber(date: Date): number {
