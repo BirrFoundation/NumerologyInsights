@@ -149,19 +149,8 @@ const NUMBER_MEANINGS = {
 } as const;
 
 function NumberDisplay({ number, title }: { number: number; title: string }) {
-  const meaning = number === 44 ? {
-    title: "The Master Structurer (44/8)",
-    strengths: [
-      ...NUMBER_MEANINGS[44].strengths,
-      "---Base 8 Qualities---",
-      ...NUMBER_MEANINGS[8].strengths
-    ],
-    weaknesses: [
-      ...NUMBER_MEANINGS[44].weaknesses,
-      "---Base 8 Challenges---",
-      ...NUMBER_MEANINGS[8].weaknesses
-    ]
-  } : (NUMBER_MEANINGS[number as keyof typeof NUMBER_MEANINGS] || NUMBER_MEANINGS[number % 9 || 9]);
+  const meaning = NUMBER_MEANINGS[number as keyof typeof NUMBER_MEANINGS] || 
+    NUMBER_MEANINGS[(number % 9 || 9) as keyof typeof NUMBER_MEANINGS];
 
   return (
     <Dialog>
@@ -188,7 +177,7 @@ function NumberDisplay({ number, title }: { number: number; title: string }) {
           </motion.div>
         </motion.div>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle className="text-2xl font-light">
             {title}: {number} - {meaning.title}
@@ -292,6 +281,7 @@ export default function ResultsDisplay({ result, onReset }: Props) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 relative">
       <ConstellationBackground className="opacity-10" />
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -352,63 +342,62 @@ export default function ResultsDisplay({ result, onReset }: Props) {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
+          transition={{ delay: 0.6 }}
         >
           <h3 className="text-xl font-semibold mb-4">Detailed Analysis</h3>
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="overview">
               <AccordionTrigger>Overview</AccordionTrigger>
               <AccordionContent>
-                {result.interpretations.overview}
+                Your Life Path number {result.lifePath} indicates your primary life direction and purpose.
               </AccordionContent>
             </AccordionItem>
 
             <AccordionItem value="lifepath">
               <AccordionTrigger>Life Path Number {result.lifePath}</AccordionTrigger>
               <AccordionContent>
-                {result.interpretations.lifePath}
+                Your Life Path number reveals your core mission and the lessons you're here to learn.
               </AccordionContent>
             </AccordionItem>
 
             <AccordionItem value="destiny">
               <AccordionTrigger>Destiny Number {result.destiny}</AccordionTrigger>
               <AccordionContent>
-                {result.interpretations.destiny}
+                Your Destiny number shows the qualities and capabilities you're meant to develop.
               </AccordionContent>
             </AccordionItem>
 
             <AccordionItem value="heartdesire">
               <AccordionTrigger>Heart's Desire Number {result.heartDesire}</AccordionTrigger>
               <AccordionContent>
-                {result.interpretations.heartDesire}
+                Your Heart's Desire number reveals your inner motivations and what truly fulfills you.
               </AccordionContent>
             </AccordionItem>
 
             <AccordionItem value="expression">
               <AccordionTrigger>Expression Number {result.expression}</AccordionTrigger>
               <AccordionContent>
-                {result.interpretations.expression}
+                Your Expression number represents your natural talents and abilities.
               </AccordionContent>
             </AccordionItem>
 
             <AccordionItem value="personality">
               <AccordionTrigger>Personality Number {result.personality}</AccordionTrigger>
               <AccordionContent>
-                {result.interpretations.personality}
+                Your Personality number shows how others perceive you and your outer personality.
               </AccordionContent>
             </AccordionItem>
 
             <AccordionItem value="attribute">
               <AccordionTrigger>Attribute Number {result.attribute}</AccordionTrigger>
               <AccordionContent>
-                {result.interpretations.attribute}
+                Your Attribute number reveals special qualities you possess.
               </AccordionContent>
             </AccordionItem>
-
             <AccordionItem value="birthdate">
               <AccordionTrigger>Birth Date Number {result.birthDateNum}</AccordionTrigger>
               <AccordionContent>
-                {result.interpretations.birthDateNum}
+                Your Birth Date number reveals the energies and influences present at your birth.
               </AccordionContent>
             </AccordionItem>
           </Accordion>
@@ -417,7 +406,7 @@ export default function ResultsDisplay({ result, onReset }: Props) {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
+          transition={{ delay: 0.7 }}
         >
           <h3 className="text-xl font-semibold mb-4">Personal Development Path</h3>
           <DevelopmentRecommendations
@@ -425,27 +414,31 @@ export default function ResultsDisplay({ result, onReset }: Props) {
             summary={result.interpretations.developmentSummary}
           />
         </motion.div>
+
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 }}
-          >
-            <h3 className="text-xl font-semibold mb-4">Personal Development Coach</h3>
-            <AICoach result={result} />
-          </motion.div>
-
-      </div>
-
-      <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}
         >
-          <h3 className="text-xl font-semibold mb-4">Personal Journal</h3>
-          <NumerologyJournal result={result} />
+          <h3 className="text-xl font-semibold mb-4">Personal Development Coach</h3>
+          <AICoach result={result} />
         </motion.div>
+      </div>
 
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9 }}>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.9 }}
+      >
+        <h3 className="text-xl font-semibold mb-4">Personal Journal</h3>
+        <NumerologyJournal result={result} />
+      </motion.div>
+
+      <motion.div 
+        initial={{ opacity: 0 }} 
+        animate={{ opacity: 1 }} 
+        transition={{ delay: 1.0 }}
+      >
         <Button variant="outline" onClick={onReset} className="w-full">
           Calculate Another Reading
         </Button>
