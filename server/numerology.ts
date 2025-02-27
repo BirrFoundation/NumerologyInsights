@@ -1,3 +1,8 @@
+function getLocalDate(dateString: string): Date {
+  const date = new Date(dateString);
+  return new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+}
+
 function getNameNumber(name: string): number {
   const nameValue = name.toLowerCase()
     .replace(/[^a-z]/g, '')
@@ -122,9 +127,11 @@ function reduceToSingleDigit(num: number): number {
 }
 
 export function calculateNumerology(name: string, birthdate: Date) {
-  console.log(`\nCalculating numerology for ${name}, born ${birthdate}`);
+  // Use the getLocalDate utility to ensure correct date handling
+  const localDate = getLocalDate(birthdate.toISOString());
+  console.log(`\nCalculating numerology for ${name}, born ${localDate}`);
 
-  const lifePath = getBirthNumber(birthdate);
+  const lifePath = getBirthNumber(localDate);
   const destiny = getNameNumber(name);
   const vowels = name.toLowerCase().match(/[aeiou]/g) || [];
   const heartDesire = reduceToSingleDigit(
@@ -132,8 +139,8 @@ export function calculateNumerology(name: string, birthdate: Date) {
   );
   const expression = getExpressionNumber(name);
   const personality = getPersonalityNumber(name);
-  const attribute = getAttributeNumber(birthdate);
-  const birthDateNum = getBirthDateNumber(birthdate);
+  const attribute = getAttributeNumber(localDate);
+  const birthDateNum = getBirthDateNumber(localDate);
 
   const result = {
     lifePath,
