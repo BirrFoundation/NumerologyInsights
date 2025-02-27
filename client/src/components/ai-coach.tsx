@@ -7,10 +7,12 @@ import {
   MessageCircle,
   Sparkles,
   SendHorizontal,
-  Loader2
+  Loader2,
+  AlertTriangle
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { NumerologyResult } from "@shared/schema";
+import { useToast } from "@/hooks/use-toast";
 
 interface Props {
   result: NumerologyResult;
@@ -24,6 +26,7 @@ interface CoachingResponse {
 export default function AICoach({ result }: Props) {
   const [userQuery, setUserQuery] = useState("");
   const [selectedQuestion, setSelectedQuestion] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const getCoaching = async (query?: string) => {
     const response = await fetch("/api/coaching", {
@@ -36,15 +39,17 @@ export default function AICoach({ result }: Props) {
     });
 
     if (!response.ok) {
-      throw new Error("Failed to get coaching insights");
+      const error = await response.json();
+      throw new Error(error.message || "Failed to get coaching insights");
     }
 
     return response.json();
   };
 
-  const { data: initialCoaching, isLoading: isInitialLoading } = useQuery<CoachingResponse>({
+  const { data: initialCoaching, isLoading: isInitialLoading, error: initialError } = useQuery<CoachingResponse>({
     queryKey: ["/api/coaching", result],
-    queryFn: () => getCoaching()
+    queryFn: () => getCoaching(),
+    retry: 2
   });
 
   const coachingMutation = useMutation({
@@ -52,6 +57,13 @@ export default function AICoach({ result }: Props) {
     onSuccess: () => {
       setUserQuery("");
       setSelectedQuestion(null);
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
     }
   });
 
@@ -65,6 +77,25 @@ export default function AICoach({ result }: Props) {
     setUserQuery("");
     coachingMutation.mutate(question);
   };
+
+  if (initialError || coachingMutation.error) {
+    return (
+      <Card className="overflow-hidden">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center text-lg font-medium">
+            <AlertTriangle className="mr-2 h-5 w-5 text-destructive" />
+            AI Coach Temporarily Unavailable
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">
+            We're experiencing some technical difficulties with the AI coaching feature.
+            Please try again later or explore your detailed numerology analysis above.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="overflow-hidden">

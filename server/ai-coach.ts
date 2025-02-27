@@ -11,15 +11,6 @@ interface CoachingResponse {
   followUpQuestions: string[];
 }
 
-const DEFAULT_COACHING_RESPONSE = {
-  advice: "Based on your numerological profile, focus on developing your core strengths while being mindful of potential challenges. Consider keeping a journal to track your personal growth journey.",
-  followUpQuestions: [
-    "What aspect of your numerology reading resonated with you the most?",
-    "Which area of personal development would you like to focus on first?",
-    "How can you apply your numerological strengths in your daily life?"
-  ]
-};
-
 function determineQuestionCategory(query: string): string {
   const lowerQuery = query.toLowerCase();
   if (lowerQuery.includes('career') || lowerQuery.includes('work') || lowerQuery.includes('job') || lowerQuery.includes('business')) {
@@ -69,10 +60,10 @@ export async function getPersonalizedCoaching(
     4. Connect to their current focus area
     5. Lead to deeper understanding of their numbers
 
-    Format the response as JSON with:
+    Format your response as JSON matching this exact structure:
     {
-      "advice": "Detailed, number-specific coaching advice that directly addresses their question",
-      "followUpQuestions": ["3-4 unique questions that explore different aspects of their numbers"]
+      "advice": "string containing detailed coaching advice that directly references their numbers",
+      "followUpQuestions": ["array of 3-4 unique questions that explore different aspects"]
     }`;
 
     const masterNumbers = [result.lifePath, result.destiny, result.expression, result.heartDesire]
@@ -129,19 +120,18 @@ export async function getPersonalizedCoaching(
         { role: "system", content: systemPrompt },
         { role: "user", content: userContent }
       ],
-      response_format: { type: "json_object" }
+      response_format: { type: "json_object" },
+      temperature: 0.7,
+      max_tokens: 1000
     });
 
-    const content = response.choices[0].message.content;
-    if (!content) {
-      console.warn('OpenAI returned empty content, using default response');
-      return DEFAULT_COACHING_RESPONSE;
+    if (!response.choices[0].message.content) {
+      throw new Error("Empty response from OpenAI");
     }
 
-    const coaching = JSON.parse(content);
-    return coaching as CoachingResponse;
+    return JSON.parse(response.choices[0].message.content) as CoachingResponse;
   } catch (error) {
     console.error('AI Coaching error:', error);
-    return DEFAULT_COACHING_RESPONSE;
+    throw error; // Throw the error instead of returning default response
   }
 }
