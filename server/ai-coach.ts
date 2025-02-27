@@ -20,71 +20,108 @@ const DEFAULT_COACHING_RESPONSE = {
   ]
 };
 
+function determineQuestionCategory(query: string): string {
+  const lowerQuery = query.toLowerCase();
+  if (lowerQuery.includes('career') || lowerQuery.includes('work') || lowerQuery.includes('job') || lowerQuery.includes('business')) {
+    return 'career';
+  }
+  if (lowerQuery.includes('love') || lowerQuery.includes('relationship') || lowerQuery.includes('partner')) {
+    return 'relationships';
+  }
+  if (lowerQuery.includes('spirit') || lowerQuery.includes('meditation') || lowerQuery.includes('soul')) {
+    return 'spiritual';
+  }
+  if (lowerQuery.includes('money') || lowerQuery.includes('finance') || lowerQuery.includes('wealth')) {
+    return 'financial';
+  }
+  return 'general';
+}
+
 export async function getPersonalizedCoaching(
   result: NumerologyResult,
   userQuery?: string
 ): Promise<CoachingResponse> {
   try {
+    const questionCategory = userQuery ? determineQuestionCategory(userQuery) : 'general';
+
     const systemPrompt = `You are an expert numerology-based personal development coach.
     Your role is to provide highly personalized coaching advice based on numerological patterns.
+    The current question category is: ${questionCategory}
 
     Key rules:
-    1. ALWAYS address the specific question asked by relating it to their numerological profile
-    2. Different questions should receive distinctly different responses
-    3. Use concrete examples and specific numbers from their profile
-    4. If no specific question is asked, focus on their dominant numbers
-    5. Never give generic advice - always tie it to their specific numbers
+    1. NEVER give generic advice - every response must directly reference their specific numbers
+    2. For each response, focus on different aspects of their numerology than previous responses
+    3. Include at least one concrete action step they can take immediately
+    4. When addressing questions, explain WHY your advice connects to their specific numbers
+    5. Follow the specific guidance for each question category
 
-    Question handling rules:
-    - For career questions: Focus on Life Path (${result.lifePath}) and Expression (${result.expression}) numbers
-    - For relationship questions: Focus on Heart's Desire (${result.heartDesire}) and Personality (${result.personality}) numbers
-    - For spiritual questions: Focus on Life Path and master numbers if present
-    - For practical questions: Focus on Expression and Birth Date (${result.birthDateNum}) numbers
+    Category-specific focus:
+    - Career questions: Analyze Life Path (${result.lifePath}), Expression (${result.expression}), and Destiny (${result.destiny})
+    - Relationship questions: Focus on Heart's Desire (${result.heartDesire}) and Personality (${result.personality})
+    - Spiritual questions: Emphasize Life Path and any master numbers present
+    - Financial questions: Focus on the 8/44 influence if present, or Expression number
+    - General questions: Provide balanced insight from all numbers
 
     Follow-up questions should:
-    - Be specific to their numbers and current question
-    - Explore different aspects of their profile
-    - Help them understand the practical application of their numbers
-    - Never be generic or repetitive
+    1. Never repeat previous questions
+    2. Target different aspects of their numerology each time
+    3. Help them explore practical applications
+    4. Connect to their current focus area
+    5. Lead to deeper understanding of their numbers
 
-    Format response as JSON with:
+    Format the response as JSON with:
     {
-      "advice": "detailed coaching advice specific to their question and numbers",
-      "followUpQuestions": ["3-4 questions that specifically relate to their current focus"]
+      "advice": "Detailed, number-specific coaching advice that directly addresses their question",
+      "followUpQuestions": ["3-4 unique questions that explore different aspects of their numbers"]
     }`;
 
     const masterNumbers = [result.lifePath, result.destiny, result.expression, result.heartDesire]
       .filter(num => [11, 22, 33, 44].includes(num));
 
-    const karmicInfluence = [result.lifePath, result.destiny, result.expression, result.heartDesire]
-      .filter(num => num === 8 || num === 44).length > 0;
+    const karmicNumbers = [result.lifePath, result.destiny, result.expression, result.heartDesire]
+      .filter(num => num === 8 || num === 44);
 
     const userContent = userQuery 
       ? `Question: "${userQuery}"
 
-        Analyze this question in the context of their numerological profile:
+        Numerological Context for ${questionCategory} question:
+        ${questionCategory === 'career' 
+          ? `Primary Career Numbers:
+             - Life Path ${result.lifePath}: Your career direction
+             - Expression ${result.expression}: Your natural talents
+             - Destiny ${result.destiny}: Your ultimate career goals`
+          : questionCategory === 'relationships'
+          ? `Key Relationship Numbers:
+             - Heart's Desire ${result.heartDesire}: Your emotional needs
+             - Personality ${result.personality}: How you interact with others`
+          : questionCategory === 'spiritual'
+          ? `Spiritual Indicators:
+             - Life Path ${result.lifePath}: Your spiritual journey
+             - Master Numbers Present: ${masterNumbers.join(', ') || 'None'}`
+          : questionCategory === 'financial'
+          ? `Financial Influences:
+             - Expression ${result.expression}: Your earning potential
+             - Karmic Numbers Present: ${karmicNumbers.join(', ') || 'None'}`
+          : `Core Numbers:
+             - Life Path ${result.lifePath}: Life direction
+             - Expression ${result.expression}: Natural talents
+             - Heart's Desire ${result.heartDesire}: Inner motivation`}
+
+        Additional Context:
+        - Master Numbers: ${masterNumbers.length > 0 ? masterNumbers.join(', ') : 'None'}
+        - Karmic Influence: ${karmicNumbers.length > 0 ? 'Strong' : 'Normal'}
+
+        Based on their numbers and this specific question, provide unique guidance that directly connects to their numerological profile.`
+      : `Provide initial coaching insights focusing on their core numbers:
         - Life Path ${result.lifePath}: Primary life direction
         - Expression ${result.expression}: Natural talents
         - Heart's Desire ${result.heartDesire}: Inner motivation
-        - Personality ${result.personality}: External self
-        - Destiny ${result.destiny}: Life goals
-        - Birth Date ${result.birthDateNum}: Core traits
 
         Special Influences:
-        ${masterNumbers.length > 0 ? `- Master Numbers Present: ${masterNumbers.join(', ')}` : ''}
-        ${karmicInfluence ? '- Strong Karmic Influence (8/44) Present' : ''}
-
-        Provide specific advice that addresses their question while incorporating relevant numbers.`
-      : `Provide initial coaching insights focusing on their primary numbers:
-        - Life Path ${result.lifePath}
-        - Expression ${result.expression}
-        - Heart's Desire ${result.heartDesire}
-
-        Key Patterns:
         ${masterNumbers.length > 0 ? `- Master Numbers: ${masterNumbers.join(', ')}` : ''}
-        ${karmicInfluence ? '- Karmic Influence Present' : ''}
+        ${karmicNumbers.length > 0 ? '- Strong Karmic Influence Present' : ''}
 
-        Focus on practical applications of these numbers in their life.`;
+        Focus on immediate practical steps they can take based on these numbers.`;
 
     const response = await openai.chat.completions.create({
       model: COACHING_MODEL,
