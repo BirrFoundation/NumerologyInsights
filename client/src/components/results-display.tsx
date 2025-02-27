@@ -92,11 +92,40 @@ const NUMBER_MEANINGS = {
     title: "The Master Builder",
     strengths: ["Practical", "Powerful", "Disciplined", "Ambitious", "Achiever"],
     weaknesses: ["Overburdened", "Anxious", "Pressured", "Unfulfilled"]
+  },
+  44: {
+    title: "The Master Structurer",
+    strengths: [
+      "Amplified stability and structure",
+      "Bridge between material and spiritual",
+      "Exceptional discipline and ambition",
+      "Powerful organizational abilities",
+      "Strong sense of responsibility"
+    ],
+    weaknesses: [
+      "Tendency to hold grudges",
+      "Difficulty letting go of past",
+      "Prone to blaming others",
+      "Strong need to win",
+      "Can develop victim mentality"
+    ]
   }
 };
 
 function NumberDisplay({ number, title }: { number: number; title: string }) {
-  const meaning = NUMBER_MEANINGS[number as keyof typeof NUMBER_MEANINGS] || NUMBER_MEANINGS[number % 9 || 9];
+  const meaning = number === 44 ? {
+    title: "The Master Structurer (44/8)",
+    strengths: [
+      ...NUMBER_MEANINGS[44].strengths,
+      "---Base 8 Qualities---",
+      ...NUMBER_MEANINGS[8].strengths
+    ],
+    weaknesses: [
+      ...NUMBER_MEANINGS[44].weaknesses,
+      "---Base 8 Challenges---",
+      ...NUMBER_MEANINGS[8].weaknesses
+    ]
+  } : (NUMBER_MEANINGS[number as keyof typeof NUMBER_MEANINGS] || NUMBER_MEANINGS[number % 9 || 9]);
 
   return (
     <Dialog>

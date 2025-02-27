@@ -98,15 +98,15 @@ function reduceToSingleDigit(num: number): number {
   let currentNum = num;
   console.log(`Reducing number: ${num}`);
 
-  // First check if the input is already a master number
-  if (currentNum === 11 || currentNum === 22) {
+  // Check for master numbers, including 44
+  if (currentNum === 11 || currentNum === 22 || currentNum === 33 || currentNum === 44) {
     console.log(`Preserving master number: ${currentNum}`);
     return currentNum;
   }
 
   while (currentNum > 9) {
-    // Check if the current number is a master number before reducing
-    if (currentNum === 11 || currentNum === 22) {
+    // Check for master numbers before reducing
+    if (currentNum === 11 || currentNum === 22 || currentNum === 33 || currentNum === 44) {
       console.log(`Found master number during reduction: ${currentNum}`);
       return currentNum;
     }
@@ -118,7 +118,7 @@ function reduceToSingleDigit(num: number): number {
     console.log(`Reduced to: ${currentNum}`);
 
     // Check again after reduction for master numbers
-    if (currentNum === 11 || currentNum === 22) {
+    if (currentNum === 11 || currentNum === 22 || currentNum === 33 || currentNum === 44) {
       console.log(`Found master number after reduction: ${currentNum}`);
       return currentNum;
     }
@@ -462,11 +462,82 @@ function getLifePathRecommendations(lifePath: number): {
         "Team building exercises",
         "Balancing ambition with self-care"
       ]
+    },
+    33: {
+      strengths: [
+        "Exceptional creative and artistic abilities",
+        "Natural charm and social charisma",
+        "Strong communication and expression",
+        "Optimistic and joyful nature",
+        "Ability to inspire and uplift others"
+      ],
+      challenges: [
+        "Tendency to scatter energy across projects",
+        "Difficulty maintaining focus and discipline",
+        "Risk of superficiality in relationships",
+        "May avoid deeper emotional issues",
+        "Challenges with follow-through"
+      ],
+      growthAreas: [
+        "Developing self-discipline and focus",
+        "Learning to channel creativity productively",
+        "Building deeper emotional connections",
+        "Following through on commitments",
+        "Balancing expression with introspection"
+      ],
+      practices: [
+        "Daily creative writing or journaling",
+        "Setting and tracking project milestones",
+        "Regular deep conversations with loved ones",
+        "Meditation for focus and concentration",
+        "Time management techniques"
+      ]
+    },
+    44: {
+      strengths: [
+        "Amplified stability and structure",
+        "Bridge between material and spiritual realms",
+        "Exceptional discipline and ambition",
+        "Powerful organizational abilities",
+        "Strong sense of responsibility"
+      ],
+      challenges: [
+        "Tendency to hold grudges",
+        "Difficulty letting go of past hurts",
+        "Prone to blaming others",
+        "Strong need to win at all costs",
+        "Can develop victim mentality"
+      ],
+      growthAreas: [
+        "Learning forgiveness and release",
+        "Developing emotional flexibility",
+        "Taking personal responsibility",
+        "Balancing competition with cooperation",
+        "Building healthier perspectives"
+      ],
+      practices: [
+        "Regular forgiveness exercises",
+        "Emotional release techniques",
+        "Mindfulness and present-moment focus",
+        "Collaborative projects",
+        "Gratitude journaling"
+      ]
     }
   };
 
-  // Use the number as is if it's a master number (11 or 22)
-  // Otherwise, reduce to single digit if not found
+  // Special handling for number 44
+  if (lifePath === 44) {
+    // Combine both 44 and 8 characteristics
+    const base8 = recommendations[8];
+    const master44 = recommendations[44];
+    return {
+      strengths: [...master44.strengths, ...base8.strengths],
+      challenges: [...master44.challenges, ...base8.challenges],
+      growthAreas: [...master44.growthAreas, ...base8.growthAreas],
+      practices: [...master44.practices, ...base8.practices]
+    };
+  }
+
   return recommendations[lifePath as keyof typeof recommendations] ||
     recommendations[reduceToSingleDigit(lifePath)];
 }
@@ -502,15 +573,17 @@ export function calculateNumerology(name: string, birthdate: string) {
       developmentSummary: `Your Life Path number ${lifePath} indicates a journey of ${
         lifePath === 11 ? "spiritual mastery and intuitive leadership" :
           lifePath === 22 ? "practical mastery and material achievement" :
-            lifePath === 1 ? "independence and leadership" :
-              lifePath === 2 ? "cooperation and diplomacy" :
-                lifePath === 3 ? "creative expression and communication" :
-                  lifePath === 4 ? "stability and organization" :
-                    lifePath === 5 ? "freedom and change" :
-                      lifePath === 6 ? "responsibility and nurturing" :
-                        lifePath === 7 ? "analysis and spiritual understanding" :
-                          lifePath === 8 ? "power and material success" :
-                            "completion and universal love"
+            lifePath === 33 ? "mastering creative expression and communication" :
+              lifePath === 44 ? "mastering stability, structure, and the bridge between material and spiritual realms" :
+                lifePath === 1 ? "independence and leadership" :
+                  lifePath === 2 ? "cooperation and diplomacy" :
+                    lifePath === 3 ? "creative expression and communication" :
+                      lifePath === 4 ? "stability and organization" :
+                        lifePath === 5 ? "freedom and change" :
+                          lifePath === 6 ? "responsibility and nurturing" :
+                            lifePath === 7 ? "analysis and spiritual understanding" :
+                              lifePath === 8 ? "power and material success" :
+                                "completion and universal love"
       }. Focus on developing your strengths while addressing your challenges for optimal growth.`
     }
   };
