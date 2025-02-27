@@ -9,6 +9,8 @@ export const numerologyResults = pgTable("numerology_results", {
   lifePath: integer("life_path").notNull(),
   destiny: integer("destiny").notNull(),
   heartDesire: integer("heart_desire").notNull(),
+  expression: integer("expression").notNull(),
+  personality: integer("personality").notNull(),
   interpretations: jsonb("interpretations").notNull()
 });
 
@@ -30,5 +32,7 @@ export type NumerologyInterpretation = {
   lifePath: string;
   destiny: string;
   heartDesire: string;
+  expression: string;
+  personality: string;
   overview: string;
 };

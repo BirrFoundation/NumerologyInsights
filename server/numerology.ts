@@ -18,6 +18,21 @@ function getBirthNumber(date: Date): number {
   );
 }
 
+function getExpressionNumber(name: string): number {
+  return getNameNumber(name); // Same as destiny number
+}
+
+function getPersonalityNumber(name: string): number {
+  const consonants = name.toLowerCase()
+    .replace(/[^a-z]/g, '')
+    .replace(/[aeiou]/g, '') // Remove vowels to get consonants
+    .split('')
+    .map(char => char.charCodeAt(0) - 96)
+    .reduce((sum, num) => sum + num, 0);
+
+  return reduceToSingleDigit(consonants);
+}
+
 function reduceToSingleDigit(num: number): number {
   while (num > 9 && num !== 11 && num !== 22) {
     num = num.toString()
@@ -34,10 +49,14 @@ export function calculateNumerology(name: string, birthdate: Date) {
   const heartDesire = reduceToSingleDigit(
     vowels.reduce((sum, char) => sum + (char.charCodeAt(0) - 96), 0)
   );
+  const expression = getExpressionNumber(name);
+  const personality = getPersonalityNumber(name);
 
   return {
     lifePath,
     destiny,
-    heartDesire
+    heartDesire,
+    expression,
+    personality
   };
 }

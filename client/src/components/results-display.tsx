@@ -40,6 +40,17 @@ export default function ResultsDisplay({ result, onReset }: Props) {
         </div>
       </div>
 
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
+        <div className="text-center p-4 rounded-lg bg-primary/5">
+          <div className="text-4xl font-bold text-primary">{result.expression}</div>
+          <div className="text-sm text-muted-foreground mt-1">Expression Number</div>
+        </div>
+        <div className="text-center p-4 rounded-lg bg-primary/5">
+          <div className="text-4xl font-bold text-primary">{result.personality}</div>
+          <div className="text-sm text-muted-foreground mt-1">Personality Number</div>
+        </div>
+      </div>
+
       <Separator />
 
       <Accordion type="single" collapsible className="w-full">
@@ -49,7 +60,7 @@ export default function ResultsDisplay({ result, onReset }: Props) {
             {result.interpretations.overview}
           </AccordionContent>
         </AccordionItem>
-        
+
         <AccordionItem value="lifepath">
           <AccordionTrigger>Life Path Number {result.lifePath}</AccordionTrigger>
           <AccordionContent>
@@ -68,6 +79,20 @@ export default function ResultsDisplay({ result, onReset }: Props) {
           <AccordionTrigger>Heart's Desire Number {result.heartDesire}</AccordionTrigger>
           <AccordionContent>
             {result.interpretations.heartDesire}
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="expression">
+          <AccordionTrigger>Expression Number {result.expression}</AccordionTrigger>
+          <AccordionContent>
+            {result.interpretations.expression}
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="personality">
+          <AccordionTrigger>Personality Number {result.personality}</AccordionTrigger>
+          <AccordionContent>
+            {result.interpretations.personality}
           </AccordionContent>
         </AccordionItem>
       </Accordion>
