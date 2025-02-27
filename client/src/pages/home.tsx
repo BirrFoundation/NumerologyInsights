@@ -41,27 +41,29 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="relative max-w-4xl mx-auto p-4 md:p-8 pt-16 md:pt-24 space-y-12">
-        <div className="text-center space-y-8">
-          <h1 className="text-4xl md:text-6xl font-light bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent animate-gradient tracking-wider">
-            <span className="font-normal">DEB</span>
-            <span className="font-medium">TERA</span>
-            <span className="font-normal"> READING</span>
+      <div className="relative max-w-4xl mx-auto p-4 md:p-8 pt-32 md:pt-40 space-y-12">
+        <div className="text-center space-y-10">
+          <h1 className="text-4xl md:text-7xl font-extralight bg-gradient-to-r from-primary/90 via-primary/70 to-primary/50 bg-clip-text text-transparent animate-gradient tracking-widest">
+            <span className="font-light">DEB</span>
+            <span className="font-extralight">TERA</span>
+            <span className="font-thin"> READING</span>
           </h1>
-          <p className="text-xl md:text-2xl text-muted-foreground font-light max-w-2xl mx-auto">
+          <p className="text-xl md:text-2xl text-muted-foreground font-extralight max-w-2xl mx-auto tracking-wide">
             Unlock the hidden patterns in your numerological DNA through the ancient wisdom of numbers
           </p>
           {!result && (
-            <div className="flex justify-center gap-4">
+            <div className="flex justify-center gap-4 pt-4">
               <Button
                 variant={mode === "numerology" ? "default" : "outline"}
                 onClick={() => setMode("numerology")}
+                className="font-light"
               >
                 Personal Reading
               </Button>
               <Button
                 variant={mode === "compatibility" ? "default" : "outline"}
                 onClick={() => setMode("compatibility")}
+                className="font-light"
               >
                 Compatibility Reading
               </Button>
