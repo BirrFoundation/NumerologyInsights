@@ -225,32 +225,32 @@ function getLifePathRecommendations(lifePath: number): {
     },
     4: {
       strengths: [
-        "Exceptional organizational abilities",
-        "Strong work ethic and dedication",
-        "Natural talent for systems and structure",
-        "Reliability and trustworthiness",
-        "Practical problem-solving skills"
+        "Exceptional work ethic and discipline",
+        "Strong focus and dedication",
+        "Natural talent for organization and structure",
+        "Deep respect for law and order",
+        "Reliable and practical approach"
       ],
       challenges: [
-        "Tendency towards rigidity and inflexibility",
-        "Resistance to change and innovation",
-        "Risk of becoming too focused on work",
-        "May overlook emotional aspects",
-        "Difficulty with spontaneity"
+        "Tendency towards inflexibility",
+        "Strong resistance to change",
+        "Can become too serious or rigid",
+        "May overlook creative solutions",
+        "Risk of becoming workaholic"
       ],
       growthAreas: [
-        "Developing flexibility and adaptability",
-        "Learning to embrace change positively",
-        "Balancing work with personal life",
-        "Cultivating emotional awareness",
-        "Finding joy in spontaneity"
+        "Developing adaptability",
+        "Embracing creative approaches",
+        "Finding work-life balance",
+        "Learning to relax and have fun",
+        "Being open to new perspectives"
       ],
       practices: [
-        "Regular unplanned activities or adventures",
-        "Mindfulness practices for flexibility",
-        "Scheduled breaks and leisure time",
-        "Trying new approaches to familiar tasks",
-        "Emotional check-ins and journaling"
+        "Schedule regular leisure activities",
+        "Practice flexible thinking exercises",
+        "Take spontaneous mini-breaks",
+        "Join creative group activities",
+        "Try new approaches to familiar tasks"
       ]
     },
     5: {
@@ -467,8 +467,8 @@ function getLifePathRecommendations(lifePath: number): {
 
   // Use the number as is if it's a master number (11 or 22)
   // Otherwise, reduce to single digit if not found
-  return recommendations[lifePath as keyof typeof recommendations] || 
-         recommendations[reduceToSingleDigit(lifePath)];
+  return recommendations[lifePath as keyof typeof recommendations] ||
+    recommendations[reduceToSingleDigit(lifePath)];
 }
 
 export function calculateNumerology(name: string, birthdate: string) {

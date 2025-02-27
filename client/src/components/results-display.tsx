@@ -42,9 +42,21 @@ const NUMBER_MEANINGS = {
     weaknesses: ["Scattered", "Superficial", "Critical", "Unfocused"]
   },
   4: {
-    title: "The Builder",
-    strengths: ["Practical", "Reliable", "Systematic", "Organized", "Hardworking"],
-    weaknesses: ["Rigid", "Stubborn", "Limited", "Too serious"]
+    title: "The Builder & Organizer",
+    strengths: [
+      "Strong work ethic & discipline",
+      "Highly focused & dedicated",
+      "Practical & structured approach",
+      "Respect for law & order",
+      "Stable & reliable nature"
+    ],
+    weaknesses: [
+      "Can be too rigid or inflexible",
+      "May resist necessary changes",
+      "Sometimes overly serious",
+      "Can be too focused on rules",
+      "Might overlook creative solutions"
+    ]
   },
   5: {
     title: "The Freedom Explorer",
