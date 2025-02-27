@@ -27,18 +27,18 @@ function getBirthNumber(date: Date): number {
   console.log(`Date components: Day=${day}, Month=${month}, Year=${year}`);
 
   // Handle master numbers in day
-  let dayNum = day === "11" || day === "22" ? parseInt(day) : 
+  let dayNum = day === "11" || day === "22" ? parseInt(day) :
     day.split('').reduce((sum, digit) => sum + parseInt(digit), 0);
 
   // Handle master numbers in month
-  let monthNum = month === "11" ? 11 : 
+  let monthNum = month === "11" ? 11 :
     month.split('').reduce((sum, digit) => sum + parseInt(digit), 0);
 
   // Calculate year sum while checking for master numbers in partial sums
   const yearDigits = year.split('').map(d => parseInt(d));
   let yearNum = yearDigits.reduce((sum, digit) => {
     const newSum = sum + digit;
-    return (newSum === 11 || newSum === 22) ? newSum : 
+    return (newSum === 11 || newSum === 22) ? newSum :
       (newSum > 9 ? newSum.toString().split('').reduce((s, d) => s + parseInt(d), 0) : newSum);
   }, 0);
 
@@ -67,7 +67,7 @@ function getAttributeNumber(date: Date): number {
   // Handle potential master numbers in calculation
   const sum = dateStr.split('').reduce((sum, digit) => {
     const newSum = sum + parseInt(digit);
-    return (newSum === 11 || newSum === 22) ? newSum : 
+    return (newSum === 11 || newSum === 22) ? newSum :
       (newSum > 9 ? newSum.toString().split('').reduce((s, d) => s + parseInt(d), 0) : newSum);
   }, 0);
 
@@ -126,8 +126,85 @@ function reduceToSingleDigit(num: number): number {
   return currentNum;
 }
 
+function getLifePathRecommendations(lifePath: number): {
+  strengths: string[];
+  challenges: string[];
+  growthAreas: string[];
+  practices: string[];
+} {
+  const recommendations = {
+    1: {
+      strengths: ["Natural leadership abilities", "Strong independence", "Creative innovation"],
+      challenges: ["Can be too dominant", "May struggle with cooperation", "Tendency to be stubborn"],
+      growthAreas: ["Developing patience", "Learning to collaborate", "Listening to others"],
+      practices: ["Practice delegation", "Meditation for patience", "Group activities"]
+    },
+    2: {
+      strengths: ["Natural diplomacy", "Strong intuition", "Excellent cooperation"],
+      challenges: ["Over-sensitivity", "Indecision", "Fear of confrontation"],
+      growthAreas: ["Building confidence", "Decision making", "Setting boundaries"],
+      practices: ["Assertiveness training", "Trust your intuition", "Practice saying no"]
+    },
+    3: {
+      strengths: ["Creative expression", "Communication skills", "Social charisma"],
+      challenges: ["Scattered energy", "Lack of focus", "Superficiality"],
+      growthAreas: ["Developing discipline", "Following through", "Deeper connections"],
+      practices: ["Daily writing", "Project completion exercises", "Deep conversations"]
+    },
+    4: {
+      strengths: ["Strong work ethic", "Reliability", "Organizational skills"],
+      challenges: ["Rigidity", "Resistance to change", "Workaholic tendencies"],
+      growthAreas: ["Flexibility", "Work-life balance", "Embracing change"],
+      practices: ["Spontaneous activities", "Regular breaks", "Try new approaches"]
+    },
+    5: {
+      strengths: ["Adaptability", "Progressive thinking", "Freedom-loving"],
+      challenges: ["Restlessness", "Lack of commitment", "Impulsiveness"],
+      growthAreas: ["Finding stability", "Building commitment", "Thoughtful decisions"],
+      practices: ["Grounding exercises", "Long-term planning", "Mindfulness"]
+    },
+    6: {
+      strengths: ["Nurturing nature", "Responsibility", "Harmony creation"],
+      challenges: ["Perfectionism", "Over-responsibility", "Self-sacrifice"],
+      growthAreas: ["Setting boundaries", "Self-care", "Accepting imperfection"],
+      practices: ["Regular self-care", "Learning to delegate", "Acceptance exercises"]
+    },
+    7: {
+      strengths: ["Analytical mind", "Spiritual connection", "Deep thinking"],
+      challenges: ["Over-analysis", "Isolation", "Skepticism"],
+      growthAreas: ["Social connection", "Trust building", "Practical application"],
+      practices: ["Group activities", "Trust exercises", "Applied learning"]
+    },
+    8: {
+      strengths: ["Material success", "Executive ability", "Power handling"],
+      challenges: ["Workaholic tendencies", "Control issues", "Material focus"],
+      growthAreas: ["Work-life balance", "Delegation", "Spiritual connection"],
+      practices: ["Meditation", "Charitable work", "Time management"]
+    },
+    9: {
+      strengths: ["Universal love", "Artistic talents", "Humanitarian nature"],
+      challenges: ["Emotional attachment", "Scattered focus", "Perfectionism"],
+      growthAreas: ["Practical grounding", "Focus development", "Emotional balance"],
+      practices: ["Goal setting", "Completion exercises", "Emotional release"]
+    },
+    11: {
+      strengths: ["Spiritual insight", "Inspirational leadership", "Intuitive abilities"],
+      challenges: ["High sensitivity", "Nervous tension", "Idealistic expectations"],
+      growthAreas: ["Grounding", "Practical application", "Stress management"],
+      practices: ["Physical exercise", "Regular breaks", "Meditation"]
+    },
+    22: {
+      strengths: ["Master building", "Practical vision", "Large-scale influence"],
+      challenges: ["Overwhelming responsibility", "Perfectionism", "Burn-out"],
+      growthAreas: ["Delegation", "Self-care", "Balance"],
+      practices: ["Regular rest", "Team building", "Stress management"]
+    }
+  };
+
+  return recommendations[lifePath] || recommendations[reduceToSingleDigit(lifePath)];
+}
+
 export function calculateNumerology(name: string, birthdate: string) {
-  // Use the getLocalDate utility to ensure correct date handling
   const localDate = getLocalDate(birthdate);
   console.log(`\nCalculating numerology for ${name}, born ${localDate}`);
 
@@ -142,6 +219,9 @@ export function calculateNumerology(name: string, birthdate: string) {
   const attribute = getAttributeNumber(localDate);
   const birthDateNum = getBirthDateNumber(localDate);
 
+  // Get personalized recommendations based on Life Path number
+  const recommendations = getLifePathRecommendations(lifePath);
+
   const result = {
     lifePath,
     destiny,
@@ -149,7 +229,23 @@ export function calculateNumerology(name: string, birthdate: string) {
     expression,
     personality,
     attribute,
-    birthDateNum
+    birthDateNum,
+    recommendations,
+    interpretations: {
+      developmentSummary: `Your Life Path number ${lifePath} indicates a journey of ${
+        lifePath === 11 ? "spiritual mastery and intuitive leadership" :
+          lifePath === 22 ? "practical mastery and material achievement" :
+            lifePath === 1 ? "independence and leadership" :
+              lifePath === 2 ? "cooperation and diplomacy" :
+                lifePath === 3 ? "creative expression and communication" :
+                  lifePath === 4 ? "stability and organization" :
+                    lifePath === 5 ? "freedom and change" :
+                      lifePath === 6 ? "responsibility and nurturing" :
+                        lifePath === 7 ? "analysis and spiritual understanding" :
+                          lifePath === 8 ? "power and material success" :
+                            "completion and universal love"
+      }. Focus on developing your strengths while addressing your challenges for optimal growth.`
+    }
   };
 
   console.log('Final numerology results:', result);
