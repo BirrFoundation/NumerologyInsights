@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { NumerologyResult } from "@shared/schema";
 import {
   Accordion,
@@ -15,7 +16,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import DevelopmentRecommendations from "./development-recommendations";
 import DNAVisualization from "./dna-visualization";
 import StrengthsWeaknessesChart from "./strengths-weaknesses-chart";
@@ -45,70 +46,34 @@ const NUMBER_MEANINGS = {
     weaknesses: ["Scattered", "Superficial", "Critical", "Unfocused"]
   },
   4: {
-    title: "The Builder & Organizer",
-    strengths: [
-      "Strong work ethic & discipline",
-      "Highly focused & dedicated",
-      "Practical & structured approach",
-      "Respect for law & order",
-      "Stable & reliable nature"
-    ],
-    weaknesses: [
-      "Can be too rigid or inflexible",
-      "May resist necessary changes",
-      "Sometimes overly serious",
-      "Can be too focused on rules",
-      "Might overlook creative solutions"
-    ]
+    title: "The Builder",
+    strengths: ["Practical", "Organized", "Determined", "Reliable", "Focused"],
+    weaknesses: ["Rigid", "Stubborn", "Limited", "Too serious"]
   },
   5: {
     title: "The Freedom Explorer",
-    strengths: ["Adventure-seeking", "Versatile", "Curious", "Dynamic", "Quick learner"],
-    weaknesses: ["Addictive tendencies", "Restless", "Easily bored", "Commitment-phobic"]
+    strengths: ["Adaptable", "Versatile", "Progressive", "Dynamic", "Adventurous"],
+    weaknesses: ["Restless", "Inconsistent", "Noncommittal", "Scattered"]
   },
   6: {
     title: "The Nurturer",
-    strengths: ["Responsible", "Loving", "Caring", "Protective", "Balanced"],
-    weaknesses: ["Worried", "Anxious", "Interfering", "Self-sacrificing"]
+    strengths: ["Responsible", "Caring", "Loving", "Protective", "Balanced"],
+    weaknesses: ["Anxious", "Meddling", "Self-sacrificing", "Worried"]
   },
   7: {
-    title: "The Seeker of Truth",
-    strengths: [
-      "Highly intelligent and analytical",
-      "Deep spiritual and philosophical insight",
-      "Excellent research and investigation skills",
-      "Strong intellectual capabilities",
-      "Natural truth seeker"
-    ],
-    weaknesses: [
-      "Intellectual ego can be overwhelming",
-      "May appear aloof or distant",
-      "Can be overly skeptical",
-      "Tendency to overthink",
-      "May isolate themselves in pursuit of knowledge"
-    ]
+    title: "The Seeker",
+    strengths: ["Analytical", "Introspective", "Studious", "Refined", "Wise"],
+    weaknesses: ["Distant", "Critical", "Aloof", "Perfectionist"]
   },
   8: {
-    title: "The Karmic Powerhouse",
-    strengths: [
-      "Strong manifestation abilities",
-      "Natural business acumen",
-      "Powerful leadership qualities",
-      "Material and financial success",
-      "Ability to achieve great goals"
-    ],
-    weaknesses: [
-      "Strong ego tendencies",
-      "All actions have immediate karmic returns",
-      "Must be extremely careful with power",
-      "Can be too focused on material success",
-      "Risk of misusing authority"
-    ]
+    title: "The Achiever",
+    strengths: ["Powerful", "Successful", "Confident", "Authoritative", "Abundant"],
+    weaknesses: ["Materialistic", "Domineering", "Workaholic", "Unforgiving"]
   },
   9: {
-    title: "The Adaptive Mirror",
-    strengths: ["Extremely adaptable", "Mirror-like perception", "Empathetic", "Universal understanding", "Reflective"],
-    weaknesses: ["Over-absorption of others", "Identity confusion", "Boundary issues", "Emotional overwhelm"]
+    title: "The Humanitarian",
+    strengths: ["Compassionate", "Generous", "Romantic", "Creative", "Universal"],
+    weaknesses: ["Aloof", "Scattered", "Unrealistic", "Resentful"]
   },
   11: {
     title: "The Master Intuitive",
@@ -149,16 +114,16 @@ const NUMBER_MEANINGS = {
 } as const;
 
 function NumberDisplay({ number, title }: { number: number; title: string }) {
+  const [isOpen, setIsOpen] = useState(false);
   const meaning = NUMBER_MEANINGS[number as keyof typeof NUMBER_MEANINGS] || 
     NUMBER_MEANINGS[(number % 9 || 9) as keyof typeof NUMBER_MEANINGS];
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+        <div 
           className="text-center p-4 rounded-lg bg-primary/5 cursor-pointer hover:bg-primary/10 transition-colors"
+          onClick={() => setIsOpen(true)}
         >
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -175,22 +140,18 @@ function NumberDisplay({ number, title }: { number: number; title: string }) {
           >
             {title}
           </motion.div>
-        </motion.div>
+        </div>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-light">
+          <DialogTitle>
             {title}: {number} - {meaning.title}
           </DialogTitle>
           <DialogDescription>
-            Click to explore the meaning and characteristics of this number
+            Explore the meaning and characteristics of this number
           </DialogDescription>
         </DialogHeader>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="space-y-4 py-4"
-        >
+        <div className="space-y-4 py-4">
           <div>
             <h4 className="text-sm font-medium mb-2 text-primary">Strengths</h4>
             <ul className="list-disc pl-5 space-y-1">
@@ -223,63 +184,26 @@ function NumberDisplay({ number, title }: { number: number; title: string }) {
               ))}
             </ul>
           </div>
-        </motion.div>
+        </div>
       </DialogContent>
     </Dialog>
   );
 }
 
 export default function ResultsDisplay({ result, onReset }: Props) {
+  const [activeAccordion, setActiveAccordion] = useState<string | undefined>();
+
   const formatDate = (dateString: string) => {
     const [year, month, day] = dateString.split("-").map(Number);
     return new Date(year, month - 1, day).toLocaleDateString();
   };
 
-  function generateChartData(result: NumerologyResult) {
-    const chartItems = [
-      {
-        label: "Leadership & Independence",
-        value: Math.min(100, (result.lifePath === 1 || result.expression === 1) ? 90 :
-          (result.lifePath === 8 || result.expression === 8) ? 85 : 70),
-        type: "strength" as const
-      },
-      {
-        label: "Creativity & Expression",
-        value: Math.min(100, (result.lifePath === 3 || result.expression === 3) ? 90 :
-          (result.heartDesire === 3) ? 85 : 65),
-        type: "strength" as const
-      },
-      {
-        label: "Analytical Thinking",
-        value: Math.min(100, (result.lifePath === 7 || result.expression === 7) ? 90 :
-          (result.personality === 7) ? 85 : 75),
-        type: "strength" as const
-      },
-      {
-        label: "Emotional Sensitivity",
-        value: Math.min(100, (result.lifePath === 2 || result.heartDesire === 2) ? 85 :
-          (result.personality === 2) ? 80 : 70),
-        type: result.lifePath === 2 ? "strength" as const : "weakness" as const
-      },
-      {
-        label: "Adaptability",
-        value: Math.min(100, (result.lifePath === 9 || result.expression === 9) ? 90 :
-          (result.lifePath === 5 || result.expression === 5) ? 85 : 70),
-        type: "strength" as const
-      },
-      {
-        label: "Focus & Discipline",
-        value: Math.min(100, (result.lifePath === 4 || result.expression === 4) ? 85 :
-          (result.personality === 4) ? 80 : 65),
-        type: result.lifePath === 4 ? "strength" as const : "weakness" as const
-      }
-    ];
-
-    return chartItems;
-  }
-
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 relative">
+    <motion.div 
+      initial={{ opacity: 0 }} 
+      animate={{ opacity: 1 }} 
+      className="space-y-6 relative"
+    >
       <ConstellationBackground className="opacity-10" />
 
       <motion.div
@@ -299,7 +223,7 @@ export default function ResultsDisplay({ result, onReset }: Props) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="grid grid-cols-1 md:grid-cols-3 gap-4 py-4"
+        className="grid grid-cols-1 md:grid-cols-3 gap-4"
       >
         <NumberDisplay number={result.lifePath} title="Life Path Number" />
         <NumberDisplay number={result.destiny} title="Destiny Number" />
@@ -310,7 +234,7 @@ export default function ResultsDisplay({ result, onReset }: Props) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="grid grid-cols-1 md:grid-cols-3 gap-4 py-4"
+        className="grid grid-cols-1 md:grid-cols-3 gap-4"
       >
         <NumberDisplay number={result.expression} title="Expression Number" />
         <NumberDisplay number={result.personality} title="Personality Number" />
@@ -333,10 +257,46 @@ export default function ResultsDisplay({ result, onReset }: Props) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="mb-8"
         >
           <h3 className="text-xl font-semibold mb-4">Personal Traits Analysis</h3>
-          <StrengthsWeaknessesChart items={generateChartData(result)} />
+          <StrengthsWeaknessesChart items={[
+            {
+              label: "Leadership & Independence",
+              value: Math.min(100, (result.lifePath === 1 || result.expression === 1) ? 90 :
+                (result.lifePath === 8 || result.expression === 8) ? 85 : 70),
+              type: "strength"
+            },
+            {
+              label: "Creativity & Expression",
+              value: Math.min(100, (result.lifePath === 3 || result.expression === 3) ? 90 :
+                (result.heartDesire === 3) ? 85 : 65),
+              type: "strength"
+            },
+            {
+              label: "Analytical Thinking",
+              value: Math.min(100, (result.lifePath === 7 || result.expression === 7) ? 90 :
+                (result.personality === 7) ? 85 : 75),
+              type: "strength"
+            },
+            {
+              label: "Emotional Sensitivity",
+              value: Math.min(100, (result.lifePath === 2 || result.heartDesire === 2) ? 85 :
+                (result.personality === 2) ? 80 : 70),
+              type: result.lifePath === 2 ? "strength" : "weakness"
+            },
+            {
+              label: "Adaptability",
+              value: Math.min(100, (result.lifePath === 9 || result.expression === 9) ? 90 :
+                (result.lifePath === 5 || result.expression === 5) ? 85 : 70),
+              type: "strength"
+            },
+            {
+              label: "Focus & Discipline",
+              value: Math.min(100, (result.lifePath === 4 || result.expression === 4) ? 85 :
+                (result.personality === 4) ? 80 : 65),
+              type: result.lifePath === 4 ? "strength" : "weakness"
+            }
+          ]} />
         </motion.div>
 
         <motion.div
@@ -345,7 +305,13 @@ export default function ResultsDisplay({ result, onReset }: Props) {
           transition={{ delay: 0.6 }}
         >
           <h3 className="text-xl font-semibold mb-4">Detailed Analysis</h3>
-          <Accordion type="single" collapsible className="w-full">
+          <Accordion 
+            type="single" 
+            collapsible 
+            value={activeAccordion}
+            onValueChange={setActiveAccordion}
+            className="w-full"
+          >
             <AccordionItem value="overview">
               <AccordionTrigger>Overview</AccordionTrigger>
               <AccordionContent>
@@ -394,6 +360,7 @@ export default function ResultsDisplay({ result, onReset }: Props) {
                 Your Attribute number reveals special qualities you possess.
               </AccordionContent>
             </AccordionItem>
+
             <AccordionItem value="birthdate">
               <AccordionTrigger>Birth Date Number {result.birthDateNum}</AccordionTrigger>
               <AccordionContent>
@@ -410,7 +377,7 @@ export default function ResultsDisplay({ result, onReset }: Props) {
         >
           <h3 className="text-xl font-semibold mb-4">Personal Development Path</h3>
           <DevelopmentRecommendations
-            recommendations={result.interpretations.recommendations}
+            recommendations={result.recommendations}
             summary={result.interpretations.developmentSummary}
           />
         </motion.div>
