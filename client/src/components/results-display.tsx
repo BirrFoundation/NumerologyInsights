@@ -16,6 +16,12 @@ interface Props {
 }
 
 export default function ResultsDisplay({ result, onReset }: Props) {
+  // Format the date correctly by splitting and reconstructing it
+  const formatDate = (dateString: string) => {
+    const [year, month, day] = dateString.split('-').map(Number);
+    return new Date(year, month - 1, day).toLocaleDateString();
+  };
+
   return (
     <div className="space-y-6">
       <div className="text-center">
@@ -23,7 +29,7 @@ export default function ResultsDisplay({ result, onReset }: Props) {
           Numerology Reading for {result.name}
         </h2>
         <p className="text-muted-foreground">
-          Based on your birth date: {new Date(result.birthdate).toLocaleDateString()}
+          Based on your birth date: {formatDate(result.birthdate)}
         </p>
       </div>
 
