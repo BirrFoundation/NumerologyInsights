@@ -11,13 +11,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       // Validate input data
       const data = insertNumerologySchema.parse(req.body);
+      console.log('Received data:', data);
 
       // Calculate numerology numbers
       const numbers = calculateNumerology(data.name, new Date(data.birthdate));
+      console.log('Calculated numbers:', numbers);
 
       try {
         // Get AI interpretation
         const interpretations = await getInterpretation(numbers, data.name);
+        console.log('Got interpretations');
 
         // Store result
         const result = await storage.createResult({

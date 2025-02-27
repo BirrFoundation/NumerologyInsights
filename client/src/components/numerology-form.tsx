@@ -32,25 +32,41 @@ export default function NumerologyForm({ onResult }: Props) {
 
   const mutation = useMutation({
     mutationFn: async (data: { name: string; birthdate: string }) => {
-      const res = await apiRequest("POST", "/api/calculate", data);
-      return res.json();
+      try {
+        const res = await apiRequest("POST", "/api/calculate", data);
+        const result = await res.json();
+        console.log('Calculation result:', result);
+        return result;
+      } catch (error) {
+        console.error('Calculation error:', error);
+        throw error;
+      }
     },
     onSuccess: (data) => {
+      console.log('Calculation succeeded:', data);
       onResult(data);
     },
-    onError: () => {
+    onError: (error) => {
+      console.error('Mutation error:', error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to calculate numerology. Please try again."
+        description: error instanceof Error ? error.message : "Failed to calculate numerology. Please try again."
       });
     }
   });
 
+  const onSubmit = async (data: { name: string; birthdate: string }) => {
+    console.log('Submitting form with data:', data);
+    mutation.mutate(data);
+  };
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit((data) => mutation.mutate(data))} 
-            className="space-y-6">
+      <form 
+        onSubmit={form.handleSubmit(onSubmit)} 
+        className="space-y-6"
+      >
         <FormField
           control={form.control}
           name="name"
@@ -72,14 +88,25 @@ export default function NumerologyForm({ onResult }: Props) {
             <FormItem>
               <FormLabel>Birth Date</FormLabel>
               <FormControl>
-                <Input type="date" {...field} />
+                <Input 
+                  type="date" 
+                  {...field}
+                  onChange={(e) => {
+                    console.log('Date changed:', e.target.value);
+                    field.onChange(e);
+                  }}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <Button type="submit" className="w-full" disabled={mutation.isPending}>
+        <Button 
+          type="submit" 
+          className="w-full" 
+          disabled={mutation.isPending}
+        >
           {mutation.isPending ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
