@@ -14,7 +14,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('Received data:', data);
 
       // Calculate numerology numbers
-      const numbers = calculateNumerology(data.name, new Date(data.birthdate + 'T00:00:00'));
+      const numbers = calculateNumerology(data.name, data.birthdate);
       console.log('Calculated numbers:', numbers);
 
       try {
@@ -60,9 +60,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Calculate compatibility
       const result = calculateCompatibility(
         data.name1,
-        new Date(data.birthdate1 + 'T00:00:00'),
+        data.birthdate1,
         data.name2,
-        new Date(data.birthdate2 + 'T00:00:00')
+        data.birthdate2
       );
 
       res.json(result);

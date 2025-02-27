@@ -1,6 +1,6 @@
 function getLocalDate(dateString: string): Date {
-  const date = new Date(dateString);
-  return new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+  const [year, month, day] = dateString.split('-').map(Number);
+  return new Date(year, month - 1, day); // months are 0-based in JavaScript
 }
 
 function getNameNumber(name: string): number {
@@ -126,9 +126,9 @@ function reduceToSingleDigit(num: number): number {
   return currentNum;
 }
 
-export function calculateNumerology(name: string, birthdate: Date) {
+export function calculateNumerology(name: string, birthdate: string) {
   // Use the getLocalDate utility to ensure correct date handling
-  const localDate = getLocalDate(birthdate.toISOString());
+  const localDate = getLocalDate(birthdate);
   console.log(`\nCalculating numerology for ${name}, born ${localDate}`);
 
   const lifePath = getBirthNumber(localDate);
@@ -158,9 +158,9 @@ export function calculateNumerology(name: string, birthdate: Date) {
 
 export function calculateCompatibility(
   name1: string,
-  birthdate1: Date,
+  birthdate1: string,
   name2: string,
-  birthdate2: Date
+  birthdate2: string
 ): { score: number; aspects: string[] } {
   const profile1 = calculateNumerology(name1, birthdate1);
   const profile2 = calculateNumerology(name2, birthdate2);
