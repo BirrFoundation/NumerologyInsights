@@ -19,9 +19,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import DevelopmentRecommendations from "./development-recommendations";
 import DNAVisualization from "./dna-visualization";
 import StrengthsWeaknessesChart from "./strengths-weaknesses-chart";
-import AICoach from "./ai-coach"; // Assuming AICoach component is imported
-import NumerologyJournal from "./numerology-journal"; // Added import
-import ConstellationBackground from "./constellation-background"; // Added import
+import AICoach from "./ai-coach";
+import NumerologyJournal from "./numerology-journal";
+import ConstellationBackground from "./constellation-background";
 
 interface Props {
   result: NumerologyResult;
@@ -146,7 +146,7 @@ const NUMBER_MEANINGS = {
       "Risk of misusing authority"
     ]
   }
-};
+} as const;
 
 function NumberDisplay({ number, title }: { number: number; title: string }) {
   const meaning = number === 44 ? {
@@ -443,7 +443,7 @@ export default function ResultsDisplay({ result, onReset }: Props) {
         >
           <h3 className="text-xl font-semibold mb-4">Personal Journal</h3>
           <NumerologyJournal result={result} />
-        </motion.div> {/* Added NumerologyJournal component */}
+        </motion.div>
 
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9 }}>
         <Button variant="outline" onClick={onReset} className="w-full">
