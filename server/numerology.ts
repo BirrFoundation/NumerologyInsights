@@ -24,6 +24,13 @@ function getBirthNumber(date: Date): number {
   );
 }
 
+function getBirthDateNumber(date: Date): number {
+  // Calculate using only the day of birth
+  const dayOfBirth = date.getDate();
+  console.log(`Birth date number calculation using day: ${dayOfBirth}`);
+  return reduceToSingleDigit(dayOfBirth);
+}
+
 function getAttributeNumber(date: Date): number {
   // Calculate using only birth date and month
   const dateStr = date.getDate().toString() + (date.getMonth() + 1).toString();
@@ -77,6 +84,7 @@ export function calculateNumerology(name: string, birthdate: Date) {
   const expression = getExpressionNumber(name);
   const personality = getPersonalityNumber(name);
   const attribute = getAttributeNumber(birthdate);
+  const birthDateNum = getBirthDateNumber(birthdate);
 
   const result = {
     lifePath,
@@ -84,9 +92,85 @@ export function calculateNumerology(name: string, birthdate: Date) {
     heartDesire,
     expression,
     personality,
-    attribute
+    attribute,
+    birthDateNum
   };
 
   console.log('Final numerology results:', result);
   return result;
+}
+
+export function calculateCompatibility(
+  name1: string,
+  birthdate1: Date,
+  name2: string,
+  birthdate2: Date
+): { score: number; aspects: string[] } {
+  const profile1 = calculateNumerology(name1, birthdate1);
+  const profile2 = calculateNumerology(name2, birthdate2);
+
+  let compatibilityScore = 0;
+  const aspects: string[] = [];
+
+  // Life Path Compatibility
+  if (profile1.lifePath === profile2.lifePath) {
+    compatibilityScore += 20;
+    aspects.push("Strong Life Path connection - shared life purpose and direction");
+  } else if ([1, 5, 7].includes(profile1.lifePath) && [1, 5, 7].includes(profile2.lifePath)) {
+    compatibilityScore += 15;
+    aspects.push("Compatible Life Paths - shared independence and intellectual interests");
+  } else if ([2, 4, 6].includes(profile1.lifePath) && [2, 4, 6].includes(profile2.lifePath)) {
+    compatibilityScore += 15;
+    aspects.push("Compatible Life Paths - shared practicality and stability");
+  } else if ([3, 6, 9].includes(profile1.lifePath) && [3, 6, 9].includes(profile2.lifePath)) {
+    compatibilityScore += 15;
+    aspects.push("Compatible Life Paths - shared creativity and emotional depth");
+  }
+
+  // Expression Number Compatibility
+  if (profile1.expression === profile2.expression) {
+    compatibilityScore += 15;
+    aspects.push("Matching Expression numbers - similar ways of expressing yourselves");
+  } else if (Math.abs(profile1.expression - profile2.expression) <= 2) {
+    compatibilityScore += 10;
+    aspects.push("Complementary Expression numbers - enriching communication styles");
+  }
+
+  // Heart's Desire Compatibility
+  if (profile1.heartDesire === profile2.heartDesire) {
+    compatibilityScore += 20;
+    aspects.push("Strong emotional connection through matching Heart's Desire numbers");
+  } else if (Math.abs(profile1.heartDesire - profile2.heartDesire) <= 2) {
+    compatibilityScore += 15;
+    aspects.push("Compatible emotional needs and desires");
+  }
+
+  // Personality Number Compatibility
+  if (profile1.personality === profile2.personality) {
+    compatibilityScore += 15;
+    aspects.push("Similar outer personalities - natural social harmony");
+  } else if ([2, 6, 9].includes(profile1.personality) && [2, 6, 9].includes(profile2.personality)) {
+    compatibilityScore += 10;
+    aspects.push("Harmonious personality interaction");
+  }
+
+  // Destiny Number Compatibility
+  if (profile1.destiny === profile2.destiny) {
+    compatibilityScore += 15;
+    aspects.push("Shared destiny numbers indicate aligned life goals");
+  } else if (Math.abs(profile1.destiny - profile2.destiny) <= 2) {
+    compatibilityScore += 10;
+    aspects.push("Complementary life paths and goals");
+  }
+
+  // Attribute Number Compatibility
+  if (profile1.attribute === profile2.attribute) {
+    compatibilityScore += 15;
+    aspects.push("Matching core attributes suggest natural understanding");
+  }
+
+  return {
+    score: Math.min(100, compatibilityScore),
+    aspects
+  };
 }

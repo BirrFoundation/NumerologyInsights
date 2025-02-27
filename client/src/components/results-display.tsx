@@ -36,8 +36,8 @@ export default function ResultsDisplay({ result, onReset }: Props) {
           <div className="text-sm text-muted-foreground mt-1">Destiny Number</div>
         </div>
         <div className="text-center p-4 rounded-lg bg-primary/5">
-          <div className="text-4xl font-bold text-primary">{result.heartDesire}</div>
-          <div className="text-sm text-muted-foreground mt-1">Heart's Desire</div>
+          <div className="text-4xl font-bold text-primary">{result.birthDateNum}</div>
+          <div className="text-sm text-muted-foreground mt-1">Birth Date Number</div>
         </div>
       </div>
 
@@ -110,23 +110,25 @@ export default function ResultsDisplay({ result, onReset }: Props) {
                 {result.interpretations.attribute}
               </AccordionContent>
             </AccordionItem>
+            <AccordionItem value="birthdate">
+              <AccordionTrigger>Birth Date Number {result.birthDateNum}</AccordionTrigger>
+              <AccordionContent>
+                {result.interpretations.birthDateNum}
+              </AccordionContent>
+            </AccordionItem>
           </Accordion>
         </div>
 
         <div>
           <h3 className="text-xl font-semibold mb-4">Personal Development Path</h3>
-          <DevelopmentRecommendations 
+          <DevelopmentRecommendations
             recommendations={result.interpretations.recommendations}
             summary={result.interpretations.developmentSummary}
           />
         </div>
       </div>
 
-      <Button 
-        variant="outline" 
-        onClick={onReset}
-        className="w-full"
-      >
+      <Button variant="outline" onClick={onReset} className="w-full">
         Calculate Another Reading
       </Button>
     </div>

@@ -12,6 +12,7 @@ export const numerologyResults = pgTable("numerology_results", {
   expression: integer("expression").notNull(),
   personality: integer("personality").notNull(),
   attribute: integer("attribute").notNull(),
+  birthDateNum: integer("birth_date_num").notNull(),
   interpretations: jsonb("interpretations").notNull()
 });
 
@@ -23,11 +24,23 @@ export const numerologyInputSchema = z.object({
   })
 });
 
+export const compatibilityInputSchema = z.object({
+  name1: z.string().min(2, "First name must be at least 2 characters"),
+  birthdate1: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  name2: z.string().min(2, "Second name must be at least 2 characters"),
+  birthdate2: z.string().regex(/^\d{4}-\d{2}-\d{2}$/)
+});
+
 export const insertNumerologySchema = createInsertSchema(numerologyResults)
   .omit({ id: true });
 
 export type InsertNumerology = z.infer<typeof numerologyInputSchema>;
 export type NumerologyResult = typeof numerologyResults.$inferSelect;
+
+export interface CompatibilityResult {
+  score: number;
+  aspects: string[];
+}
 
 export type NumerologyInterpretation = {
   lifePath: string;
@@ -36,6 +49,7 @@ export type NumerologyInterpretation = {
   expression: string;
   personality: string;
   attribute: string;
+  birthDateNum: string;
   overview: string;
   recommendations: {
     strengths: string[];
@@ -44,4 +58,5 @@ export type NumerologyInterpretation = {
     practices: string[];
   };
   developmentSummary: string;
+  compatibility?: CompatibilityResult;
 };

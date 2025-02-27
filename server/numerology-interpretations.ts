@@ -239,6 +239,23 @@ export const basicInterpretations = {
     };
   },
 
+  birthDateNum: (number: number) => {
+    const meanings: Record<number, string> = {
+      1: "Born on the 1st, you embody natural leadership qualities and pioneering spirit. Your birthday grants you exceptional independence, originality, and determination. You're naturally drawn to innovation and have the courage to forge new paths. This number enhances your ability to overcome obstacles through willpower and creative thinking. You excel in roles that require initiative and self-reliance.",
+      2: "Your birth on a 2nd day imbues you with remarkable diplomatic abilities and intuitive sensitivity. You possess natural talents in cooperation and maintaining harmony in relationships. This birthday enhances your ability to see multiple perspectives and find peaceful resolutions to conflicts. You excel in partnerships and situations requiring careful negotiation.",
+      3: "Born on the 3rd, you possess inherent creative talents and exceptional communication abilities. Your birthday grants you natural charm, artistic expression, and optimistic energy. This number amplifies your capacity to inspire others through various forms of creative expression. You have a gift for bringing joy and enthusiasm to any situation.",
+      4: "Your birth on a 4th day gives you strong organizational abilities and practical wisdom. You possess natural talents in building stable foundations and managing complex systems. This birthday enhances your capacity for disciplined work and methodical problem-solving. You excel in situations requiring reliability and attention to detail.",
+      5: "Born on the 5th, you embody adaptability and progressive thinking. Your birthday grants you natural versatility and an adventurous spirit. This number amplifies your ability to embrace change and inspire others to explore new possibilities. You excel in dynamic environments that require quick thinking and flexibility.",
+      6: "Your birth on a 6th day bestows strong nurturing abilities and a sense of responsibility. You possess natural talents in creating harmony and supporting others. This birthday enhances your capacity for understanding emotional needs and creating beautiful environments. You excel in roles involving care, guidance, and artistic expression.",
+      7: "Born on the 7th, you possess deep analytical abilities and spiritual awareness. Your birthday grants you natural investigative talents and philosophical insight. This number amplifies your capacity for research, analysis, and understanding life's mysteries. You excel in pursuits requiring deep thought and spiritual understanding.",
+      8: "Your birth on an 8th day indicates strong executive abilities and material wisdom. You possess natural talents in business and achievement. This birthday enhances your capacity for managing resources and creating success. You excel in situations requiring leadership and financial acumen.",
+      9: "Born on the 9th, you embody humanitarian ideals and universal understanding. Your birthday grants you natural compassion and artistic sensitivity. This number amplifies your capacity for serving others and seeing the bigger picture. You excel in roles that allow you to make a positive impact on humanity.",
+      11: "Your birth on the 11th gives you master number qualities of inspiration and spiritual insight. You possess natural intuitive abilities and visionary thinking. This birthday enhances your capacity for spiritual leadership and inspiring others. You excel in roles that allow you to share higher wisdom.",
+      22: "Born on the 22nd, you embody the master builder energy. You possess natural talents in manifestation and practical achievement. This birthday enhances your capacity for creating large-scale improvements and bringing ideas into reality. You excel in projects that benefit many people.",
+    };
+    return meanings[number] || "Your birth date number reveals unique talents and personal characteristics that influence your life journey";
+  },
+
   getBasicInterpretation: (numbers: {
     lifePath: number;
     destiny: number;
@@ -246,6 +263,7 @@ export const basicInterpretations = {
     expression: number;
     personality: number;
     attribute: number;
+    birthDateNum: number;
   }) => {
     const personalDev = basicInterpretations.personalDevelopment(numbers);
 
@@ -256,7 +274,8 @@ export const basicInterpretations = {
       expression: basicInterpretations.expression(numbers.expression),
       personality: basicInterpretations.personality(numbers.personality),
       attribute: basicInterpretations.attribute(numbers.attribute),
-      overview: `Your Life Path ${numbers.lifePath} reveals your life's purpose and the lessons you're here to learn. Your Destiny number ${numbers.destiny} shows your potential and the goals you're meant to achieve. Your Heart's Desire ${numbers.heartDesire} indicates your inner motivation and what truly makes you happy. Your Expression number ${numbers.expression} reveals how you share yourself with the world, while your Personality number ${numbers.personality} shows how others perceive you. Your Attribute number ${numbers.attribute} highlights your natural talents and core characteristics that help you achieve your goals.`,
+      birthDateNum: basicInterpretations.birthDateNum(numbers.birthDateNum),
+      overview: `Your Life Path ${numbers.lifePath} reveals your life's purpose and the lessons you're here to learn. Your Destiny number ${numbers.destiny} shows your potential and the goals you're meant to achieve. Your Heart's Desire ${numbers.heartDesire} indicates your inner motivation and what truly makes you happy. Your Expression number ${numbers.expression} reveals how you share yourself with the world, while your Personality number ${numbers.personality} shows how others perceive you. Your Attribute number ${numbers.attribute} highlights your natural talents and core characteristics that help you achieve your goals. Your Birth Date number ${numbers.birthDateNum} reveals specific talents and abilities you brought into this life.`,
       recommendations: personalDev.recommendations,
       developmentSummary: personalDev.summary
     };
