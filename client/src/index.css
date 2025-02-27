@@ -21,6 +21,15 @@
   .animate-float-slow {
     animation: float 20s infinite linear;
   }
+
+  .animate-dna {
+    animation: dnaFloat 10s ease-in-out infinite;
+    opacity: 0.8;
+  }
+
+  .animate-pulse {
+    animation: pulse 2s ease-in-out infinite;
+  }
 }
 
 @keyframes gradient {
@@ -41,5 +50,27 @@
   }
   to {
     transform: rotate(360deg) translateX(1px) rotate(-360deg);
+  }
+}
+
+@keyframes dnaFloat {
+  0%, 100% {
+    transform: translateX(0);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateX(5px);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 1;
   }
 }

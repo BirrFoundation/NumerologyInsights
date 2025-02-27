@@ -8,6 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import DevelopmentRecommendations from "./development-recommendations";
+import DNAVisualization from "./dna-visualization";
 
 interface Props {
   result: NumerologyResult;
@@ -61,6 +62,11 @@ export default function ResultsDisplay({ result, onReset }: Props) {
       <div className="space-y-8">
         <div>
           <h3 className="text-xl font-semibold mb-4">Numerological Profile</h3>
+          <DNAVisualization result={result} />
+        </div>
+
+        <div>
+          <h3 className="text-xl font-semibold mb-4">Detailed Analysis</h3>
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="overview">
               <AccordionTrigger>Overview</AccordionTrigger>
