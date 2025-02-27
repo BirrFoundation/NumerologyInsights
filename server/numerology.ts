@@ -542,6 +542,89 @@ function getLifePathRecommendations(lifePath: number): {
     recommendations[reduceToSingleDigit(lifePath)];
 }
 
+function getPersonalizedRecommendations(result: {
+  lifePath: number;
+  destiny: number;
+  heartDesire: number;
+  expression: number;
+  personality: number;
+  attribute: number;
+  birthDateNum: number;
+  name: string;
+  birthdate: string;
+}): {
+  strengths: string[];
+  challenges: string[];
+  growthAreas: string[];
+  practices: string[];
+} {
+  // Start with life path recommendations
+  const lifepathRecs = getLifePathRecommendations(result.lifePath);
+
+  // Check for master numbers influence
+  const hasMasterNumbers = [result.lifePath, result.destiny, result.expression, result.heartDesire]
+    .some(num => [11, 22, 33, 44].includes(num));
+
+  // Check for karmic influence (8 or 44)
+  const hasKarmicInfluence = [result.lifePath, result.destiny, result.expression, result.heartDesire]
+    .some(num => num === 8 || num === 44);
+
+  // Enhance recommendations based on other numbers
+  const enhancedRecommendations = {
+    strengths: [...lifepathRecs.strengths],
+    challenges: [...lifepathRecs.challenges],
+    growthAreas: [...lifepathRecs.growthAreas],
+    practices: [...lifepathRecs.practices]
+  };
+
+  // Add master number specific recommendations
+  if (hasMasterNumbers) {
+    enhancedRecommendations.growthAreas.push(
+      "Work on balancing higher spiritual understanding with practical application",
+      "Focus on developing your unique gifts while staying grounded"
+    );
+    enhancedRecommendations.practices.push(
+      "Regular meditation to connect with your higher purpose",
+      "Keep a journal of your spiritual insights and their practical applications"
+    );
+  }
+
+  // Add karmic influence recommendations
+  if (hasKarmicInfluence) {
+    enhancedRecommendations.growthAreas.push(
+      "Understand and work with karmic patterns in your life",
+      "Focus on balanced give and take in relationships"
+    );
+    enhancedRecommendations.practices.push(
+      "Daily reflection on cause and effect in your actions",
+      "Practice conscious decision-making in all areas of life"
+    );
+  }
+
+  // Add expression number influence
+  if (result.expression === 1 || result.expression === 8) {
+    enhancedRecommendations.practices.push(
+      "Take on leadership roles that allow you to express your natural abilities",
+      "Practice delegating tasks while maintaining your vision"
+    );
+  } else if (result.expression === 2 || result.expression === 6) {
+    enhancedRecommendations.practices.push(
+      "Engage in collaborative projects that utilize your diplomatic skills",
+      "Practice setting healthy boundaries while helping others"
+    );
+  }
+
+  // Add heart's desire influence
+  if (result.heartDesire === 7 || result.heartDesire === 9) {
+    enhancedRecommendations.growthAreas.push(
+      "Balance intellectual pursuits with emotional connections",
+      "Develop ways to share your wisdom while maintaining personal space"
+    );
+  }
+
+  return enhancedRecommendations;
+}
+
 export function calculateNumerology(name: string, birthdate: string) {
   const localDate = getLocalDate(birthdate);
   console.log(`\nCalculating numerology for ${name}, born ${localDate}`);
@@ -557,8 +640,18 @@ export function calculateNumerology(name: string, birthdate: string) {
   const attribute = getAttributeNumber(localDate);
   const birthDateNum = getBirthDateNumber(localDate);
 
-  // Get personalized recommendations based on Life Path number
-  const recommendations = getLifePathRecommendations(lifePath);
+  // Get enhanced personalized recommendations
+  const recommendations = getPersonalizedRecommendations({
+    lifePath,
+    destiny,
+    heartDesire,
+    expression,
+    personality,
+    attribute,
+    birthDateNum,
+    name,
+    birthdate
+  });
 
   const result = {
     lifePath,
