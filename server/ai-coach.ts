@@ -26,59 +26,71 @@ export async function getPersonalizedCoaching(
 ): Promise<CoachingResponse> {
   try {
     const systemPrompt = `You are an expert numerology-based personal development coach.
-    Use the numerology results to provide highly personalized, specific advice that directly relates to the person's numbers.
+    Your role is to provide highly personalized coaching advice based on numerological patterns.
 
     Key rules:
-    1. Always connect advice to specific numbers in their profile
-    2. Provide concrete, actionable steps, not generic advice
-    3. If responding to a question, address it directly using their numerological patterns
-    4. Keep responses clear and practical
-    5. Generate unique follow-up questions based on their specific numbers and any previous query
+    1. ALWAYS address the specific question asked by relating it to their numerological profile
+    2. Different questions should receive distinctly different responses
+    3. Use concrete examples and specific numbers from their profile
+    4. If no specific question is asked, focus on their dominant numbers
+    5. Never give generic advice - always tie it to their specific numbers
 
-    When crafting follow-up questions:
-    - Focus on their strongest numbers and potential growth areas
-    - Ask about specific challenges indicated by their numbers
-    - Suggest practical applications of their numerological strengths
-    - Never use generic questions
-    - Each question should relate to a different aspect of their numerological profile
+    Question handling rules:
+    - For career questions: Focus on Life Path (${result.lifePath}) and Expression (${result.expression}) numbers
+    - For relationship questions: Focus on Heart's Desire (${result.heartDesire}) and Personality (${result.personality}) numbers
+    - For spiritual questions: Focus on Life Path and master numbers if present
+    - For practical questions: Focus on Expression and Birth Date (${result.birthDateNum}) numbers
+
+    Follow-up questions should:
+    - Be specific to their numbers and current question
+    - Explore different aspects of their profile
+    - Help them understand the practical application of their numbers
+    - Never be generic or repetitive
 
     Format response as JSON with:
     {
-      "advice": "detailed coaching advice",
-      "followUpQuestions": ["3-4 highly specific follow-up questions that relate to their numbers"]
+      "advice": "detailed coaching advice specific to their question and numbers",
+      "followUpQuestions": ["3-4 questions that specifically relate to their current focus"]
     }`;
 
-    const userPrompt = userQuery 
-      ? `Based on the numerology profile and this specific question: "${userQuery}", provide personalized coaching advice that addresses their question while considering their specific numbers.
-        Ensure the advice connects directly to their numbers and life path.`
-      : `Based on this numerology profile, provide initial coaching insights that specifically address the strengths and challenges indicated by their Life Path ${result.lifePath}, Expression ${result.expression}, and Heart's Desire ${result.heartDesire} numbers.`;
+    const masterNumbers = [result.lifePath, result.destiny, result.expression, result.heartDesire]
+      .filter(num => [11, 22, 33, 44].includes(num));
+
+    const karmicInfluence = [result.lifePath, result.destiny, result.expression, result.heartDesire]
+      .filter(num => num === 8 || num === 44).length > 0;
+
+    const userContent = userQuery 
+      ? `Question: "${userQuery}"
+
+        Analyze this question in the context of their numerological profile:
+        - Life Path ${result.lifePath}: Primary life direction
+        - Expression ${result.expression}: Natural talents
+        - Heart's Desire ${result.heartDesire}: Inner motivation
+        - Personality ${result.personality}: External self
+        - Destiny ${result.destiny}: Life goals
+        - Birth Date ${result.birthDateNum}: Core traits
+
+        Special Influences:
+        ${masterNumbers.length > 0 ? `- Master Numbers Present: ${masterNumbers.join(', ')}` : ''}
+        ${karmicInfluence ? '- Strong Karmic Influence (8/44) Present' : ''}
+
+        Provide specific advice that addresses their question while incorporating relevant numbers.`
+      : `Provide initial coaching insights focusing on their primary numbers:
+        - Life Path ${result.lifePath}
+        - Expression ${result.expression}
+        - Heart's Desire ${result.heartDesire}
+
+        Key Patterns:
+        ${masterNumbers.length > 0 ? `- Master Numbers: ${masterNumbers.join(', ')}` : ''}
+        ${karmicInfluence ? '- Karmic Influence Present' : ''}
+
+        Focus on practical applications of these numbers in their life.`;
 
     const response = await openai.chat.completions.create({
       model: COACHING_MODEL,
       messages: [
         { role: "system", content: systemPrompt },
-        {
-          role: "user",
-          content: `
-            Numerology Profile:
-            - Life Path: ${result.lifePath} (Primary life direction)
-            - Destiny: ${result.destiny} (Ultimate goals)
-            - Expression: ${result.expression} (Natural talents)
-            - Heart's Desire: ${result.heartDesire} (Inner motivation)
-            - Personality: ${result.personality} (External self)
-            - Birth Date: ${result.birthDateNum} (Core traits)
-
-            Key Patterns:
-            - Master Numbers Present: ${[result.lifePath, result.destiny, result.expression, result.heartDesire]
-              .filter(num => [11, 22, 33, 44].includes(num))
-              .join(', ') || 'None'}
-            - Karmic Numbers (8): ${[result.lifePath, result.destiny, result.expression, result.heartDesire]
-              .filter(num => num === 8 || num === 44)
-              .length > 0 ? 'Present' : 'Not present'}
-
-            Current Focus: ${userPrompt}
-          `
-        }
+        { role: "user", content: userContent }
       ],
       response_format: { type: "json_object" }
     });
@@ -93,7 +105,6 @@ export async function getPersonalizedCoaching(
     return coaching as CoachingResponse;
   } catch (error) {
     console.error('AI Coaching error:', error);
-    // Return default coaching response instead of throwing error
     return DEFAULT_COACHING_RESPONSE;
   }
 }
