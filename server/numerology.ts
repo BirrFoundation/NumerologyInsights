@@ -602,11 +602,15 @@ function getPersonalizedRecommendations(result: {
   if (hasMasterNumbers) {
     enhancedRecommendations.growthAreas.push(
       "Work on balancing higher spiritual understanding with practical application",
-      "Focus on developing your unique gifts while staying grounded"
+      "Focus on developing your unique gifts while staying grounded",
+      "Learn to manage the intense energy of your master numbers",
+      "Develop your spiritual awareness and intuition"
     );
     enhancedRecommendations.practices.push(
       "Regular meditation to connect with your higher purpose",
-      "Keep a journal of your spiritual insights and their practical applications"
+      "Keep a journal of your spiritual insights and their practical applications",
+      "Practice energy protection and grounding exercises",
+      "Set aside quiet time for spiritual development"
     );
   }
 
@@ -614,11 +618,15 @@ function getPersonalizedRecommendations(result: {
   if (hasKarmicInfluence) {
     enhancedRecommendations.growthAreas.push(
       "Understand and work with karmic patterns in your life",
-      "Focus on balanced give and take in relationships"
+      "Focus on balanced give and take in relationships",
+      "Develop greater awareness of cause and effect",
+      "Learn to use power and influence wisely"
     );
     enhancedRecommendations.practices.push(
       "Daily reflection on cause and effect in your actions",
-      "Practice conscious decision-making in all areas of life"
+      "Practice conscious decision-making in all areas of life",
+      "Regular karmic cleansing and balancing practices",
+      "Mindful use of personal power and influence"
     );
   }
 
@@ -626,12 +634,16 @@ function getPersonalizedRecommendations(result: {
   if (result.expression === 1 || result.expression === 8) {
     enhancedRecommendations.practices.push(
       "Take on leadership roles that allow you to express your natural abilities",
-      "Practice delegating tasks while maintaining your vision"
+      "Practice delegating tasks while maintaining your vision",
+      "Learn to balance authority with collaboration",
+      "Develop your natural leadership style"
     );
   } else if (result.expression === 2 || result.expression === 6) {
     enhancedRecommendations.practices.push(
       "Engage in collaborative projects that utilize your diplomatic skills",
-      "Practice setting healthy boundaries while helping others"
+      "Practice setting healthy boundaries while helping others",
+      "Develop your natural counseling abilities",
+      "Focus on relationship-building activities"
     );
   }
 
@@ -639,11 +651,37 @@ function getPersonalizedRecommendations(result: {
   if (result.heartDesire === 7 || result.heartDesire === 9) {
     enhancedRecommendations.growthAreas.push(
       "Balance intellectual pursuits with emotional connections",
-      "Develop ways to share your wisdom while maintaining personal space"
+      "Develop ways to share your wisdom while maintaining personal space",
+      "Learn to bridge the gap between spiritual and material worlds",
+      "Cultivate deeper emotional awareness"
     );
   }
 
-  return enhancedRecommendations;
+  // Add personality number influence
+  if (result.personality === 1 || result.personality === 5) {
+    enhancedRecommendations.practices.push(
+      "Channel your dynamic energy into productive ventures",
+      "Practice patience and persistence in your endeavors",
+      "Learn to adapt your communication style to different audiences"
+    );
+  }
+
+  // Add birth number influence
+  if (result.birthDateNum === 1 || result.birthDateNum === 9) {
+    enhancedRecommendations.growthAreas.push(
+      "Embrace your natural leadership qualities while remaining humble",
+      "Learn to balance independence with interconnectedness",
+      "Develop your humanitarian instincts"
+    );
+  }
+
+  // Remove any duplicate recommendations
+  return {
+    strengths: [...new Set(enhancedRecommendations.strengths)],
+    challenges: [...new Set(enhancedRecommendations.challenges)],
+    growthAreas: [...new Set(enhancedRecommendations.growthAreas)],
+    practices: [...new Set(enhancedRecommendations.practices)]
+  };
 }
 
 export function calculateNumerology(name: string, birthdate: string) {
