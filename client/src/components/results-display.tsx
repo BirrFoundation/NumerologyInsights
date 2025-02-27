@@ -18,6 +18,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import DevelopmentRecommendations from "./development-recommendations";
 import DNAVisualization from "./dna-visualization";
+import StrengthsWeaknessesChart from "./strengths-weaknesses-chart";
 
 interface Props {
   result: NumerologyResult;
@@ -168,6 +169,49 @@ export default function ResultsDisplay({ result, onReset }: Props) {
     return new Date(year, month - 1, day).toLocaleDateString();
   };
 
+  function generateChartData(result: NumerologyResult) {
+    const chartItems = [
+      {
+        label: "Leadership & Independence",
+        value: Math.min(100, (result.lifePath === 1 || result.expression === 1) ? 90 :
+          (result.lifePath === 8 || result.expression === 8) ? 85 : 70),
+        type: "strength" as const
+      },
+      {
+        label: "Creativity & Expression",
+        value: Math.min(100, (result.lifePath === 3 || result.expression === 3) ? 90 :
+          (result.heartDesire === 3) ? 85 : 65),
+        type: "strength" as const
+      },
+      {
+        label: "Analytical Thinking",
+        value: Math.min(100, (result.lifePath === 7 || result.expression === 7) ? 90 :
+          (result.personality === 7) ? 85 : 75),
+        type: "strength" as const
+      },
+      {
+        label: "Emotional Sensitivity",
+        value: Math.min(100, (result.lifePath === 2 || result.heartDesire === 2) ? 85 :
+          (result.personality === 2) ? 80 : 70),
+        type: result.lifePath === 2 ? "strength" as const : "weakness" as const
+      },
+      {
+        label: "Adaptability",
+        value: Math.min(100, (result.lifePath === 9 || result.expression === 9) ? 90 :
+          (result.lifePath === 5 || result.expression === 5) ? 85 : 70),
+        type: "strength" as const
+      },
+      {
+        label: "Focus & Discipline",
+        value: Math.min(100, (result.lifePath === 4 || result.expression === 4) ? 85 :
+          (result.personality === 4) ? 80 : 65),
+        type: result.lifePath === 4 ? "strength" as const : "weakness" as const
+      }
+    ];
+
+    return chartItems;
+  }
+
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
       <motion.div
@@ -215,6 +259,16 @@ export default function ResultsDisplay({ result, onReset }: Props) {
         >
           <h3 className="text-xl font-semibold mb-4">Numerological Profile</h3>
           <DNAVisualization result={result} />
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="mb-8"
+        >
+          <h3 className="text-xl font-semibold mb-4">Personal Traits Analysis</h3>
+          <StrengthsWeaknessesChart items={generateChartData(result)} />
         </motion.div>
 
         <motion.div
