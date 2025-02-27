@@ -11,6 +11,15 @@ interface CoachingResponse {
   followUpQuestions: string[];
 }
 
+const DEFAULT_COACHING_RESPONSE = {
+  advice: "Based on your numerological profile, focus on developing your core strengths while being mindful of potential challenges. Consider keeping a journal to track your personal growth journey.",
+  followUpQuestions: [
+    "What aspect of your numerology reading resonated with you the most?",
+    "Which area of personal development would you like to focus on first?",
+    "How can you apply your numerological strengths in your daily life?"
+  ]
+};
+
 export async function getPersonalizedCoaching(
   result: NumerologyResult,
   userQuery?: string
@@ -20,14 +29,14 @@ export async function getPersonalizedCoaching(
     Use the provided numerology results to give personalized, actionable advice.
     Focus on practical steps and insights based on the person's numbers.
     Be encouraging but direct. Keep responses concise and actionable.
-    
+
     When providing advice:
     1. Consider all numerology numbers in the profile
     2. Focus on strengths while acknowledging challenges
     3. Provide specific, actionable steps
     4. Connect advice to the person's numerological DNA pattern
     5. Consider both spiritual and practical aspects
-    
+
     Format response as JSON with:
     {
       "advice": "detailed coaching advice",
@@ -52,7 +61,7 @@ export async function getPersonalizedCoaching(
             - Heart's Desire: ${result.heartDesire}
             - Personality: ${result.personality}
             - Birth Date: ${result.birthDateNum}
-            
+
             Current Question/Focus: ${userPrompt}
           `
         }
@@ -60,10 +69,17 @@ export async function getPersonalizedCoaching(
       response_format: { type: "json_object" }
     });
 
-    const coaching = JSON.parse(response.choices[0].message.content);
+    const content = response.choices[0].message.content;
+    if (!content) {
+      console.warn('OpenAI returned empty content, using default response');
+      return DEFAULT_COACHING_RESPONSE;
+    }
+
+    const coaching = JSON.parse(content);
     return coaching as CoachingResponse;
   } catch (error) {
     console.error('AI Coaching error:', error);
-    throw new Error('Failed to generate coaching insights. Please try again.');
+    // Return default coaching response instead of throwing error
+    return DEFAULT_COACHING_RESPONSE;
   }
 }
