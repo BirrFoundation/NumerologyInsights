@@ -1,0 +1,84 @@
+import type { NumerologyResult } from "@shared/schema";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+
+interface Props {
+  result: NumerologyResult;
+  onReset: () => void;
+}
+
+export default function ResultsDisplay({ result, onReset }: Props) {
+  return (
+    <div className="space-y-6">
+      <div className="text-center">
+        <h2 className="text-2xl font-semibold mb-2">
+          Numerology Reading for {result.name}
+        </h2>
+        <p className="text-muted-foreground">
+          Based on your birth date: {new Date(result.birthdate).toLocaleDateString()}
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-4">
+        <div className="text-center p-4 rounded-lg bg-primary/5">
+          <div className="text-4xl font-bold text-primary">{result.lifePath}</div>
+          <div className="text-sm text-muted-foreground mt-1">Life Path Number</div>
+        </div>
+        <div className="text-center p-4 rounded-lg bg-primary/5">
+          <div className="text-4xl font-bold text-primary">{result.destiny}</div>
+          <div className="text-sm text-muted-foreground mt-1">Destiny Number</div>
+        </div>
+        <div className="text-center p-4 rounded-lg bg-primary/5">
+          <div className="text-4xl font-bold text-primary">{result.heartDesire}</div>
+          <div className="text-sm text-muted-foreground mt-1">Heart's Desire</div>
+        </div>
+      </div>
+
+      <Separator />
+
+      <Accordion type="single" collapsible className="w-full">
+        <AccordionItem value="overview">
+          <AccordionTrigger>Overview</AccordionTrigger>
+          <AccordionContent>
+            {result.interpretations.overview}
+          </AccordionContent>
+        </AccordionItem>
+        
+        <AccordionItem value="lifepath">
+          <AccordionTrigger>Life Path Number {result.lifePath}</AccordionTrigger>
+          <AccordionContent>
+            {result.interpretations.lifePath}
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="destiny">
+          <AccordionTrigger>Destiny Number {result.destiny}</AccordionTrigger>
+          <AccordionContent>
+            {result.interpretations.destiny}
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="heartdesire">
+          <AccordionTrigger>Heart's Desire Number {result.heartDesire}</AccordionTrigger>
+          <AccordionContent>
+            {result.interpretations.heartDesire}
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+
+      <Button 
+        variant="outline" 
+        onClick={onReset}
+        className="w-full"
+      >
+        Calculate Another Reading
+      </Button>
+    </div>
+  );
+}
