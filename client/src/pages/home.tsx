@@ -1,11 +1,22 @@
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import NumerologyForm from "@/components/numerology-form";
+import CompatibilityForm from "@/components/compatibility-form";
 import ResultsDisplay from "@/components/results-display";
+import CompatibilityDisplay from "@/components/compatibility-display";
 import { useState } from "react";
-import type { NumerologyResult } from "@shared/schema";
+import type { NumerologyResult, CompatibilityResult } from "@shared/schema";
+
+type Mode = "numerology" | "compatibility";
+type Result = { type: "numerology"; data: NumerologyResult } | { type: "compatibility"; data: CompatibilityResult };
 
 export default function Home() {
-  const [result, setResult] = useState<NumerologyResult | null>(null);
+  const [mode, setMode] = useState<Mode>("numerology");
+  const [result, setResult] = useState<Result | null>(null);
+
+  const handleReset = () => {
+    setResult(null);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-primary/5 relative overflow-hidden">
@@ -38,30 +49,45 @@ export default function Home() {
           <p className="text-xl md:text-2xl text-muted-foreground font-light max-w-2xl mx-auto">
             Unlock the hidden patterns in your numerological DNA through the ancient wisdom of numbers
           </p>
-          <div className="flex justify-center gap-4 text-sm text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-primary/60" />
-              <span>Life Path</span>
+          {!result && (
+            <div className="flex justify-center gap-4">
+              <Button
+                variant={mode === "numerology" ? "default" : "outline"}
+                onClick={() => setMode("numerology")}
+              >
+                Personal Reading
+              </Button>
+              <Button
+                variant={mode === "compatibility" ? "default" : "outline"}
+                onClick={() => setMode("compatibility")}
+              >
+                Compatibility Reading
+              </Button>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-primary/60" />
-              <span>Destiny</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-primary/60" />
-              <span>Expression</span>
-            </div>
-          </div>
+          )}
         </div>
 
         <Card className="backdrop-blur-sm bg-background/95 border-primary/10 shadow-lg">
           <CardContent className="p-6">
             {!result ? (
-              <NumerologyForm onResult={setResult} />
-            ) : (
+              mode === "numerology" ? (
+                <NumerologyForm 
+                  onResult={(data) => setResult({ type: "numerology", data })} 
+                />
+              ) : (
+                <CompatibilityForm 
+                  onResult={(data) => setResult({ type: "compatibility", data })} 
+                />
+              )
+            ) : result.type === "numerology" ? (
               <ResultsDisplay 
-                result={result} 
-                onReset={() => setResult(null)} 
+                result={result.data} 
+                onReset={handleReset} 
+              />
+            ) : (
+              <CompatibilityDisplay 
+                result={result.data} 
+                onReset={handleReset} 
               />
             )}
           </CardContent>

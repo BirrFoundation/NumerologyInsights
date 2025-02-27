@@ -1,9 +1,9 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { calculateNumerology } from "./numerology";
+import { calculateNumerology, calculateCompatibility } from "./numerology";
 import { getInterpretation } from "./ai";
-import { numerologyInputSchema } from "@shared/schema";
+import { numerologyInputSchema, compatibilityInputSchema } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -47,6 +47,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       res.status(500).json({ 
         message: "Failed to process numerology calculation" 
+      });
+    }
+  });
+
+  app.post("/api/compatibility", async (req, res) => {
+    try {
+      // Validate input data
+      const data = compatibilityInputSchema.parse(req.body);
+      console.log('Received compatibility data:', data);
+
+      // Calculate compatibility
+      const result = calculateCompatibility(
+        data.name1,
+        new Date(data.birthdate1),
+        data.name2,
+        new Date(data.birthdate2)
+      );
+
+      res.json(result);
+    } catch (error) {
+      console.error('Compatibility calculation error:', error);
+      if (error instanceof z.ZodError) {
+        res.status(400).json({
+          message: "Invalid input data",
+          errors: error.errors
+        });
+        return;
+      }
+      res.status(500).json({
+        message: "Failed to calculate compatibility"
       });
     }
   });
