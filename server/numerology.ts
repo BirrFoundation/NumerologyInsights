@@ -14,30 +14,59 @@ function getNameNumber(name: string): number {
 }
 
 function getBirthNumber(date: Date): number {
-  const dateStr = date.getDate().toString() +
-                 (date.getMonth() + 1).toString() +
-                 date.getFullYear().toString();
+  // Parse individual components while preserving master numbers
+  const day = date.getDate().toString();
+  const month = (date.getMonth() + 1).toString();
+  const year = date.getFullYear().toString();
 
-  console.log(`Date string for calculation: ${dateStr}`);
-  return reduceToSingleDigit(
-    dateStr.split('').reduce((sum, digit) => sum + parseInt(digit), 0)
-  );
+  console.log(`Date components: Day=${day}, Month=${month}, Year=${year}`);
+
+  // Handle master numbers in day
+  let dayNum = day === "11" || day === "22" ? parseInt(day) : 
+    day.split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+
+  // Handle master numbers in month
+  let monthNum = month === "11" ? 11 : 
+    month.split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+
+  // Calculate year sum while checking for master numbers in partial sums
+  const yearDigits = year.split('').map(d => parseInt(d));
+  let yearNum = yearDigits.reduce((sum, digit) => {
+    const newSum = sum + digit;
+    return (newSum === 11 || newSum === 22) ? newSum : 
+      (newSum > 9 ? newSum.toString().split('').reduce((s, d) => s + parseInt(d), 0) : newSum);
+  }, 0);
+
+  console.log(`Processed numbers: Day=${dayNum}, Month=${monthNum}, Year=${yearNum}`);
+
+  // Final sum preserving master numbers
+  const total = dayNum + monthNum + yearNum;
+  console.log(`Total before final reduction: ${total}`);
+
+  return reduceToSingleDigit(total);
 }
 
 function getBirthDateNumber(date: Date): number {
   // Calculate using only the day of birth
   const dayOfBirth = date.getDate();
   console.log(`Birth date number calculation using day: ${dayOfBirth}`);
-  return reduceToSingleDigit(dayOfBirth);
+  // Preserve master numbers
+  return dayOfBirth === 11 || dayOfBirth === 22 ? dayOfBirth : reduceToSingleDigit(dayOfBirth);
 }
 
 function getAttributeNumber(date: Date): number {
   // Calculate using only birth date and month
   const dateStr = date.getDate().toString() + (date.getMonth() + 1).toString();
   console.log(`Attribute calculation using date and month: ${dateStr}`);
-  return reduceToSingleDigit(
-    dateStr.split('').reduce((sum, digit) => sum + parseInt(digit), 0)
-  );
+
+  // Handle potential master numbers in calculation
+  const sum = dateStr.split('').reduce((sum, digit) => {
+    const newSum = sum + parseInt(digit);
+    return (newSum === 11 || newSum === 22) ? newSum : 
+      (newSum > 9 ? newSum.toString().split('').reduce((s, d) => s + parseInt(d), 0) : newSum);
+  }, 0);
+
+  return reduceToSingleDigit(sum);
 }
 
 function getExpressionNumber(name: string): number {
@@ -63,11 +92,31 @@ function getPersonalityNumber(name: string): number {
 function reduceToSingleDigit(num: number): number {
   let currentNum = num;
   console.log(`Reducing number: ${num}`);
-  while (currentNum > 9 && currentNum !== 11 && currentNum !== 22) {
+
+  // First check if the input is already a master number
+  if (currentNum === 11 || currentNum === 22) {
+    console.log(`Preserving master number: ${currentNum}`);
+    return currentNum;
+  }
+
+  while (currentNum > 9) {
+    // Check if the current number is a master number before reducing
+    if (currentNum === 11 || currentNum === 22) {
+      console.log(`Found master number during reduction: ${currentNum}`);
+      return currentNum;
+    }
+
     currentNum = currentNum.toString()
       .split('')
       .reduce((sum, digit) => sum + parseInt(digit), 0);
+
     console.log(`Reduced to: ${currentNum}`);
+
+    // Check again after reduction for master numbers
+    if (currentNum === 11 || currentNum === 22) {
+      console.log(`Found master number after reduction: ${currentNum}`);
+      return currentNum;
+    }
   }
   return currentNum;
 }
