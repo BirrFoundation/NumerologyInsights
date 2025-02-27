@@ -24,6 +24,15 @@ function getBirthNumber(date: Date): number {
   );
 }
 
+function getAttributeNumber(date: Date): number {
+  // Calculate using only birth date and month
+  const dateStr = date.getDate().toString() + (date.getMonth() + 1).toString();
+  console.log(`Attribute calculation using date and month: ${dateStr}`);
+  return reduceToSingleDigit(
+    dateStr.split('').reduce((sum, digit) => sum + parseInt(digit), 0)
+  );
+}
+
 function getExpressionNumber(name: string): number {
   return getNameNumber(name); // Same as destiny number
 }
@@ -67,13 +76,15 @@ export function calculateNumerology(name: string, birthdate: Date) {
   );
   const expression = getExpressionNumber(name);
   const personality = getPersonalityNumber(name);
+  const attribute = getAttributeNumber(birthdate);
 
   const result = {
     lifePath,
     destiny,
     heartDesire,
     expression,
-    personality
+    personality,
+    attribute
   };
 
   console.log('Final numerology results:', result);
