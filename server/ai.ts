@@ -35,8 +35,15 @@ Provide detailed interpretations in JSON format with these keys:
       response_format: { type: "json_object" }
     });
 
-    return JSON.parse(response.choices[0].message.content);
+    const content = response.choices[0].message.content;
+    if (!content) {
+      throw new Error("No content in OpenAI response");
+    }
+
+    const parsedContent = JSON.parse(content) as NumerologyInterpretation;
+    return parsedContent;
   } catch (error) {
+    console.error('OpenAI API error:', error);
     throw new Error("Failed to get AI interpretation");
   }
 }
