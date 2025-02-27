@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertNumerologySchema, type NumerologyResult } from "@shared/schema";
+import { numerologyInputSchema, type NumerologyResult } from "@shared/schema";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -25,7 +25,7 @@ interface Props {
 export default function NumerologyForm({ onResult }: Props) {
   const { toast } = useToast();
   const form = useForm({
-    resolver: zodResolver(insertNumerologySchema),
+    resolver: zodResolver(numerologyInputSchema),
     defaultValues: {
       name: "",
       birthdate: new Date().toISOString().split('T')[0]

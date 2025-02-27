@@ -3,14 +3,14 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { calculateNumerology } from "./numerology";
 import { getInterpretation } from "./ai";
-import { insertNumerologySchema } from "@shared/schema";
+import { numerologyInputSchema } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/calculate", async (req, res) => {
     try {
       // Validate input data
-      const data = insertNumerologySchema.parse(req.body);
+      const data = numerologyInputSchema.parse(req.body);
       console.log('Received data:', data);
 
       // Calculate numerology numbers
