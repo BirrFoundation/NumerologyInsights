@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import type { NumerologyInterpretation } from "@shared/schema";
+import { basicInterpretations } from "./numerology-interpretations";
 
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -83,21 +84,8 @@ Provide detailed interpretations in JSON format with these keys:
   } catch (error: any) {
     console.error('OpenAI API error:', error);
 
-    // Check for insufficient quota
-    if (error?.error?.code === 'insufficient_quota') {
-      throw new Error("The AI service is currently unavailable. Please try again later.");
-    }
-
-    // Check for rate limit error
-    if (error?.status === 429) {
-      throw new Error("The AI service is temporarily busy. Please try again in a few minutes.");
-    }
-
-    // Check for invalid API key
-    if (error?.status === 401) {
-      throw new Error("Invalid OpenAI API key. Please check your API key configuration.");
-    }
-
-    throw new Error("Failed to get AI interpretation. Please try again.");
+    // Use basic interpretations as fallback
+    console.log('Using fallback basic interpretations');
+    return basicInterpretations.getBasicInterpretation(numbers);
   }
 }
