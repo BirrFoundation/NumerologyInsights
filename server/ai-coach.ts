@@ -44,7 +44,13 @@ export async function getPersonalizedCoaching(
     2. For each response, focus on different aspects of their numerology than previous responses
     3. Include at least one concrete action step they can take immediately
     4. When addressing questions, explain WHY your advice connects to their specific numbers
-    5. Follow the specific guidance for each question category
+    5. For master number 44, always acknowledge both the 44 and 8 aspects (44/8)
+
+    Special number handling:
+    - When encountering master number 44, treat it as both 44 and 8
+    - For 44: Focus on manifestation, structure, and karmic responsibility
+    - Include the base 8 aspects: material success, power, and authority
+    - Provide balanced guidance incorporating both energies
 
     Category-specific focus:
     - Career questions: Analyze Life Path (${result.lifePath}), Expression (${result.expression}), and Destiny (${result.destiny})
@@ -78,25 +84,25 @@ export async function getPersonalizedCoaching(
         Numerological Context for ${questionCategory} question:
         ${questionCategory === 'career' 
           ? `Primary Career Numbers:
-             - Life Path ${result.lifePath}: Your career direction
-             - Expression ${result.expression}: Your natural talents
-             - Destiny ${result.destiny}: Your ultimate career goals`
+            - Life Path ${result.lifePath}: Your career direction
+            - Expression ${result.expression}: Your natural talents
+            - Destiny ${result.destiny}: Your ultimate career goals`
           : questionCategory === 'relationships'
           ? `Key Relationship Numbers:
-             - Heart's Desire ${result.heartDesire}: Your emotional needs
-             - Personality ${result.personality}: How you interact with others`
+            - Heart's Desire ${result.heartDesire}: Your emotional needs
+            - Personality ${result.personality}: How you interact with others`
           : questionCategory === 'spiritual'
           ? `Spiritual Indicators:
-             - Life Path ${result.lifePath}: Your spiritual journey
-             - Master Numbers Present: ${masterNumbers.join(', ') || 'None'}`
+            - Life Path ${result.lifePath}: Your spiritual journey
+            - Master Numbers Present: ${masterNumbers.join(', ') || 'None'}`
           : questionCategory === 'financial'
           ? `Financial Influences:
-             - Expression ${result.expression}: Your earning potential
-             - Karmic Numbers Present: ${karmicNumbers.join(', ') || 'None'}`
+            - Expression ${result.expression}: Your earning potential
+            - Karmic Numbers Present: ${karmicNumbers.join(', ') || 'None'}`
           : `Core Numbers:
-             - Life Path ${result.lifePath}: Life direction
-             - Expression ${result.expression}: Natural talents
-             - Heart's Desire ${result.heartDesire}: Inner motivation`}
+            - Life Path ${result.lifePath}: Life direction
+            - Expression ${result.expression}: Natural talents
+            - Heart's Desire ${result.heartDesire}: Inner motivation`}
 
         Additional Context:
         - Master Numbers: ${masterNumbers.length > 0 ? masterNumbers.join(', ') : 'None'}

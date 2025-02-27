@@ -121,20 +121,29 @@ const NUMBER_MEANINGS = {
     weaknesses: ["Overburdened", "Anxious", "Pressured", "Unfulfilled"]
   },
   44: {
-    title: "The Master Structurer",
+    title: "The Master Structurer (44/8)",
     strengths: [
-      "Amplified stability and structure",
-      "Bridge between material and spiritual",
-      "Exceptional discipline and ambition",
-      "Powerful organizational abilities",
-      "Strong sense of responsibility"
+      "Bridge between material and spiritual realms",
+      "Exceptional ability to build lasting structures",
+      "Powerful manifestation through discipline",
+      "Heightened sense of responsibility",
+      "Deep understanding of universal laws",
+      "---Base 8 Qualities---",
+      "Strong manifestation abilities",
+      "Natural business acumen",
+      "Powerful leadership qualities",
+      "Material and financial success"
     ],
     weaknesses: [
-      "Tendency to hold grudges",
-      "Difficulty letting go of past",
-      "Prone to blaming others",
-      "Strong need to win",
-      "Can develop victim mentality"
+      "Double intensity of karmic lessons",
+      "Risk of overwhelm from high expectations",
+      "Challenge balancing material/spiritual",
+      "Tendency toward perfectionism",
+      "---Base 8 Challenges---",
+      "Strong ego tendencies",
+      "Must be careful with power",
+      "Can be too focused on material success",
+      "Risk of misusing authority"
     ]
   }
 };
