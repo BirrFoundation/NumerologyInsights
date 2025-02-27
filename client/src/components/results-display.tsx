@@ -7,12 +7,121 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import DevelopmentRecommendations from "./development-recommendations";
 import DNAVisualization from "./dna-visualization";
 
 interface Props {
   result: NumerologyResult;
   onReset: () => void;
+}
+
+const NUMBER_MEANINGS = {
+  1: {
+    title: "The Leader",
+    strengths: ["Independent", "Creative", "Original", "Ambitious", "Determined"],
+    weaknesses: ["Stubborn", "Dominant", "Impatient", "Self-centered"]
+  },
+  2: {
+    title: "The Mediator",
+    strengths: ["Diplomatic", "Cooperative", "Patient", "Sensitive", "Supportive"],
+    weaknesses: ["Oversensitive", "Indecisive", "Fearful", "Dependent"]
+  },
+  3: {
+    title: "The Communicator",
+    strengths: ["Creative", "Expressive", "Social", "Optimistic", "Inspiring"],
+    weaknesses: ["Scattered", "Superficial", "Critical", "Unfocused"]
+  },
+  4: {
+    title: "The Builder",
+    strengths: ["Practical", "Reliable", "Systematic", "Organized", "Hardworking"],
+    weaknesses: ["Rigid", "Stubborn", "Limited", "Too serious"]
+  },
+  5: {
+    title: "The Freedom Seeker",
+    strengths: ["Adaptable", "Versatile", "Progressive", "Adventurous", "Magnetic"],
+    weaknesses: ["Restless", "Inconsistent", "Unreliable", "Scattered"]
+  },
+  6: {
+    title: "The Nurturer",
+    strengths: ["Responsible", "Loving", "Caring", "Protective", "Balanced"],
+    weaknesses: ["Worried", "Anxious", "Interfering", "Self-sacrificing"]
+  },
+  7: {
+    title: "The Seeker",
+    strengths: ["Analytical", "Studious", "Introspective", "Perfectionist", "Wise"],
+    weaknesses: ["Reserved", "Secretive", "Isolated", "Skeptical"]
+  },
+  8: {
+    title: "The Powerhouse",
+    strengths: ["Ambitious", "Confident", "Executive", "Goal-oriented", "Successful"],
+    weaknesses: ["Materialistic", "Domineering", "Workaholic", "Stressed"]
+  },
+  9: {
+    title: "The Humanitarian",
+    strengths: ["Compassionate", "Generous", "Artistic", "Romantic", "Selfless"],
+    weaknesses: ["Emotional", "Aloof", "Scattered", "Unrealistic"]
+  },
+  11: {
+    title: "The Master Intuitive",
+    strengths: ["Intuitive", "Inspirational", "Idealistic", "Visionary", "Spiritual"],
+    weaknesses: ["Stressed", "Sensitive", "Impractical", "Dreamy"]
+  },
+  22: {
+    title: "The Master Builder",
+    strengths: ["Practical", "Powerful", "Disciplined", "Ambitious", "Achiever"],
+    weaknesses: ["Overburdened", "Anxious", "Pressured", "Unfulfilled"]
+  }
+};
+
+function NumberDisplay({ number, title }: { number: number, title: string }) {
+  const meaning = NUMBER_MEANINGS[number as keyof typeof NUMBER_MEANINGS] || NUMBER_MEANINGS[number % 9 || 9];
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <div className="text-center p-4 rounded-lg bg-primary/5 cursor-pointer hover:bg-primary/10 transition-colors">
+          <div className="text-4xl font-light text-primary">{number}</div>
+          <div className="text-sm text-muted-foreground mt-1">{title}</div>
+        </div>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-light">
+            {title}: {number} - {meaning.title}
+          </DialogTitle>
+          <DialogDescription>
+            Click to explore the meaning and characteristics of this number
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4 py-4">
+          <div>
+            <h4 className="text-sm font-medium mb-2 text-primary">Strengths</h4>
+            <ul className="list-disc pl-5 space-y-1">
+              {meaning.strengths.map((strength, index) => (
+                <li key={index} className="text-sm">{strength}</li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h4 className="text-sm font-medium mb-2 text-primary">Challenges</h4>
+            <ul className="list-disc pl-5 space-y-1">
+              {meaning.weaknesses.map((weakness, index) => (
+                <li key={index} className="text-sm">{weakness}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
 }
 
 export default function ResultsDisplay({ result, onReset }: Props) {
@@ -34,33 +143,15 @@ export default function ResultsDisplay({ result, onReset }: Props) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-4">
-        <div className="text-center p-4 rounded-lg bg-primary/5">
-          <div className="text-4xl font-bold text-primary">{result.lifePath}</div>
-          <div className="text-sm text-muted-foreground mt-1">Life Path Number</div>
-        </div>
-        <div className="text-center p-4 rounded-lg bg-primary/5">
-          <div className="text-4xl font-bold text-primary">{result.destiny}</div>
-          <div className="text-sm text-muted-foreground mt-1">Destiny Number</div>
-        </div>
-        <div className="text-center p-4 rounded-lg bg-primary/5">
-          <div className="text-4xl font-bold text-primary">{result.birthDateNum}</div>
-          <div className="text-sm text-muted-foreground mt-1">Birth Date Number</div>
-        </div>
+        <NumberDisplay number={result.lifePath} title="Life Path Number" />
+        <NumberDisplay number={result.destiny} title="Destiny Number" />
+        <NumberDisplay number={result.birthDateNum} title="Birth Date Number" />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-4">
-        <div className="text-center p-4 rounded-lg bg-primary/5">
-          <div className="text-4xl font-bold text-primary">{result.expression}</div>
-          <div className="text-sm text-muted-foreground mt-1">Expression Number</div>
-        </div>
-        <div className="text-center p-4 rounded-lg bg-primary/5">
-          <div className="text-4xl font-bold text-primary">{result.personality}</div>
-          <div className="text-sm text-muted-foreground mt-1">Personality Number</div>
-        </div>
-        <div className="text-center p-4 rounded-lg bg-primary/5">
-          <div className="text-4xl font-bold text-primary">{result.attribute}</div>
-          <div className="text-sm text-muted-foreground mt-1">Attribute Number</div>
-        </div>
+        <NumberDisplay number={result.expression} title="Expression Number" />
+        <NumberDisplay number={result.personality} title="Personality Number" />
+        <NumberDisplay number={result.attribute} title="Attribute Number" />
       </div>
 
       <Separator />
@@ -122,6 +213,7 @@ export default function ResultsDisplay({ result, onReset }: Props) {
                 {result.interpretations.attribute}
               </AccordionContent>
             </AccordionItem>
+
             <AccordionItem value="birthdate">
               <AccordionTrigger>Birth Date Number {result.birthDateNum}</AccordionTrigger>
               <AccordionContent>
