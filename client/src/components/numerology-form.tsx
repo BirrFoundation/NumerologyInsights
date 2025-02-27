@@ -11,10 +11,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { useEffect } from "react";
 
 interface Props {
   onResult: (result: NumerologyResult) => void;
@@ -26,13 +28,24 @@ export default function NumerologyForm({ onResult }: Props) {
     resolver: zodResolver(insertNumerologySchema),
     defaultValues: {
       name: "",
-      birthdate: ""
+      birthdate: new Date().toISOString().split('T')[0]
     }
   });
+
+  // Debug form state
+  useEffect(() => {
+    console.log('Form state:', {
+      values: form.getValues(),
+      errors: form.formState.errors,
+      isValid: form.formState.isValid,
+      isDirty: form.formState.isDirty
+    });
+  }, [form.formState]);
 
   const mutation = useMutation({
     mutationFn: async (data: { name: string; birthdate: string }) => {
       try {
+        console.log('Attempting to submit:', data);
         const res = await apiRequest("POST", "/api/calculate", data);
         const result = await res.json();
         console.log('Calculation result:', result);
@@ -57,7 +70,7 @@ export default function NumerologyForm({ onResult }: Props) {
   });
 
   const onSubmit = async (data: { name: string; birthdate: string }) => {
-    console.log('Submitting form with data:', data);
+    console.log('Form submitted with:', data);
     mutation.mutate(data);
   };
 
@@ -74,8 +87,18 @@ export default function NumerologyForm({ onResult }: Props) {
             <FormItem>
               <FormLabel>Full Name</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your full name" {...field} />
+                <Input 
+                  placeholder="Enter your full name" 
+                  {...field} 
+                  onChange={(e) => {
+                    console.log('Name changed:', e.target.value);
+                    field.onChange(e);
+                  }}
+                />
               </FormControl>
+              <FormDescription>
+                Enter your full name as it appears on your birth certificate
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -97,6 +120,9 @@ export default function NumerologyForm({ onResult }: Props) {
                   }}
                 />
               </FormControl>
+              <FormDescription>
+                Select your date of birth
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -104,8 +130,7 @@ export default function NumerologyForm({ onResult }: Props) {
 
         <Button 
           type="submit" 
-          className="w-full" 
-          disabled={mutation.isPending}
+          className="w-full"
         >
           {mutation.isPending ? (
             <>
@@ -116,6 +141,17 @@ export default function NumerologyForm({ onResult }: Props) {
             "Calculate Numerology"
           )}
         </Button>
+
+        {Object.keys(form.formState.errors).length > 0 && (
+          <div className="text-sm text-red-500 mt-2">
+            <p>Please fix the following errors:</p>
+            <ul className="list-disc pl-4">
+              {Object.entries(form.formState.errors).map(([field, error]) => (
+                <li key={field}>{error?.message}</li>
+              ))}
+            </ul>
+          </div>
+        )}
       </form>
     </Form>
   );

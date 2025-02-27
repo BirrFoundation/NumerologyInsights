@@ -15,8 +15,10 @@ export const numerologyResults = pgTable("numerology_results", {
 export const insertNumerologySchema = createInsertSchema(numerologyResults)
   .omit({ id: true })
   .extend({
-    name: z.string().min(2).max(100),
-    birthdate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/)
+    name: z.string().min(2, "Name must be at least 2 characters").max(100, "Name must be less than 100 characters"),
+    birthdate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {
+      message: "Please enter a valid date in YYYY-MM-DD format"
+    })
   });
 
 export type InsertNumerology = z.infer<typeof insertNumerologySchema>;
