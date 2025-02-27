@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import DevelopmentRecommendations from "./development-recommendations";
 
 interface Props {
   result: NumerologyResult;
@@ -57,56 +58,69 @@ export default function ResultsDisplay({ result, onReset }: Props) {
 
       <Separator />
 
-      <Accordion type="single" collapsible className="w-full">
-        <AccordionItem value="overview">
-          <AccordionTrigger>Overview</AccordionTrigger>
-          <AccordionContent>
-            {result.interpretations.overview}
-          </AccordionContent>
-        </AccordionItem>
+      <div className="space-y-8">
+        <div>
+          <h3 className="text-xl font-semibold mb-4">Numerological Profile</h3>
+          <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="overview">
+              <AccordionTrigger>Overview</AccordionTrigger>
+              <AccordionContent>
+                {result.interpretations.overview}
+              </AccordionContent>
+            </AccordionItem>
 
-        <AccordionItem value="lifepath">
-          <AccordionTrigger>Life Path Number {result.lifePath}</AccordionTrigger>
-          <AccordionContent>
-            {result.interpretations.lifePath}
-          </AccordionContent>
-        </AccordionItem>
+            <AccordionItem value="lifepath">
+              <AccordionTrigger>Life Path Number {result.lifePath}</AccordionTrigger>
+              <AccordionContent>
+                {result.interpretations.lifePath}
+              </AccordionContent>
+            </AccordionItem>
 
-        <AccordionItem value="destiny">
-          <AccordionTrigger>Destiny Number {result.destiny}</AccordionTrigger>
-          <AccordionContent>
-            {result.interpretations.destiny}
-          </AccordionContent>
-        </AccordionItem>
+            <AccordionItem value="destiny">
+              <AccordionTrigger>Destiny Number {result.destiny}</AccordionTrigger>
+              <AccordionContent>
+                {result.interpretations.destiny}
+              </AccordionContent>
+            </AccordionItem>
 
-        <AccordionItem value="heartdesire">
-          <AccordionTrigger>Heart's Desire Number {result.heartDesire}</AccordionTrigger>
-          <AccordionContent>
-            {result.interpretations.heartDesire}
-          </AccordionContent>
-        </AccordionItem>
+            <AccordionItem value="heartdesire">
+              <AccordionTrigger>Heart's Desire Number {result.heartDesire}</AccordionTrigger>
+              <AccordionContent>
+                {result.interpretations.heartDesire}
+              </AccordionContent>
+            </AccordionItem>
 
-        <AccordionItem value="expression">
-          <AccordionTrigger>Expression Number {result.expression}</AccordionTrigger>
-          <AccordionContent>
-            {result.interpretations.expression}
-          </AccordionContent>
-        </AccordionItem>
+            <AccordionItem value="expression">
+              <AccordionTrigger>Expression Number {result.expression}</AccordionTrigger>
+              <AccordionContent>
+                {result.interpretations.expression}
+              </AccordionContent>
+            </AccordionItem>
 
-        <AccordionItem value="personality">
-          <AccordionTrigger>Personality Number {result.personality}</AccordionTrigger>
-          <AccordionContent>
-            {result.interpretations.personality}
-          </AccordionContent>
-        </AccordionItem>
+            <AccordionItem value="personality">
+              <AccordionTrigger>Personality Number {result.personality}</AccordionTrigger>
+              <AccordionContent>
+                {result.interpretations.personality}
+              </AccordionContent>
+            </AccordionItem>
 
-        <AccordionItem value="attribute">
-          <AccordionTrigger>Attribute Number {result.attribute}</AccordionTrigger>
-          <AccordionContent>
-            {result.interpretations.attribute}
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
+            <AccordionItem value="attribute">
+              <AccordionTrigger>Attribute Number {result.attribute}</AccordionTrigger>
+              <AccordionContent>
+                {result.interpretations.attribute}
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
+
+        <div>
+          <h3 className="text-xl font-semibold mb-4">Personal Development Path</h3>
+          <DevelopmentRecommendations 
+            recommendations={result.interpretations.recommendations}
+            summary={result.interpretations.developmentSummary}
+          />
+        </div>
+      </div>
 
       <Button 
         variant="outline" 

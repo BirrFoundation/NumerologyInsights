@@ -102,7 +102,7 @@ export const basicInterpretations = {
     return meanings[number] || "Your core attributes reveal your natural talents and abilities";
   },
 
-  getBasicInterpretation: (numbers: { 
+  personalDevelopment: (numbers: {
     lifePath: number;
     destiny: number;
     heartDesire: number;
@@ -110,6 +110,145 @@ export const basicInterpretations = {
     personality: number;
     attribute: number;
   }) => {
+    const recommendations = {
+      strengths: [] as string[],
+      challenges: [] as string[],
+      growthAreas: [] as string[],
+      practices: [] as string[]
+    };
+
+    // Life Path Based Recommendations
+    switch (numbers.lifePath) {
+      case 1:
+        recommendations.strengths.push("Natural leadership abilities");
+        recommendations.challenges.push("May struggle with being too independent");
+        recommendations.growthAreas.push("Develop patience and collaboration skills");
+        recommendations.practices.push("Practice active listening and team-building exercises");
+        break;
+      case 2:
+        recommendations.strengths.push("Natural diplomatic abilities");
+        recommendations.challenges.push("May avoid necessary confrontation");
+        recommendations.growthAreas.push("Develop assertiveness while maintaining harmony");
+        recommendations.practices.push("Practice setting healthy boundaries while remaining cooperative");
+        break;
+      case 3:
+        recommendations.strengths.push("Creative and expressive talents");
+        recommendations.challenges.push("May scatter energy across too many projects");
+        recommendations.growthAreas.push("Develop focus and follow-through");
+        recommendations.practices.push("Keep a creativity journal and set project completion goals");
+        break;
+      case 4:
+        recommendations.strengths.push("Strong organizational abilities");
+        recommendations.challenges.push("May become too rigid or inflexible");
+        recommendations.growthAreas.push("Develop adaptability and spontaneity");
+        recommendations.practices.push("Try new approaches to familiar tasks regularly");
+        break;
+      case 5:
+        recommendations.strengths.push("Adaptability and quick learning");
+        recommendations.challenges.push("May resist commitment or routine");
+        recommendations.growthAreas.push("Develop stability while maintaining freedom");
+        recommendations.practices.push("Create flexible routines that allow for variety");
+        break;
+      case 6:
+        recommendations.strengths.push("Natural caregiving abilities");
+        recommendations.challenges.push("May take on too much responsibility for others");
+        recommendations.growthAreas.push("Develop healthy boundaries in relationships");
+        recommendations.practices.push("Practice self-care and delegating responsibilities");
+        break;
+      case 7:
+        recommendations.strengths.push("Deep analytical abilities");
+        recommendations.challenges.push("May become too isolated or withdrawn");
+        recommendations.growthAreas.push("Develop balance between solitude and connection");
+        recommendations.practices.push("Schedule regular social activities while maintaining study time");
+        break;
+      case 8:
+        recommendations.strengths.push("Natural business acumen");
+        recommendations.challenges.push("May focus too much on material success");
+        recommendations.growthAreas.push("Develop balance between material and spiritual goals");
+        recommendations.practices.push("Practice mindfulness and charitable giving");
+        break;
+      case 9:
+        recommendations.strengths.push("Natural humanitarian instincts");
+        recommendations.challenges.push("May sacrifice personal needs for others");
+        recommendations.growthAreas.push("Develop healthy self-interest while serving others");
+        recommendations.practices.push("Set personal goals alongside service activities");
+        break;
+      case 11:
+        recommendations.strengths.push("Spiritual insight and inspiration");
+        recommendations.challenges.push("May struggle with practical matters");
+        recommendations.growthAreas.push("Develop grounding while maintaining inspiration");
+        recommendations.practices.push("Combine spiritual practices with practical goal-setting");
+        break;
+      case 22:
+        recommendations.strengths.push("Visionary building abilities");
+        recommendations.challenges.push("May feel overwhelmed by potential");
+        recommendations.growthAreas.push("Develop step-by-step implementation skills");
+        recommendations.practices.push("Break large visions into manageable projects");
+        break;
+    }
+
+    // Add Expression Number Insights
+    recommendations.growthAreas.push(
+      `Based on your Expression number ${numbers.expression}, focus on ${
+        numbers.expression === 1 ? "leadership development" :
+          numbers.expression === 2 ? "relationship building" :
+            numbers.expression === 3 ? "creative expression" :
+              numbers.expression === 4 ? "system building" :
+                numbers.expression === 5 ? "adaptability training" :
+                  numbers.expression === 6 ? "counseling skills" :
+                    numbers.expression === 7 ? "research and analysis" :
+                      numbers.expression === 8 ? "business development" :
+                        numbers.expression === 9 ? "humanitarian work" :
+                          numbers.expression === 11 ? "spiritual teaching" :
+                            "manifesting visions" // 22
+      }`
+    );
+
+    // Add Personality Number Suggestions
+    recommendations.practices.push(
+      `Enhance your ${numbers.personality} personality energy by ${
+        numbers.personality === 1 ? "taking leadership roles in groups" :
+          numbers.personality === 2 ? "mediating conflicts" :
+            numbers.personality === 3 ? "public speaking" :
+              numbers.personality === 4 ? "organizing events" :
+                numbers.personality === 5 ? "teaching adaptability skills" :
+                  numbers.personality === 6 ? "counseling others" :
+                    numbers.personality === 7 ? "writing or teaching" :
+                      numbers.personality === 8 ? "mentoring in business" :
+                        numbers.personality === 9 ? "volunteering" :
+                          numbers.personality === 11 ? "spiritual counseling" :
+                            "project management" // 22
+      }`
+    );
+
+    return {
+      recommendations,
+      summary: `Focus on developing your ${numbers.lifePath} Life Path strengths while being mindful of potential challenges. Your Expression number ${numbers.expression} suggests natural talents in ${
+        numbers.expression === 1 ? "leadership and innovation" :
+          numbers.expression === 2 ? "diplomacy and cooperation" :
+            numbers.expression === 3 ? "creativity and communication" :
+              numbers.expression === 4 ? "organization and stability" :
+                numbers.expression === 5 ? "freedom and adaptability" :
+                  numbers.expression === 6 ? "nurturing and responsibility" :
+                    numbers.expression === 7 ? "analysis and wisdom" :
+                      numbers.expression === 8 ? "business and achievement" :
+                        numbers.expression === 9 ? "humanitarian service" :
+                          numbers.expression === 11 ? "spiritual inspiration" :
+                            "practical manifestation" // 22
+      }. Use these gifts in your personal development journey.`
+    };
+  },
+
+  getBasicInterpretation: (numbers: {
+    lifePath: number;
+    destiny: number;
+    heartDesire: number;
+    expression: number;
+    personality: number;
+    attribute: number;
+  }) => {
+    const personalDev = basicInterpretations.personalDevelopment(numbers);
+
     return {
       lifePath: basicInterpretations.lifePath(numbers.lifePath),
       destiny: basicInterpretations.destiny(numbers.destiny),
@@ -117,7 +256,9 @@ export const basicInterpretations = {
       expression: basicInterpretations.expression(numbers.expression),
       personality: basicInterpretations.personality(numbers.personality),
       attribute: basicInterpretations.attribute(numbers.attribute),
-      overview: `Your Life Path ${numbers.lifePath} reveals your life's purpose and the lessons you're here to learn. Your Destiny number ${numbers.destiny} shows your potential and the goals you're meant to achieve. Your Heart's Desire ${numbers.heartDesire} indicates your inner motivation and what truly makes you happy. Your Expression number ${numbers.expression} reveals how you share yourself with the world, while your Personality number ${numbers.personality} shows how others perceive you. Your Attribute number ${numbers.attribute} highlights your natural talents and core characteristics that help you achieve your goals.`
+      overview: `Your Life Path ${numbers.lifePath} reveals your life's purpose and the lessons you're here to learn. Your Destiny number ${numbers.destiny} shows your potential and the goals you're meant to achieve. Your Heart's Desire ${numbers.heartDesire} indicates your inner motivation and what truly makes you happy. Your Expression number ${numbers.expression} reveals how you share yourself with the world, while your Personality number ${numbers.personality} shows how others perceive you. Your Attribute number ${numbers.attribute} highlights your natural talents and core characteristics that help you achieve your goals.`,
+      recommendations: personalDev.recommendations,
+      developmentSummary: personalDev.summary
     };
   }
 };

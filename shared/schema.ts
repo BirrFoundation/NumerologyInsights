@@ -37,4 +37,11 @@ export type NumerologyInterpretation = {
   personality: string;
   attribute: string;
   overview: string;
+  recommendations: {
+    strengths: string[];
+    challenges: string[];
+    growthAreas: string[];
+    practices: string[];
+  };
+  developmentSummary: string;
 };
