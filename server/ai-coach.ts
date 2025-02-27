@@ -25,27 +25,33 @@ export async function getPersonalizedCoaching(
   userQuery?: string
 ): Promise<CoachingResponse> {
   try {
-    const systemPrompt = `You are an expert numerology-based personal development coach. 
-    Use the provided numerology results to give personalized, actionable advice.
-    Focus on practical steps and insights based on the person's numbers.
-    Be encouraging but direct. Keep responses concise and actionable.
+    const systemPrompt = `You are an expert numerology-based personal development coach.
+    Use the numerology results to provide highly personalized, specific advice that directly relates to the person's numbers.
 
-    When providing advice:
-    1. Consider all numerology numbers in the profile
-    2. Focus on strengths while acknowledging challenges
-    3. Provide specific, actionable steps
-    4. Connect advice to the person's numerological DNA pattern
-    5. Consider both spiritual and practical aspects
+    Key rules:
+    1. Always connect advice to specific numbers in their profile
+    2. Provide concrete, actionable steps, not generic advice
+    3. If responding to a question, address it directly using their numerological patterns
+    4. Keep responses clear and practical
+    5. Generate unique follow-up questions based on their specific numbers and any previous query
+
+    When crafting follow-up questions:
+    - Focus on their strongest numbers and potential growth areas
+    - Ask about specific challenges indicated by their numbers
+    - Suggest practical applications of their numerological strengths
+    - Never use generic questions
+    - Each question should relate to a different aspect of their numerological profile
 
     Format response as JSON with:
     {
       "advice": "detailed coaching advice",
-      "followUpQuestions": ["2-3 relevant follow-up questions to deepen the coaching"]
+      "followUpQuestions": ["3-4 highly specific follow-up questions that relate to their numbers"]
     }`;
 
     const userPrompt = userQuery 
-      ? `Based on the numerology profile and this specific question: "${userQuery}", provide personalized coaching advice.`
-      : "Based on this numerology profile, provide initial coaching insights and guidance.";
+      ? `Based on the numerology profile and this specific question: "${userQuery}", provide personalized coaching advice that addresses their question while considering their specific numbers.
+        Ensure the advice connects directly to their numbers and life path.`
+      : `Based on this numerology profile, provide initial coaching insights that specifically address the strengths and challenges indicated by their Life Path ${result.lifePath}, Expression ${result.expression}, and Heart's Desire ${result.heartDesire} numbers.`;
 
     const response = await openai.chat.completions.create({
       model: COACHING_MODEL,
@@ -55,14 +61,22 @@ export async function getPersonalizedCoaching(
           role: "user",
           content: `
             Numerology Profile:
-            - Life Path: ${result.lifePath}
-            - Destiny: ${result.destiny}
-            - Expression: ${result.expression}
-            - Heart's Desire: ${result.heartDesire}
-            - Personality: ${result.personality}
-            - Birth Date: ${result.birthDateNum}
+            - Life Path: ${result.lifePath} (Primary life direction)
+            - Destiny: ${result.destiny} (Ultimate goals)
+            - Expression: ${result.expression} (Natural talents)
+            - Heart's Desire: ${result.heartDesire} (Inner motivation)
+            - Personality: ${result.personality} (External self)
+            - Birth Date: ${result.birthDateNum} (Core traits)
 
-            Current Question/Focus: ${userPrompt}
+            Key Patterns:
+            - Master Numbers Present: ${[result.lifePath, result.destiny, result.expression, result.heartDesire]
+              .filter(num => [11, 22, 33, 44].includes(num))
+              .join(', ') || 'None'}
+            - Karmic Numbers (8): ${[result.lifePath, result.destiny, result.expression, result.heartDesire]
+              .filter(num => num === 8 || num === 44)
+              .length > 0 ? 'Present' : 'Not present'}
+
+            Current Focus: ${userPrompt}
           `
         }
       ],

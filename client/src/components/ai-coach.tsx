@@ -34,11 +34,11 @@ export default function AICoach({ result }: Props) {
         userQuery: query
       })
     });
-    
+
     if (!response.ok) {
       throw new Error("Failed to get coaching insights");
     }
-    
+
     return response.json();
   };
 
@@ -130,7 +130,7 @@ export default function AICoach({ result }: Props) {
 
                 <div className="space-y-2">
                   <p className="text-sm font-medium text-primary">
-                    Explore Further:
+                    Follow-up Insights:
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {coachingMutation.data.followUpQuestions.map(
@@ -155,7 +155,7 @@ export default function AICoach({ result }: Props) {
           {/* Question Input */}
           <div className="flex gap-2 mt-4">
             <Input
-              placeholder="Ask a specific question..."
+              placeholder="Ask a specific question about your numerological path..."
               value={userQuery}
               onChange={(e) => {
                 setUserQuery(e.target.value);
