@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { format } from "date-fns";
 import type { NumerologyResult } from "@shared/schema";
+import ColorPaletteGenerator from "./color-palette-generator";
 
 interface JournalEntry {
   date: string;
@@ -67,106 +68,113 @@ export default function NumerologyJournal({ result }: Props) {
   };
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="text-2xl font-light">Numerology Journal</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="text-sm font-medium">Date</label>
-            <Input
-              type="date"
-              value={currentEntry.date}
-              onChange={(e) => setCurrentEntry(prev => ({ ...prev, date: e.target.value }))}
-            />
+    <div className="space-y-6">
+      <Card className="w-full">
+        <CardHeader>
+          <CardTitle className="text-2xl font-light">Numerology Journal</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-medium">Date</label>
+              <Input
+                type="date"
+                value={currentEntry.date}
+                onChange={(e) => setCurrentEntry(prev => ({ ...prev, date: e.target.value }))}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Mood</label>
+              <Select
+                value={currentEntry.mood}
+                onValueChange={(value) => setCurrentEntry(prev => ({ ...prev, mood: value }))}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="How are you feeling?" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Joyful">✨ Joyful</SelectItem>
+                  <SelectItem value="Calm">⚖️ Calm</SelectItem>
+                  <SelectItem value="Energetic">⚡ Energetic</SelectItem>
+                  <SelectItem value="Reflective">🤔 Reflective</SelectItem>
+                  <SelectItem value="Creative">🎨 Creative</SelectItem>
+                  <SelectItem value="Focused">🎯 Focused</SelectItem>
+                  <SelectItem value="Peaceful">🕊️ Peaceful</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
+
           <div>
-            <label className="text-sm font-medium">Mood</label>
+            <label className="text-sm font-medium">Today's Reflection Prompt</label>
             <Select
-              value={currentEntry.mood}
-              onValueChange={(value) => setCurrentEntry(prev => ({ ...prev, mood: value }))}
+              value={currentEntry.prompt}
+              onValueChange={(value) => setCurrentEntry(prev => ({ ...prev, prompt: value }))}
             >
               <SelectTrigger>
-                <SelectValue placeholder="How are you feeling?" />
+                <SelectValue placeholder="Choose a reflection prompt..." />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="inspired">✨ Inspired</SelectItem>
-                <SelectItem value="balanced">⚖️ Balanced</SelectItem>
-                <SelectItem value="challenged">🎯 Challenged</SelectItem>
-                <SelectItem value="reflective">🤔 Reflective</SelectItem>
-                <SelectItem value="energetic">⚡ Energetic</SelectItem>
-                <SelectItem value="peaceful">🕊️ Peaceful</SelectItem>
-                <SelectItem value="uncertain">❓ Uncertain</SelectItem>
+                {getReflectionPrompts().map((prompt, index) => (
+                  <SelectItem key={index} value={prompt}>
+                    {prompt}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
-        </div>
 
-        <div>
-          <label className="text-sm font-medium">Today's Reflection Prompt</label>
-          <Select
-            value={currentEntry.prompt}
-            onValueChange={(value) => setCurrentEntry(prev => ({ ...prev, prompt: value }))}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Choose a reflection prompt..." />
-            </SelectTrigger>
-            <SelectContent>
-              {getReflectionPrompts().map((prompt, index) => (
-                <SelectItem key={index} value={prompt}>
-                  {prompt}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div>
-          <label className="text-sm font-medium">Your Reflection</label>
-          <Textarea
-            placeholder="Write your thoughts here..."
-            className="mt-2"
-            value={currentEntry.reflection}
-            onChange={(e) => setCurrentEntry(prev => ({ ...prev, reflection: e.target.value }))}
-            rows={6}
-          />
-        </div>
-
-        <Button
-          onClick={handleSaveEntry}
-          className="w-full"
-          disabled={!currentEntry.mood || !currentEntry.reflection}
-        >
-          Save Journal Entry
-        </Button>
-
-        {entries.length > 0 && (
-          <div className="mt-8">
-            <h3 className="text-lg font-medium mb-4">Previous Entries</h3>
-            <div className="space-y-4">
-              {entries.map((entry, index) => (
-                <Card key={index} className="bg-muted/50">
-                  <CardContent className="pt-6">
-                    <div className="flex justify-between items-start mb-4">
-                      <div className="text-sm text-muted-foreground">
-                        {format(new Date(entry.date), 'MMMM d, yyyy')}
-                      </div>
-                      <div className="text-sm font-medium">{entry.mood}</div>
-                    </div>
-                    <div className="text-sm text-muted-foreground mb-2">
-                      Prompt: {entry.prompt}
-                    </div>
-                    <div className="text-sm whitespace-pre-wrap">
-                      {entry.reflection}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+          <div>
+            <label className="text-sm font-medium">Your Reflection</label>
+            <Textarea
+              placeholder="Write your thoughts here..."
+              className="mt-2"
+              value={currentEntry.reflection}
+              onChange={(e) => setCurrentEntry(prev => ({ ...prev, reflection: e.target.value }))}
+              rows={6}
+            />
           </div>
-        )}
-      </CardContent>
-    </Card>
+
+          <Button
+            onClick={handleSaveEntry}
+            className="w-full"
+            disabled={!currentEntry.mood || !currentEntry.reflection}
+          >
+            Save Journal Entry
+          </Button>
+        </CardContent>
+      </Card>
+
+      <ColorPaletteGenerator 
+        result={result} 
+        currentMood={currentEntry.mood}
+      />
+
+      {entries.length > 0 && (
+        <div className="mt-8">
+          <h3 className="text-lg font-medium mb-4">Previous Entries</h3>
+          <div className="space-y-4">
+            {entries.map((entry, index) => (
+              <Card key={index} className="bg-muted/50">
+                <CardContent className="pt-6">
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="text-sm text-muted-foreground">
+                      {format(new Date(entry.date), 'MMMM d, yyyy')}
+                    </div>
+                    <div className="text-sm font-medium">{entry.mood}</div>
+                  </div>
+                  <div className="text-sm text-muted-foreground mb-2">
+                    Prompt: {entry.prompt}
+                  </div>
+                  <div className="text-sm whitespace-pre-wrap">
+                    {entry.reflection}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
