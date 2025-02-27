@@ -19,6 +19,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import DevelopmentRecommendations from "./development-recommendations";
 import DNAVisualization from "./dna-visualization";
 import StrengthsWeaknessesChart from "./strengths-weaknesses-chart";
+import AICoach from "./ai-coach"; // Assuming AICoach component is imported
 
 interface Props {
   result: NumerologyResult;
@@ -388,9 +389,18 @@ export default function ResultsDisplay({ result, onReset }: Props) {
             summary={result.interpretations.developmentSummary}
           />
         </motion.div>
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+          >
+            <h3 className="text-xl font-semibold mb-4">Personal Development Coach</h3>
+            <AICoach result={result} />
+          </motion.div>
+
       </div>
 
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}>
         <Button variant="outline" onClick={onReset} className="w-full">
           Calculate Another Reading
         </Button>

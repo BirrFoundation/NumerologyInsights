@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { calculateNumerology, calculateCompatibility } from "./numerology";
 import { getInterpretation } from "./ai";
+import { getPersonalizedCoaching } from "./ai-coach";
 import { numerologyInputSchema, compatibilityInputSchema } from "@shared/schema";
 import { z } from "zod";
 
@@ -77,6 +78,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       res.status(500).json({
         message: "Failed to calculate compatibility"
+      });
+    }
+  });
+
+  // New AI Coaching endpoint
+  app.post("/api/coaching", async (req, res) => {
+    try {
+      if (!req.body.numerologyResult) {
+        res.status(400).json({
+          message: "Numerology result is required"
+        });
+        return;
+      }
+
+      const coaching = await getPersonalizedCoaching(
+        req.body.numerologyResult,
+        req.body.userQuery
+      );
+
+      res.json(coaching);
+    } catch (error) {
+      console.error('AI Coaching error:', error);
+      res.status(503).json({
+        message: "Failed to get coaching insights. Please try again."
       });
     }
   });
