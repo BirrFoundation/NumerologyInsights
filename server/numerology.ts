@@ -134,74 +134,341 @@ function getLifePathRecommendations(lifePath: number): {
 } {
   const recommendations = {
     1: {
-      strengths: ["Natural leadership abilities", "Strong independence", "Creative innovation"],
-      challenges: ["Can be too dominant", "May struggle with cooperation", "Tendency to be stubborn"],
-      growthAreas: ["Developing patience", "Learning to collaborate", "Listening to others"],
-      practices: ["Practice delegation", "Meditation for patience", "Group activities"]
+      strengths: [
+        "Natural leadership and pioneering spirit",
+        "Strong creative and innovative thinking",
+        "Exceptional problem-solving abilities",
+        "Self-reliant and independent nature",
+        "Determination to achieve goals"
+      ],
+      challenges: [
+        "Tendency to be overly dominant or controlling",
+        "Difficulty accepting help from others",
+        "Can appear egotistical or self-centered",
+        "May struggle with patience and cooperation",
+        "Risk of isolation due to independence"
+      ],
+      growthAreas: [
+        "Developing emotional intelligence and empathy",
+        "Learning to collaborate effectively with others",
+        "Balancing independence with interdependence",
+        "Practicing active listening and openness",
+        "Managing competitive tendencies constructively"
+      ],
+      practices: [
+        "Daily meditation to cultivate patience",
+        "Regular team activities or group projects",
+        "Practice delegating tasks and trusting others",
+        "Journaling to process emotions and thoughts",
+        "Seeking feedback from trusted colleagues and friends"
+      ]
     },
     2: {
-      strengths: ["Natural diplomacy", "Strong intuition", "Excellent cooperation"],
-      challenges: ["Over-sensitivity", "Indecision", "Fear of confrontation"],
-      growthAreas: ["Building confidence", "Decision making", "Setting boundaries"],
-      practices: ["Assertiveness training", "Trust your intuition", "Practice saying no"]
+      strengths: [
+        "Exceptional diplomatic abilities",
+        "Natural peacemaker and mediator",
+        "Strong intuitive and empathetic nature",
+        "Detail-oriented and thorough",
+        "Excellent team player and collaborator"
+      ],
+      challenges: [
+        "Heightened sensitivity to criticism",
+        "Tendency to avoid confrontation",
+        "Difficulty making decisions independently",
+        "Risk of codependency in relationships",
+        "May sacrifice personal needs for others"
+      ],
+      growthAreas: [
+        "Developing assertiveness and confidence",
+        "Learning to trust your intuition more",
+        "Setting and maintaining healthy boundaries",
+        "Building emotional resilience",
+        "Finding balance between giving and receiving"
+      ],
+      practices: [
+        "Regular assertiveness training exercises",
+        "Daily affirmations for self-confidence",
+        "Practicing saying 'no' when necessary",
+        "Mindfulness meditation for emotional balance",
+        "Regular self-care routines"
+      ]
     },
     3: {
-      strengths: ["Creative expression", "Communication skills", "Social charisma"],
-      challenges: ["Scattered energy", "Lack of focus", "Superficiality"],
-      growthAreas: ["Developing discipline", "Following through", "Deeper connections"],
-      practices: ["Daily writing", "Project completion exercises", "Deep conversations"]
+      strengths: [
+        "Exceptional creative and artistic abilities",
+        "Natural charm and social charisma",
+        "Strong communication and expression",
+        "Optimistic and joyful nature",
+        "Ability to inspire and uplift others"
+      ],
+      challenges: [
+        "Tendency to scatter energy across projects",
+        "Difficulty maintaining focus and discipline",
+        "Risk of superficiality in relationships",
+        "May avoid deeper emotional issues",
+        "Challenges with follow-through"
+      ],
+      growthAreas: [
+        "Developing self-discipline and focus",
+        "Learning to channel creativity productively",
+        "Building deeper emotional connections",
+        "Following through on commitments",
+        "Balancing expression with introspection"
+      ],
+      practices: [
+        "Daily creative writing or journaling",
+        "Setting and tracking project milestones",
+        "Regular deep conversations with loved ones",
+        "Meditation for focus and concentration",
+        "Time management techniques"
+      ]
     },
     4: {
-      strengths: ["Strong work ethic", "Reliability", "Organizational skills"],
-      challenges: ["Rigidity", "Resistance to change", "Workaholic tendencies"],
-      growthAreas: ["Flexibility", "Work-life balance", "Embracing change"],
-      practices: ["Spontaneous activities", "Regular breaks", "Try new approaches"]
+      strengths: [
+        "Exceptional organizational abilities",
+        "Strong work ethic and dedication",
+        "Natural talent for systems and structure",
+        "Reliability and trustworthiness",
+        "Practical problem-solving skills"
+      ],
+      challenges: [
+        "Tendency towards rigidity and inflexibility",
+        "Resistance to change and innovation",
+        "Risk of becoming too focused on work",
+        "May overlook emotional aspects",
+        "Difficulty with spontaneity"
+      ],
+      growthAreas: [
+        "Developing flexibility and adaptability",
+        "Learning to embrace change positively",
+        "Balancing work with personal life",
+        "Cultivating emotional awareness",
+        "Finding joy in spontaneity"
+      ],
+      practices: [
+        "Regular unplanned activities or adventures",
+        "Mindfulness practices for flexibility",
+        "Scheduled breaks and leisure time",
+        "Trying new approaches to familiar tasks",
+        "Emotional check-ins and journaling"
+      ]
     },
     5: {
-      strengths: ["Adaptability", "Progressive thinking", "Freedom-loving"],
-      challenges: ["Restlessness", "Lack of commitment", "Impulsiveness"],
-      growthAreas: ["Finding stability", "Building commitment", "Thoughtful decisions"],
-      practices: ["Grounding exercises", "Long-term planning", "Mindfulness"]
+      strengths: [
+        "Natural adaptability and versatility",
+        "Strong desire for adventure and exploration",
+        "Quick learning and understanding",
+        "Freedom-loving and progressive thinking",
+        "Magnetic personality and charm"
+      ],
+      challenges: [
+        "Tendency towards restlessness",
+        "Risk of developing addictive behaviors",
+        "Difficulty with commitment and routine",
+        "May struggle with focus and discipline",
+        "Can be overly impulsive"
+      ],
+      growthAreas: [
+        "Developing healthy stability and routine",
+        "Learning to channel energy constructively",
+        "Building lasting commitments",
+        "Finding freedom within structure",
+        "Managing impulsive tendencies"
+      ],
+      practices: [
+        "Regular grounding exercises",
+        "Maintaining a flexible daily routine",
+        "Mindful decision-making practices",
+        "Setting and reviewing long-term goals",
+        "Adventure planning with accountability"
+      ]
     },
     6: {
-      strengths: ["Nurturing nature", "Responsibility", "Harmony creation"],
-      challenges: ["Perfectionism", "Over-responsibility", "Self-sacrifice"],
-      growthAreas: ["Setting boundaries", "Self-care", "Accepting imperfection"],
-      practices: ["Regular self-care", "Learning to delegate", "Acceptance exercises"]
+      strengths: [
+        "Natural nurturing and caring abilities",
+        "Strong sense of responsibility",
+        "Ability to create harmony and beauty",
+        "Excellence in teaching and healing",
+        "Deep commitment to family and community"
+      ],
+      challenges: [
+        "Tendency towards perfectionism",
+        "Risk of taking on too much responsibility",
+        "May neglect self-care for others",
+        "Difficulty letting go of control",
+        "Can be overly critical"
+      ],
+      growthAreas: [
+        "Developing healthy boundaries",
+        "Learning to accept imperfection",
+        "Balancing giving with receiving",
+        "Practicing self-care and self-love",
+        "Managing perfectionist tendencies"
+      ],
+      practices: [
+        "Daily self-care rituals",
+        "Setting and maintaining boundaries",
+        "Delegating responsibilities",
+        "Mindfulness and acceptance exercises",
+        "Regular artistic or creative activities"
+      ]
     },
     7: {
-      strengths: ["Analytical mind", "Spiritual connection", "Deep thinking"],
-      challenges: ["Over-analysis", "Isolation", "Skepticism"],
-      growthAreas: ["Social connection", "Trust building", "Practical application"],
-      practices: ["Group activities", "Trust exercises", "Applied learning"]
+      strengths: [
+        "Deep analytical and philosophical mind",
+        "Strong spiritual awareness",
+        "Excellence in research and investigation",
+        "Natural wisdom and understanding",
+        "Ability to see beyond surface reality"
+      ],
+      challenges: [
+        "Tendency towards overthinking",
+        "Risk of isolation and withdrawal",
+        "Difficulty with trust and intimacy",
+        "May appear aloof or distant",
+        "Skepticism can become cynicism"
+      ],
+      growthAreas: [
+        "Developing social connections",
+        "Learning to trust intuition",
+        "Balancing analysis with action",
+        "Building emotional openness",
+        "Connecting wisdom with practical life"
+      ],
+      practices: [
+        "Regular social interactions and activities",
+        "Meditation and spiritual practices",
+        "Keeping a wisdom journal",
+        "Sharing knowledge through teaching",
+        "Balancing solitude with connection"
+      ]
     },
     8: {
-      strengths: ["Material success", "Executive ability", "Power handling"],
-      challenges: ["Workaholic tendencies", "Control issues", "Material focus"],
-      growthAreas: ["Work-life balance", "Delegation", "Spiritual connection"],
-      practices: ["Meditation", "Charitable work", "Time management"]
+      strengths: [
+        "Natural business and financial acumen",
+        "Strong leadership and executive ability",
+        "Excellence in organization and management",
+        "Power to manifest abundance",
+        "Ability to achieve large-scale goals"
+      ],
+      challenges: [
+        "Risk of workaholism and burnout",
+        "Tendency to value material over spiritual",
+        "May struggle with personal relationships",
+        "Can be overly controlling",
+        "Difficulty delegating power"
+      ],
+      growthAreas: [
+        "Developing work-life balance",
+        "Learning to share power and control",
+        "Building spiritual connection",
+        "Cultivating personal relationships",
+        "Managing stress and pressure"
+      ],
+      practices: [
+        "Regular meditation and spiritual practice",
+        "Scheduled family and personal time",
+        "Delegation exercises",
+        "Charitable giving and service",
+        "Stress management techniques"
+      ]
     },
     9: {
-      strengths: ["Universal love", "Artistic talents", "Humanitarian nature"],
-      challenges: ["Emotional attachment", "Scattered focus", "Perfectionism"],
-      growthAreas: ["Practical grounding", "Focus development", "Emotional balance"],
-      practices: ["Goal setting", "Completion exercises", "Emotional release"]
+      strengths: [
+        "Exceptional adaptability and understanding",
+        "Natural ability to mirror and connect",
+        "Deep empathy and universal love",
+        "Strong humanitarian instincts",
+        "Ability to see multiple perspectives"
+      ],
+      challenges: [
+        "Risk of absorbing others' energies",
+        "Difficulty maintaining personal boundaries",
+        "May struggle with personal identity",
+        "Emotional overwhelm from empathy",
+        "Tendency to lose self in others"
+      ],
+      growthAreas: [
+        "Developing strong personal identity",
+        "Learning to maintain boundaries",
+        "Balancing empathy with self-care",
+        "Managing emotional absorption",
+        "Finding personal truth amid perspectives"
+      ],
+      practices: [
+        "Regular energy clearing exercises",
+        "Boundary-setting practices",
+        "Grounding and centering techniques",
+        "Identity-affirming activities",
+        "Emotional release practices"
+      ]
     },
     11: {
-      strengths: ["Spiritual insight", "Inspirational leadership", "Intuitive abilities"],
-      challenges: ["High sensitivity", "Nervous tension", "Idealistic expectations"],
-      growthAreas: ["Grounding", "Practical application", "Stress management"],
-      practices: ["Physical exercise", "Regular breaks", "Meditation"]
+      strengths: [
+        "Heightened spiritual awareness",
+        "Strong intuitive abilities",
+        "Natural healing and teaching gifts",
+        "Visionary leadership potential",
+        "Ability to inspire others"
+      ],
+      challenges: [
+        "High sensitivity to energy",
+        "Risk of nervous tension and anxiety",
+        "May struggle with practical matters",
+        "Difficulty grounding visions",
+        "Can be overwhelmed by responsibility"
+      ],
+      growthAreas: [
+        "Developing practical groundedness",
+        "Learning to manage sensitivity",
+        "Balancing spiritual with material",
+        "Building stress resilience",
+        "Channeling vision into action"
+      ],
+      practices: [
+        "Daily grounding exercises",
+        "Regular physical activity",
+        "Practical goal-setting",
+        "Energy protection techniques",
+        "Balanced spiritual practice"
+      ]
     },
     22: {
-      strengths: ["Master building", "Practical vision", "Large-scale influence"],
-      challenges: ["Overwhelming responsibility", "Perfectionism", "Burn-out"],
-      growthAreas: ["Delegation", "Self-care", "Balance"],
-      practices: ["Regular rest", "Team building", "Stress management"]
+      strengths: [
+        "Exceptional manifesting abilities",
+        "Mastery of practical spirituality",
+        "Vision for large-scale impact",
+        "Natural ability to build and create",
+        "Power to transform dreams into reality"
+      ],
+      challenges: [
+        "Overwhelming sense of responsibility",
+        "Risk of burnout from high expectations",
+        "May struggle with personal limitations",
+        "Difficulty delegating control",
+        "Pressure to achieve greatness"
+      ],
+      growthAreas: [
+        "Developing sustainable work practices",
+        "Learning to pace yourself",
+        "Balancing vision with execution",
+        "Building support systems",
+        "Managing perfectionist tendencies"
+      ],
+      practices: [
+        "Regular rest and recovery periods",
+        "Project planning and delegation",
+        "Stress management techniques",
+        "Team building exercises",
+        "Balancing ambition with self-care"
+      ]
     }
   };
 
-  return recommendations[lifePath] || recommendations[reduceToSingleDigit(lifePath)];
+  // Use the number as is if it's a master number (11 or 22)
+  // Otherwise, reduce to single digit if not found
+  return recommendations[lifePath as keyof typeof recommendations] || 
+         recommendations[reduceToSingleDigit(lifePath)];
 }
 
 export function calculateNumerology(name: string, birthdate: string) {
