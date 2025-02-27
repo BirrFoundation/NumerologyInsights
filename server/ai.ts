@@ -83,6 +83,11 @@ Provide detailed interpretations in JSON format with these keys:
   } catch (error: any) {
     console.error('OpenAI API error:', error);
 
+    // Check for insufficient quota
+    if (error?.error?.code === 'insufficient_quota') {
+      throw new Error("The AI service is currently unavailable. Please try again later.");
+    }
+
     // Check for rate limit error
     if (error?.status === 429) {
       throw new Error("The AI service is temporarily busy. Please try again in a few minutes.");
