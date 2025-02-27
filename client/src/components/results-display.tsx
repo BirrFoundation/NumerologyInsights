@@ -21,6 +21,7 @@ import DNAVisualization from "./dna-visualization";
 import StrengthsWeaknessesChart from "./strengths-weaknesses-chart";
 import AICoach from "./ai-coach"; // Assuming AICoach component is imported
 import NumerologyJournal from "./numerology-journal"; // Added import
+import ConstellationBackground from "./constellation-background"; // Added import
 
 interface Props {
   result: NumerologyResult;
@@ -280,7 +281,8 @@ export default function ResultsDisplay({ result, onReset }: Props) {
   }
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 relative">
+      <ConstellationBackground className="opacity-10" />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
