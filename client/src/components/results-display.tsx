@@ -115,8 +115,22 @@ const NUMBER_MEANINGS = {
 
 function NumberDisplay({ number, title }: { number: number; title: string }) {
   const [isOpen, setIsOpen] = useState(false);
-  const meaning = NUMBER_MEANINGS[number as keyof typeof NUMBER_MEANINGS] || 
-    NUMBER_MEANINGS[(number % 9 || 9) as keyof typeof NUMBER_MEANINGS];
+
+  // Use either the direct number meaning or combine 44 with 8 if it's 44
+  const meaning = number === 44 ? {
+    title: "The Master Structurer (44/8)",
+    strengths: [
+      ...NUMBER_MEANINGS[44].strengths,
+      "---Base 8 Qualities---",
+      ...NUMBER_MEANINGS[8].strengths
+    ],
+    weaknesses: [
+      ...NUMBER_MEANINGS[44].weaknesses,
+      "---Base 8 Challenges---",
+      ...NUMBER_MEANINGS[8].weaknesses
+    ]
+  } : (NUMBER_MEANINGS[number as keyof typeof NUMBER_MEANINGS] || 
+       NUMBER_MEANINGS[(number % 9 || 9) as keyof typeof NUMBER_MEANINGS]);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
