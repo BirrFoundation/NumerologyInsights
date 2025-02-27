@@ -50,9 +50,13 @@ export default function NumerologyForm({ onResult }: Props) {
         const result = await res.json();
         console.log('Calculation result:', result);
         return result;
-      } catch (error) {
+      } catch (error: any) {
         console.error('Calculation error:', error);
-        throw error;
+        // Get the error message from the response if available
+        const message = await error.response?.json()
+          .then((data: any) => data.message)
+          .catch(() => null);
+        throw new Error(message || error.message || "Failed to calculate numerology");
       }
     },
     onSuccess: (data) => {

@@ -30,10 +30,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
 
         res.json(result);
-      } catch (aiError) {
+      } catch (aiError: any) {
         console.error('AI Interpretation error:', aiError);
-        res.status(500).json({ 
-          message: "Failed to get AI interpretation. Please try again." 
+        res.status(503).json({ 
+          message: aiError.message || "Failed to get AI interpretation. Please try again." 
         });
       }
     } catch (error) {

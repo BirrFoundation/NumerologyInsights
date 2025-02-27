@@ -42,8 +42,19 @@ Provide detailed interpretations in JSON format with these keys:
 
     const parsedContent = JSON.parse(content) as NumerologyInterpretation;
     return parsedContent;
-  } catch (error) {
+  } catch (error: any) {
     console.error('OpenAI API error:', error);
-    throw new Error("Failed to get AI interpretation");
+
+    // Check for rate limit error
+    if (error?.status === 429) {
+      throw new Error("OpenAI API rate limit exceeded. Please try again in a few minutes.");
+    }
+
+    // Check for invalid API key
+    if (error?.status === 401) {
+      throw new Error("Invalid OpenAI API key. Please check your API key configuration.");
+    }
+
+    throw new Error("Failed to get AI interpretation. Please try again.");
   }
 }
