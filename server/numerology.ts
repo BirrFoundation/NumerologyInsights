@@ -316,61 +316,61 @@ function getLifePathRecommendations(lifePath: number): {
     7: {
       strengths: [
         "Deep analytical and philosophical mind",
+        "Exceptional intellectual capabilities",
+        "Natural truth seeker and researcher",
         "Strong spiritual awareness",
-        "Excellence in research and investigation",
-        "Natural wisdom and understanding",
-        "Ability to see beyond surface reality"
+        "Ability to uncover hidden knowledge"
       ],
       challenges: [
-        "Tendency towards overthinking",
-        "Risk of isolation and withdrawal",
-        "Difficulty with trust and intimacy",
-        "May appear aloof or distant",
-        "Skepticism can become cynicism"
+        "Intellectual ego can be overwhelming",
+        "Risk of isolation in pursuit of truth",
+        "Can become too detached from reality",
+        "May appear distant or unapproachable",
+        "Tendency to overthink everything"
       ],
       growthAreas: [
-        "Developing social connections",
-        "Learning to trust intuition",
-        "Balancing analysis with action",
-        "Building emotional openness",
-        "Connecting wisdom with practical life"
+        "Balancing intellect with emotion",
+        "Sharing wisdom with others",
+        "Developing practical applications",
+        "Building meaningful connections",
+        "Managing intellectual pride"
       ],
       practices: [
-        "Regular social interactions and activities",
-        "Meditation and spiritual practices",
-        "Keeping a wisdom journal",
-        "Sharing knowledge through teaching",
-        "Balancing solitude with connection"
+        "Regular meditation and contemplation",
+        "Teaching or mentoring others",
+        "Writing and documenting insights",
+        "Participating in intellectual discussions",
+        "Grounding spiritual knowledge in daily life"
       ]
     },
     8: {
       strengths: [
-        "Natural business and financial acumen",
-        "Strong leadership and executive ability",
-        "Excellence in organization and management",
-        "Power to manifest abundance",
-        "Ability to achieve large-scale goals"
+        "Powerful manifestation abilities",
+        "Strong karmic understanding",
+        "Natural leadership and authority",
+        "Excellence in business and finance",
+        "Ability to achieve material success"
       ],
       challenges: [
-        "Risk of workaholism and burnout",
-        "Tendency to value material over spiritual",
-        "May struggle with personal relationships",
-        "Can be overly controlling",
-        "Difficulty delegating power"
+        "Strong ego tendencies",
+        "Immediate karmic consequences",
+        "Risk of power misuse",
+        "Can become too materialistic",
+        "Must carefully consider all actions"
       ],
       growthAreas: [
-        "Developing work-life balance",
-        "Learning to share power and control",
-        "Building spiritual connection",
-        "Cultivating personal relationships",
-        "Managing stress and pressure"
+        "Understanding karmic responsibility",
+        "Using power wisely and ethically",
+        "Balancing material and spiritual",
+        "Developing humility and service",
+        "Learning from karmic lessons"
       ],
       practices: [
-        "Regular meditation and spiritual practice",
-        "Scheduled family and personal time",
-        "Delegation exercises",
+        "Regular self-reflection",
+        "Ethical business practices",
         "Charitable giving and service",
-        "Stress management techniques"
+        "Mindful decision-making",
+        "Studying cause and effect"
       ]
     },
     9: {

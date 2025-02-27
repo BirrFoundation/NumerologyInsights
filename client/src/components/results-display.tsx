@@ -70,14 +70,38 @@ const NUMBER_MEANINGS = {
     weaknesses: ["Worried", "Anxious", "Interfering", "Self-sacrificing"]
   },
   7: {
-    title: "The Seeker",
-    strengths: ["Analytical", "Studious", "Introspective", "Perfectionist", "Wise"],
-    weaknesses: ["Reserved", "Secretive", "Isolated", "Skeptical"]
+    title: "The Seeker of Truth",
+    strengths: [
+      "Highly intelligent and analytical",
+      "Deep spiritual and philosophical insight",
+      "Excellent research and investigation skills",
+      "Strong intellectual capabilities",
+      "Natural truth seeker"
+    ],
+    weaknesses: [
+      "Intellectual ego can be overwhelming",
+      "May appear aloof or distant",
+      "Can be overly skeptical",
+      "Tendency to overthink",
+      "May isolate themselves in pursuit of knowledge"
+    ]
   },
   8: {
-    title: "The Powerhouse",
-    strengths: ["Ambitious", "Confident", "Executive", "Goal-oriented", "Successful"],
-    weaknesses: ["Materialistic", "Domineering", "Workaholic", "Stressed"]
+    title: "The Karmic Powerhouse",
+    strengths: [
+      "Strong manifestation abilities",
+      "Natural business acumen",
+      "Powerful leadership qualities",
+      "Material and financial success",
+      "Ability to achieve great goals"
+    ],
+    weaknesses: [
+      "Strong ego tendencies",
+      "All actions have immediate karmic returns",
+      "Must be extremely careful with power",
+      "Can be too focused on material success",
+      "Risk of misusing authority"
+    ]
   },
   9: {
     title: "The Adaptive Mirror",
