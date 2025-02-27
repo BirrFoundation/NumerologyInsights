@@ -20,6 +20,7 @@ import DevelopmentRecommendations from "./development-recommendations";
 import DNAVisualization from "./dna-visualization";
 import StrengthsWeaknessesChart from "./strengths-weaknesses-chart";
 import AICoach from "./ai-coach"; // Assuming AICoach component is imported
+import NumerologyJournal from "./numerology-journal"; // Added import
 
 interface Props {
   result: NumerologyResult;
@@ -424,7 +425,16 @@ export default function ResultsDisplay({ result, onReset }: Props) {
 
       </div>
 
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}>
+      <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+        >
+          <h3 className="text-xl font-semibold mb-4">Personal Journal</h3>
+          <NumerologyJournal result={result} />
+        </motion.div> {/* Added NumerologyJournal component */}
+
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9 }}>
         <Button variant="outline" onClick={onReset} className="w-full">
           Calculate Another Reading
         </Button>
