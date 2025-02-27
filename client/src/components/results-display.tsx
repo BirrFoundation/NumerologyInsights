@@ -45,9 +45,9 @@ const NUMBER_MEANINGS = {
     weaknesses: ["Rigid", "Stubborn", "Limited", "Too serious"]
   },
   5: {
-    title: "The Freedom Seeker",
-    strengths: ["Adaptable", "Versatile", "Progressive", "Adventurous", "Magnetic"],
-    weaknesses: ["Restless", "Inconsistent", "Unreliable", "Scattered"]
+    title: "The Freedom Explorer",
+    strengths: ["Adventure-seeking", "Versatile", "Curious", "Dynamic", "Quick learner"],
+    weaknesses: ["Addictive tendencies", "Restless", "Easily bored", "Commitment-phobic"]
   },
   6: {
     title: "The Nurturer",
@@ -65,9 +65,9 @@ const NUMBER_MEANINGS = {
     weaknesses: ["Materialistic", "Domineering", "Workaholic", "Stressed"]
   },
   9: {
-    title: "The Humanitarian",
-    strengths: ["Compassionate", "Generous", "Artistic", "Romantic", "Selfless"],
-    weaknesses: ["Emotional", "Aloof", "Scattered", "Unrealistic"]
+    title: "The Adaptive Mirror",
+    strengths: ["Extremely adaptable", "Mirror-like perception", "Empathetic", "Universal understanding", "Reflective"],
+    weaknesses: ["Over-absorption of others", "Identity confusion", "Boundary issues", "Emotional overwhelm"]
   },
   11: {
     title: "The Master Intuitive",
