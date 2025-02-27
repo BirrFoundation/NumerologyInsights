@@ -33,7 +33,7 @@ export default function Home() {
       <div className="relative max-w-4xl mx-auto p-4 md:p-8 space-y-8">
         <div className="text-center space-y-6">
           <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent animate-gradient">
-            DNA READING
+            DEBTERA READING
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground font-light max-w-2xl mx-auto">
             Unlock the hidden patterns in your numerological DNA through the ancient wisdom of numbers
