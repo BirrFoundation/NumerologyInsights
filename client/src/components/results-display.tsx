@@ -15,6 +15,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { motion, AnimatePresence } from "framer-motion";
 import DevelopmentRecommendations from "./development-recommendations";
 import DNAVisualization from "./dna-visualization";
 
@@ -81,16 +82,33 @@ const NUMBER_MEANINGS = {
   }
 };
 
-function NumberDisplay({ number, title }: { number: number, title: string }) {
+function NumberDisplay({ number, title }: { number: number; title: string }) {
   const meaning = NUMBER_MEANINGS[number as keyof typeof NUMBER_MEANINGS] || NUMBER_MEANINGS[number % 9 || 9];
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <div className="text-center p-4 rounded-lg bg-primary/5 cursor-pointer hover:bg-primary/10 transition-colors">
-          <div className="text-4xl font-light text-primary">{number}</div>
-          <div className="text-sm text-muted-foreground mt-1">{title}</div>
-        </div>
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="text-center p-4 rounded-lg bg-primary/5 cursor-pointer hover:bg-primary/10 transition-colors"
+        >
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-4xl font-light text-primary"
+          >
+            {number}
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="text-sm text-muted-foreground mt-1"
+          >
+            {title}
+          </motion.div>
+        </motion.div>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -101,12 +119,24 @@ function NumberDisplay({ number, title }: { number: number, title: string }) {
             Click to explore the meaning and characteristics of this number
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-4 py-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-4 py-4"
+        >
           <div>
             <h4 className="text-sm font-medium mb-2 text-primary">Strengths</h4>
             <ul className="list-disc pl-5 space-y-1">
               {meaning.strengths.map((strength, index) => (
-                <li key={index} className="text-sm">{strength}</li>
+                <motion.li
+                  key={index}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="text-sm"
+                >
+                  {strength}
+                </motion.li>
               ))}
             </ul>
           </div>
@@ -114,55 +144,84 @@ function NumberDisplay({ number, title }: { number: number, title: string }) {
             <h4 className="text-sm font-medium mb-2 text-primary">Challenges</h4>
             <ul className="list-disc pl-5 space-y-1">
               {meaning.weaknesses.map((weakness, index) => (
-                <li key={index} className="text-sm">{weakness}</li>
+                <motion.li
+                  key={index}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="text-sm"
+                >
+                  {weakness}
+                </motion.li>
               ))}
             </ul>
           </div>
-        </div>
+        </motion.div>
       </DialogContent>
     </Dialog>
   );
 }
 
 export default function ResultsDisplay({ result, onReset }: Props) {
-  // Format the date correctly by splitting and reconstructing it
   const formatDate = (dateString: string) => {
-    const [year, month, day] = dateString.split('-').map(Number);
+    const [year, month, day] = dateString.split("-").map(Number);
     return new Date(year, month - 1, day).toLocaleDateString();
   };
 
   return (
-    <div className="space-y-6">
-      <div className="text-center">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center"
+      >
         <h2 className="text-2xl font-semibold mb-2">
           Numerology Reading for {result.name}
         </h2>
         <p className="text-muted-foreground">
           Based on your birth date: {formatDate(result.birthdate)}
         </p>
-      </div>
+      </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-4">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="grid grid-cols-1 md:grid-cols-3 gap-4 py-4"
+      >
         <NumberDisplay number={result.lifePath} title="Life Path Number" />
         <NumberDisplay number={result.destiny} title="Destiny Number" />
         <NumberDisplay number={result.birthDateNum} title="Birth Date Number" />
-      </div>
+      </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-4">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="grid grid-cols-1 md:grid-cols-3 gap-4 py-4"
+      >
         <NumberDisplay number={result.expression} title="Expression Number" />
         <NumberDisplay number={result.personality} title="Personality Number" />
         <NumberDisplay number={result.attribute} title="Attribute Number" />
-      </div>
+      </motion.div>
 
       <Separator />
 
       <div className="space-y-8">
-        <div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
           <h3 className="text-xl font-semibold mb-4">Numerological Profile</h3>
           <DNAVisualization result={result} />
-        </div>
+        </motion.div>
 
-        <div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+        >
           <h3 className="text-xl font-semibold mb-4">Detailed Analysis</h3>
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="overview">
@@ -221,20 +280,26 @@ export default function ResultsDisplay({ result, onReset }: Props) {
               </AccordionContent>
             </AccordionItem>
           </Accordion>
-        </div>
+        </motion.div>
 
-        <div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+        >
           <h3 className="text-xl font-semibold mb-4">Personal Development Path</h3>
           <DevelopmentRecommendations
             recommendations={result.interpretations.recommendations}
             summary={result.interpretations.developmentSummary}
           />
-        </div>
+        </motion.div>
       </div>
 
-      <Button variant="outline" onClick={onReset} className="w-full">
-        Calculate Another Reading
-      </Button>
-    </div>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}>
+        <Button variant="outline" onClick={onReset} className="w-full">
+          Calculate Another Reading
+        </Button>
+      </motion.div>
+    </motion.div>
   );
 }
