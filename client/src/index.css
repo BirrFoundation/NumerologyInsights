@@ -11,3 +11,35 @@
     @apply font-sans antialiased bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient 8s ease infinite;
+  }
+
+  .animate-float-slow {
+    animation: float 20s infinite linear;
+  }
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes float {
+  from {
+    transform: rotate(0deg) translateX(1px) rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg) translateX(1px) rotate(-360deg);
+  }
+}
