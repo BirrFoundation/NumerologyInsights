@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, RefreshCw } from "lucide-react";
 import { useEffect } from "react";
 
 interface Props {
@@ -140,6 +140,11 @@ export default function NumerologyForm({ onResult }: Props) {
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Calculating...
+            </>
+          ) : mutation.isError ? (
+            <>
+              <RefreshCw className="mr-2 h-4 w-4" />
+              Try Again
             </>
           ) : (
             "Calculate Numerology"
