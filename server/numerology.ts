@@ -35,19 +35,23 @@ function getBirthNumber(date: Date): number {
     month.split('').reduce((sum, digit) => sum + parseInt(digit), 0);
 
   // Calculate year sum while checking for master numbers in partial sums
-  const yearDigits = year.split('').map(d => parseInt(d));
-  let yearNum = yearDigits.reduce((sum, digit) => {
-    const newSum = sum + digit;
-    return (newSum === 11 || newSum === 22) ? newSum :
-      (newSum > 9 ? newSum.toString().split('').reduce((s, d) => s + parseInt(d), 0) : newSum);
-  }, 0);
+  let yearSum = 0;
+  for (const digit of year) {
+    yearSum += parseInt(digit);
+  }
+  console.log(`Initial year sum: ${yearSum}`);
 
-  console.log(`Processed numbers: Day=${dayNum}, Month=${monthNum}, Year=${yearNum}`);
+  // Get the total sum
+  let total = dayNum + monthNum + yearSum;
+  console.log(`Total before final check: ${total}`);
 
-  // Final sum preserving master numbers
-  const total = dayNum + monthNum + yearNum;
-  console.log(`Total before final reduction: ${total}`);
+  // Check if the total is 44 specifically
+  if (total === 44) {
+    console.log('Found master number 44, preserving');
+    return 44;
+  }
 
+  // If not 44, check for other master numbers or reduce
   return reduceToSingleDigit(total);
 }
 
