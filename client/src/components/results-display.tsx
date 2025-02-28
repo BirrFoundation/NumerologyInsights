@@ -38,7 +38,8 @@ const NUMBER_MEANINGS = {
   1: {
     title: "The Leader",
     strengths: ["Independent", "Creative", "Original", "Ambitious", "Strong desire for recognition", "Natural leadership abilities"],
-    weaknesses: ["Overly ego-driven", "Needs constant recognition", "Dominant", "Self-centered", "Can be overly demanding"]
+    weaknesses: ["Overly ego-driven", "Needs constant recognition", "Dominant", "Self-centered", "Can be overly demanding"],
+    warning: "Must be mindful of excessive need for recognition and attention"
   },
   2: {
     title: "The Mediator",
@@ -46,20 +47,22 @@ const NUMBER_MEANINGS = {
     weaknesses: ["Oversensitive", "Indecisive", "Fearful", "Dependent"]
   },
   3: {
-    title: "The Expressor",
+    title: "The Creative Risk-Taker",
     strengths: ["Creative", "Expressive", "Social", "Optimistic", "Inspiring"],
-    weaknesses: ["Scattered", "Risk of breaking rules/laws", "Critical", "Unfocused", "Tendency toward rebellion"]
+    weaknesses: ["Scattered", "Risk of breaking rules/laws", "Critical", "Unfocused", "Tendency toward rebellion"],
+    warning: "High likelihood of breaking rules - must be mindful of legal boundaries"
   },
   4: {
-    title: "The Builder",
+    title: "The Law Abider",
     strengths: ["Law-abiding", "Organized", "Reliable", "Disciplined", "Strong sense of justice"],
-    weaknesses: ["Rigid", "Stubborn", "Limited", "Too serious"]
+    weaknesses: ["Rigid", "Stubborn", "Limited", "Too serious"],
+    guidance: "Natural respect for law and order - use this to build stable foundations"
   },
   5: {
     title: "The Freedom Seeker",
     strengths: ["Adaptable", "Versatile", "Progressive", "Dynamic", "Adventurous"],
     weaknesses: ["Addictive tendencies", "Restless", "Inconsistent", "Risk of overindulgence"],
-    guidance: "Must be careful with addictive tendencies and maintain balance in pursuits"
+    warning: "Must be careful with addictive tendencies and maintain balance in pursuits"
   },
   6: {
     title: "The Nurturer",
@@ -67,9 +70,10 @@ const NUMBER_MEANINGS = {
     weaknesses: ["Anxious", "Meddling", "Self-sacrificing", "Worried"]
   },
   7: {
-    title: "The Seeker",
+    title: "The Intellectual",
     strengths: ["Highly intelligent", "Analytical", "Spiritual", "Deep thinker", "Wise"],
-    weaknesses: ["Ego-driven intellectual pride", "Critical", "Aloof", "Perfectionist", "Can be arrogant about intelligence"]
+    weaknesses: ["Ego-driven intellectual pride", "Critical", "Aloof", "Perfectionist"],
+    warning: "Can be arrogant about intelligence - must practice humility"
   },
   8: {
     title: "The Achiever (High Karmic Number)",
@@ -78,9 +82,10 @@ const NUMBER_MEANINGS = {
     karmic_warning: "Must be extremely careful with actions as karmic return is amplified - both positive and negative actions return with greater force"
   },
   9: {
-    title: "The Humanitarian",
+    title: "The Mirror",
     strengths: ["Highly adaptable", "Mirror-like qualities", "Compassionate", "Universal", "Reflects others' energies"],
-    weaknesses: ["Can absorb too much", "Scattered", "Unrealistic", "Resentful"]
+    weaknesses: ["Can absorb too much", "Scattered", "Unrealistic", "Resentful"],
+    special_trait: "Acts as a mirror, reflecting and adapting to the energies around them"
   },
   11: {
     title: "The Master Intuitive",
@@ -105,7 +110,9 @@ const NUMBER_MEANINGS = {
       "Oversensitivity",
       "Indecision",
       "Dependency issues"
-    ]
+    ],
+    master_number: true,
+    guidance: "Master number - must learn to handle enhanced spiritual sensitivity and intuitive abilities"
   },
   22: {
     title: "The Master Builder",
@@ -129,7 +136,9 @@ const NUMBER_MEANINGS = {
       "Rigidity",
       "Overwork",
       "Too serious"
-    ]
+    ],
+    master_number: true,
+    guidance: "Master number - requires balance between grand vision and practical implementation"
   },
   33: {
     title: "The Master Teacher",
@@ -152,7 +161,9 @@ const NUMBER_MEANINGS = {
       "Self-sacrifice",
       "Worry",
       "Interference"
-    ]
+    ],
+    master_number: true,
+    guidance: "Master number - highest spiritual teacher number, requires great responsibility"
   },
   44: {
     title: "The Master Structurer (44/8)",
@@ -178,7 +189,9 @@ const NUMBER_MEANINGS = {
       "Must be careful with power",
       "Can be too focused on material success",
       "Risk of misusing authority"
-    ]
+    ],
+    master_number: true,
+    karmic_warning: "Combines master number power with 8's karmic intensity - requires exceptional care with actions"
   },
   28: {
     title: "The Wealth Harmonizer (28/1)",
@@ -202,33 +215,32 @@ const NUMBER_MEANINGS = {
       "Ego issues",
       "Need for recognition",
       "Can be too independent"
-    ]
+    ],
+    wealth_number: true,
+    guidance: "Special wealth number - indicates natural prosperity but requires balance between material success and spiritual growth"
   }
 } as const;
 
 function NumberDisplay({ number, title }: { number: number; title: string }) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const meaning = number === 44 ? {
-    title: "The Master Structurer (44/8)",
-    strengths: [
-      ...NUMBER_MEANINGS[44].strengths,
-      "---Base 8 Qualities---",
-      ...NUMBER_MEANINGS[8].strengths
-    ],
-    weaknesses: [
-      ...NUMBER_MEANINGS[44].weaknesses,
-      "---Base 8 Challenges---",
-      ...NUMBER_MEANINGS[8].weaknesses
-    ]
-  } : (NUMBER_MEANINGS[number as keyof typeof NUMBER_MEANINGS] ||
-    NUMBER_MEANINGS[(number % 9 || 9) as keyof typeof NUMBER_MEANINGS]);
+  const meaning = number === 44 ? NUMBER_MEANINGS[44] :
+                 number === 28 ? NUMBER_MEANINGS[28] :
+                 (NUMBER_MEANINGS[number as keyof typeof NUMBER_MEANINGS] ||
+                 NUMBER_MEANINGS[(number % 9 || 9) as keyof typeof NUMBER_MEANINGS]);
+
+  const isMasterNumber = [11, 22, 33, 44].includes(number);
+  const isWealthNumber = number === 28;
+  const hasKarmicWarning = meaning.karmic_warning || number === 8;
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <div
-          className="text-center p-4 rounded-lg bg-primary/5 cursor-pointer hover:bg-primary/10 transition-colors"
+          className={`text-center p-4 rounded-lg cursor-pointer transition-colors
+            ${isMasterNumber ? 'bg-primary/20 hover:bg-primary/30' : 
+              isWealthNumber ? 'bg-amber-500/20 hover:bg-amber-500/30' :
+              'bg-primary/5 hover:bg-primary/10'}`}
           onClick={() => setIsOpen(true)}
         >
           <motion.div
@@ -237,6 +249,12 @@ function NumberDisplay({ number, title }: { number: number; title: string }) {
             className="text-4xl font-light text-primary"
           >
             {number}
+            {isMasterNumber && 
+              <span className="text-sm ml-1 text-primary/80">Master</span>
+            }
+            {isWealthNumber && 
+              <span className="text-sm ml-1 text-amber-500">Wealth</span>
+            }
           </motion.div>
           <motion.div
             initial={{ opacity: 0 }}
@@ -250,14 +268,36 @@ function NumberDisplay({ number, title }: { number: number; title: string }) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
             {title}: {number} - {meaning.title}
+            {isMasterNumber && 
+              <span className="text-sm bg-primary/20 px-2 py-1 rounded">Master Number</span>
+            }
+            {isWealthNumber && 
+              <span className="text-sm bg-amber-500/20 px-2 py-1 rounded">Wealth Number</span>
+            }
           </DialogTitle>
           <DialogDescription>
-            Explore the meaning and characteristics of this number
+            {isMasterNumber && "This is a powerful master number with special significance."}
+            {isWealthNumber && "This number carries special wealth-generating potential."}
+            {!isMasterNumber && !isWealthNumber && "Explore the meaning and characteristics of this number"}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4">
+          {hasKarmicWarning && (
+            <div className="bg-orange-500/10 p-4 rounded-lg mb-4">
+              <h4 className="text-sm font-medium text-orange-500 mb-2">Karmic Warning</h4>
+              <p className="text-sm">{meaning.karmic_warning}</p>
+            </div>
+          )}
+
+          {meaning.warning && (
+            <div className="bg-primary/10 p-4 rounded-lg mb-4">
+              <h4 className="text-sm font-medium mb-2">Important Note</h4>
+              <p className="text-sm">{meaning.warning}</p>
+            </div>
+          )}
+
           <div>
             <h4 className="text-sm font-medium mb-2 text-primary">Strengths</h4>
             <ul className="list-disc pl-5 space-y-1">
@@ -274,6 +314,7 @@ function NumberDisplay({ number, title }: { number: number; title: string }) {
               ))}
             </ul>
           </div>
+
           <div>
             <h4 className="text-sm font-medium mb-2 text-primary">Challenges</h4>
             <ul className="list-disc pl-5 space-y-1">
@@ -290,6 +331,20 @@ function NumberDisplay({ number, title }: { number: number; title: string }) {
               ))}
             </ul>
           </div>
+
+          {meaning.guidance && (
+            <div className="mt-4 bg-primary/5 p-4 rounded-lg">
+              <h4 className="text-sm font-medium mb-2">Guidance</h4>
+              <p className="text-sm">{meaning.guidance}</p>
+            </div>
+          )}
+
+          {meaning.special_trait && (
+            <div className="mt-4 bg-primary/5 p-4 rounded-lg">
+              <h4 className="text-sm font-medium mb-2">Special Characteristic</h4>
+              <p className="text-sm">{meaning.special_trait}</p>
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>
