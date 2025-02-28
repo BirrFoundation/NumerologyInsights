@@ -10,7 +10,10 @@ import {
   Loader2,
   AlertTriangle,
   BookOpen,
-  RefreshCcw
+  RefreshCcw,
+  Star,
+  Target,
+  Heart
 } from "lucide-react";
 import { motion } from "framer-motion";
 import type { NumerologyResult } from "@shared/schema";
@@ -24,6 +27,39 @@ interface CoachingResponse {
   advice: string;
   followUpQuestions: string[];
 }
+
+const getPersonalInsight = (lifePath: number): string => {
+  switch (lifePath) {
+    case 1:
+      return "Focus on leadership and independence. Your natural pioneering spirit is a great asset.";
+    case 2:
+      return "Your diplomatic abilities shine. Work on building harmonious relationships.";
+    case 3:
+      return "Express your creativity freely. Your communication skills can inspire others.";
+    case 4:
+      return "Build strong foundations. Your practical approach helps create lasting structures.";
+    case 5:
+      return "Embrace change and adventure. Your adaptability is your greatest strength.";
+    case 6:
+      return "Nurture and support others. Your caring nature creates harmony.";
+    case 7:
+      return "Seek deeper understanding. Your analytical mind uncovers hidden truths.";
+    case 8:
+      return "Master the material world. Your executive abilities bring success.";
+    case 9:
+      return "Serve humanity. Your compassionate nature helps heal others.";
+    case 11:
+      return "Trust your intuition. Your spiritual awareness guides others.";
+    case 22:
+      return "Build grand visions. Your practical mastery manifests great things.";
+    case 33:
+      return "Teach and heal. Your nurturing spirit uplifts humanity.";
+    case 44:
+      return "Bridge worlds. Your unique ability to connect material and spiritual realms is powerful.";
+    default:
+      return "Focus on your personal growth journey. Each number carries unique wisdom.";
+  }
+};
 
 export default function AICoach({ result }: Props) {
   const [userQuery, setUserQuery] = useState("");
@@ -69,17 +105,6 @@ export default function AICoach({ result }: Props) {
     }
   });
 
-  const handleAskQuestion = () => {
-    if (!userQuery && !selectedQuestion) return;
-    coachingMutation.mutate(selectedQuestion || userQuery);
-  };
-
-  const handleQuestionClick = (question: string) => {
-    setSelectedQuestion(question);
-    setUserQuery("");
-    coachingMutation.mutate(question);
-  };
-
   if (initialError || coachingMutation.error) {
     return (
       <Card className="overflow-hidden">
@@ -91,29 +116,58 @@ export default function AICoach({ result }: Props) {
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            Our AI Coach is currently recharging. In the meantime, here are some personalized insights based on your numerology:
+            Our AI Coach is recharging. Here are some personalized insights based on your numerology:
           </p>
 
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div className="flex items-start gap-2">
-              <BookOpen className="h-5 w-5 text-primary mt-0.5" />
+              <Star className="h-5 w-5 text-primary mt-0.5" />
               <div>
-                <h4 className="text-sm font-medium">Focus on Your Life Path {result.lifePath}</h4>
+                <h4 className="text-sm font-medium">Personal Insight</h4>
                 <p className="text-sm text-muted-foreground">
-                  Your Life Path number indicates a journey of {
-                    result.lifePath === 1 ? "leadership and independence" :
-                    result.lifePath === 2 ? "cooperation and harmony" :
-                    result.lifePath === 3 ? "creative expression" :
-                    result.lifePath === 4 ? "building solid foundations" :
-                    result.lifePath === 5 ? "freedom and change" :
-                    result.lifePath === 6 ? "responsibility and nurturing" :
-                    result.lifePath === 7 ? "spiritual wisdom" :
-                    result.lifePath === 8 ? "material mastery" :
-                    result.lifePath === 9 ? "humanitarian service" :
-                    result.lifePath === 11 ? "spiritual mastery" :
-                    result.lifePath === 22 ? "master building" :
-                    result.lifePath === 33 ? "spiritual teaching" :
-                    "universal wisdom"
+                  {getPersonalInsight(result.lifePath)}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-2">
+              <Target className="h-5 w-5 text-primary mt-0.5" />
+              <div>
+                <h4 className="text-sm font-medium">Focus Area</h4>
+                <p className="text-sm text-muted-foreground">
+                  Your Expression number {result.expression} suggests focusing on {
+                    result.expression === 1 ? "leadership and innovation" :
+                    result.expression === 2 ? "cooperation and diplomacy" :
+                    result.expression === 3 ? "creative self-expression" :
+                    result.expression === 4 ? "building and organizing" :
+                    result.expression === 5 ? "freedom and adaptability" :
+                    result.expression === 6 ? "responsibility and service" :
+                    result.expression === 7 ? "analysis and research" :
+                    result.expression === 8 ? "business and achievement" :
+                    result.expression === 9 ? "humanitarian work" :
+                    result.expression === 11 ? "inspirational leadership" :
+                    result.expression === 22 ? "large-scale projects" :
+                    "teaching and healing"
+                  }.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-2">
+              <Heart className="h-5 w-5 text-primary mt-0.5" />
+              <div>
+                <h4 className="text-sm font-medium">Heart's Desire</h4>
+                <p className="text-sm text-muted-foreground">
+                  Your Heart's Desire number {result.heartDesire} reveals your inner motivation for {
+                    result.heartDesire === 1 ? "independence and achievement" :
+                    result.heartDesire === 2 ? "harmony and connection" :
+                    result.heartDesire === 3 ? "creative expression" :
+                    result.heartDesire === 4 ? "stability and order" :
+                    result.heartDesire === 5 ? "freedom and adventure" :
+                    result.heartDesire === 6 ? "love and nurturing" :
+                    result.heartDesire === 7 ? "wisdom and understanding" :
+                    result.heartDesire === 8 ? "success and recognition" :
+                    "universal love and compassion"
                   }.
                 </p>
               </div>
@@ -122,7 +176,7 @@ export default function AICoach({ result }: Props) {
             <Button 
               variant="outline" 
               size="sm" 
-              className="w-full"
+              className="w-full mt-4"
               onClick={() => refetch()}
             >
               <RefreshCcw className="mr-2 h-4 w-4" />
