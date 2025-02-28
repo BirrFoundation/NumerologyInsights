@@ -24,6 +24,7 @@ import AICoach from "./ai-coach";
 import NumerologyJournal from "./numerology-journal";
 import ConstellationBackground from "./constellation-background";
 import { CosmicEnergyMeter } from "./cosmic-energy-meter";
+import { NumerologySoundtrack } from "./numerology-soundtrack"; // Added import
 
 interface Props {
   result: NumerologyResult;
@@ -117,7 +118,6 @@ const NUMBER_MEANINGS = {
 function NumberDisplay({ number, title }: { number: number; title: string }) {
   const [isOpen, setIsOpen] = useState(false);
 
-  // Use either the direct number meaning or combine 44 with 8 if it's 44
   const meaning = number === 44 ? {
     title: "The Master Structurer (44/8)",
     strengths: [
@@ -694,6 +694,14 @@ export default function ResultsDisplay({ result, onReset }: Props) {
         >
           <h3 className="text-xl font-semibold mb-4">Personal Journal</h3>
           <NumerologyJournal result={result} />
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.7 }}
+        >
+          <NumerologySoundtrack result={result} /> {/* Added NumerologySoundtrack component */}
         </motion.div>
 
         <motion.div
