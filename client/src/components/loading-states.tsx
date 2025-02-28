@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
-import { Loader2, Sparkles, Brain, Cpu, Calculator } from "lucide-react";
+import { Loader2, Sparkles, Brain, Cpu, Calculator, Stars, Moon, Sun } from "lucide-react";
 import { Card } from "./ui/card";
 
 interface LoadingStateProps {
-  type?: "ai" | "processing" | "analysis" | "calculation";
+  type?: "ai" | "processing" | "analysis" | "calculation" | "cosmic" | "numerology";
   message?: string;
 }
 
@@ -11,15 +11,29 @@ export function LoadingState({ type = "ai", message }: LoadingStateProps) {
   const Icon = type === "ai" ? Sparkles : 
               type === "processing" ? Cpu : 
               type === "calculation" ? Calculator :
+              type === "cosmic" ? Stars :
+              type === "numerology" ? Sun :
               Brain;
 
   const defaultMessage = type === "ai" ? "AI is calculating your cosmic patterns..." :
                         type === "processing" ? "Processing your celestial data..." :
                         type === "calculation" ? "Calculating numerological harmonies..." :
+                        type === "cosmic" ? "Aligning with cosmic frequencies..." :
+                        type === "numerology" ? "Decoding your numerological DNA..." :
                         "Analyzing numerology patterns...";
 
+  const particles = Array.from({ length: 20 }, (_, i) => ({
+    id: i,
+    delay: Math.random() * 2,
+    duration: 2 + Math.random() * 2,
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+  }));
+
+  const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 22, 33, 44];
+
   return (
-    <Card className="p-8 relative overflow-hidden">
+    <Card className="p-8 relative overflow-hidden bg-gradient-to-br from-background/50 to-background">
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -41,7 +55,7 @@ export function LoadingState({ type = "ai", message }: LoadingStateProps) {
         >
           <Icon className="w-12 h-12 text-primary relative z-10" />
 
-          {/* Cosmic particle effects */}
+          {/* Cosmic glow effect */}
           <motion.div
             className="absolute inset-0 bg-primary/20 rounded-full blur-xl"
             animate={{
@@ -54,6 +68,39 @@ export function LoadingState({ type = "ai", message }: LoadingStateProps) {
               ease: "easeInOut"
             }}
           />
+
+          {/* Orbiting numbers */}
+          {numbers.map((num, i) => (
+            <motion.div
+              key={num}
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+              animate={{
+                rotate: [0, 360],
+              }}
+              transition={{
+                duration: 10 + i,
+                repeat: Infinity,
+                ease: "linear",
+              }}
+            >
+              <motion.span
+                className="absolute text-xs font-mono text-primary/60"
+                style={{
+                  transform: `rotate(${(i * 360) / numbers.length}deg) translateY(-30px)`,
+                }}
+                animate={{
+                  opacity: [0.4, 1, 0.4],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  delay: i * 0.1,
+                }}
+              >
+                {num}
+              </motion.span>
+            </motion.div>
+          ))}
 
           {/* Rotating rings */}
           {[...Array(3)].map((_, i) => (
@@ -89,29 +136,51 @@ export function LoadingState({ type = "ai", message }: LoadingStateProps) {
             {message || defaultMessage}
           </p>
           <p className="text-sm text-muted-foreground">
-            Aligning with cosmic frequencies...
+            Discovering cosmic connections...
           </p>
         </motion.div>
 
-        {/* Cosmic particles background */}
+        {/* Floating particles */}
+        {particles.map((particle) => (
+          <motion.div
+            key={particle.id}
+            className="absolute w-1 h-1 bg-primary/30 rounded-full"
+            style={{
+              left: `${particle.x}%`,
+              top: `${particle.y}%`,
+            }}
+            animate={{
+              scale: [0, 1, 0],
+              opacity: [0, 1, 0],
+              y: [0, -20, 0],
+            }}
+            transition={{
+              duration: particle.duration,
+              repeat: Infinity,
+              delay: particle.delay,
+              ease: "easeInOut",
+            }}
+          />
+        ))}
+
+        {/* Background constellation effect */}
         <div className="absolute inset-0 -z-10">
-          {[...Array(20)].map((_, i) => (
+          {particles.map((particle) => (
             <motion.div
-              key={i}
-              className="absolute w-1 h-1 bg-primary/30 rounded-full"
+              key={`constellation-${particle.id}`}
+              className="absolute w-px h-px bg-primary/20"
               style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
+                left: `${particle.x}%`,
+                top: `${particle.y}%`,
               }}
               animate={{
-                scale: [0, 1, 0],
-                opacity: [0, 1, 0],
+                opacity: [0, 0.5, 0],
+                scale: [1, 1.5, 1],
               }}
               transition={{
-                duration: 2 + Math.random() * 2,
+                duration: particle.duration * 1.5,
                 repeat: Infinity,
-                delay: Math.random() * 2,
-                ease: "easeInOut",
+                delay: particle.delay,
               }}
             />
           ))}
