@@ -349,15 +349,6 @@ export default function ResultsDisplay({ result, onReset }: Props) {
         <NumberDisplay number={result.attribute} title="Attribute Number" />
       </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="relative z-10"
-      >
-        <NumberEvolutionVisualization result={result} className="mt-6" />
-      </motion.div>
-
       <Separator />
 
       <div className="space-y-8">
@@ -713,10 +704,9 @@ export default function ResultsDisplay({ result, onReset }: Props) {
                       <div>
                         <h5 className="font-medium text-primary">Core Numbers</h5>
                         <div className="mt-2 space-y-2">
-                          <p className="text-sm"><span className="font-medium">Life Path {result.lifePath}:</span> As {NUMBER_MEANINGS[result.lifePath as keyof typeof NUMBER_MEANINGS].title}, your fundamental purpose centers on {NUMBER_MEANINGS[result.lifePath as keyof typeof NUMBER_MEANINGS].strengths[0].toLowerCase()}. This number influences every aspect of your journey`.
-                  </p>
+                          <p className="text-sm"><span className="font-medium">Life Path {result.lifePath}:</span> As {NUMBER_MEANINGS[result.lifePath as keyof typeof NUMBER_MEANINGS].title}, your fundamental purpose centers on {NUMBER_MEANINGS[result.lifePath as keyof typeof NUMBER_MEANINGS].strengths[0].toLowerCase()}. This number influences every aspect of your journey.</p>
 
-                          <p className="text-sm"><span className="font-medium">Destiny {result.destiny}:</span> Your Destiny number as {NUMBER_MEANINGS[result.destiny as keyof typeof NUMBER_MEANINGS].title} reveals your ultimate life goals and the talents you're meant to develop. This number guides your achievements and life direction.</p>
+                          <p className="text-sm"><span className="font-medium">Destiny {result.destiny}:</span> Your Destiny number as {NUMBER_MEANINGS[result.destiny as keyof typeof NUMBER_MEANINGS].title} reveals your ultimate life goals and the talents you'remeant to develop. This number guides your achievements and life direction.</p>
                         </div>
                       </div>
 
@@ -1117,6 +1107,15 @@ export default function ResultsDisplay({ result, onReset }: Props) {
           transition={{ delay: 0.8 }}
         >
           <KarmaLeaderboard />
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+        >
+          <h3 className="text-xl font-semibold mb-4">Number Evolution</h3>
+          <NumberEvolutionVisualization result={result} />
         </motion.div>
 
         <motion.div
