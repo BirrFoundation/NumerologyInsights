@@ -1,8 +1,11 @@
 import { Router } from "express";
 import { storage } from "./storage";
 import { generateVerificationCode, sendVerificationEmail, hashPassword } from "./email-service";
-import { userAuthSchema, verificationSchema } from "@shared/schema";
+import { userAuthSchema, verificationSchema, numerologyInputSchema, compatibilityInputSchema } from "@shared/schema";
 import { z } from "zod";
+import { calculateNumerology, calculateCompatibility } from "./numerology";
+import { getInterpretation } from "./ai";
+import { getPersonalizedCoaching } from "./ai-coach";
 
 const router = Router();
 
@@ -108,6 +111,100 @@ router.post("/login", async (req, res) => {
       return;
     }
     res.status(500).json({ message: "Failed to log in" });
+  }
+});
+
+// Numerology Routes
+router.post("/calculate", async (req, res) => {
+  try {
+    const data = numerologyInputSchema.parse(req.body);
+    console.log('Received data:', data);
+
+    const numbers = calculateNumerology(data.name, data.birthdate);
+    console.log('Calculated numbers:', numbers);
+
+    try {
+      const interpretations = await getInterpretation(numbers, data.name);
+      console.log('Got interpretations');
+
+      const userId = req.session.userId || null;
+      const result = await storage.createResult({
+        ...data,
+        ...numbers,
+        interpretations,
+        userId
+      });
+
+      res.json(result);
+    } catch (aiError: any) {
+      console.error('AI Interpretation error:', aiError);
+      res.status(503).json({ 
+        message: aiError.message || "Failed to get AI interpretation. Please try again." 
+      });
+    }
+  } catch (error) {
+    console.error('Request error:', error);
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ 
+        message: "Invalid input data",
+        errors: error.errors
+      });
+      return;
+    }
+    res.status(500).json({ 
+      message: "Failed to process numerology calculation" 
+    });
+  }
+});
+
+router.post("/compatibility", async (req, res) => {
+  try {
+    const data = compatibilityInputSchema.parse(req.body);
+    console.log('Received compatibility data:', data);
+
+    const result = calculateCompatibility(
+      data.name1,
+      data.birthdate1,
+      data.name2,
+      data.birthdate2
+    );
+
+    res.json(result);
+  } catch (error) {
+    console.error('Compatibility calculation error:', error);
+    if (error instanceof z.ZodError) {
+      res.status(400).json({
+        message: "Invalid input data",
+        errors: error.errors
+      });
+      return;
+    }
+    res.status(500).json({
+      message: "Failed to calculate compatibility"
+    });
+  }
+});
+
+router.post("/coaching", async (req, res) => {
+  try {
+    if (!req.body.numerologyResult) {
+      res.status(400).json({
+        message: "Numerology result is required"
+      });
+      return;
+    }
+
+    const coaching = await getPersonalizedCoaching(
+      req.body.numerologyResult,
+      req.body.userQuery
+    );
+
+    res.json(coaching);
+  } catch (error) {
+    console.error('AI Coaching error:', error);
+    res.status(503).json({
+      message: "Failed to get coaching insights. Please try again."
+    });
   }
 });
 

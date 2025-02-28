@@ -93,9 +93,17 @@ app.use((req, res, next) => {
     });
   });
 
-  // Setup Vite or static serving after API routes
+  // Only handle non-API routes with Vite
   if (app.get("env") === "development") {
-    await setupVite(app, server);
+    // Non-API routes go to Vite
+    app.use(/^(?!\/api).*/, async (req, res, next) => {
+      try {
+        await setupVite(app, server);
+        next();
+      } catch (e) {
+        next(e);
+      }
+    });
   } else {
     serveStatic(app);
   }
