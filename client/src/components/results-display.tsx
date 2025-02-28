@@ -706,8 +706,7 @@ export default function ResultsDisplay({ result, onReset }: Props) {
                         <div className="mt-2 space-y-2">
                           <p className="text-sm"><span className="font-medium">Life Path {result.lifePath}:</span> As {NUMBER_MEANINGS[result.lifePath as keyof typeof NUMBER_MEANINGS].title}, your fundamental purpose centers on {NUMBER_MEANINGS[result.lifePath as keyof typeof NUMBER_MEANINGS].strengths[0].toLowerCase()}. This number influences every aspect of your journey.</p>
 
-                          <p className="text-sm"><span className="font-medium">Destiny {result.destiny}:</span> Your Destiny number as {NUMBER_MEANINGS[result.destiny as keyof typeof NUMBER_MEANINGS].title} reveals your ultimate life goals and the talents you'remeant to develop. This number guides your achievements and life direction.</p>
-                        </div>
+                          <p className="text-sm"><span className="font-medium">Destiny {result.destiny}:</span> Your Destiny number as {NUMBER_MEANINGS[result.destiny as keyof typeof NUMBER_MEANINGS].title} reveals your ultimate life goals and the talents you'remeant to develop. This number guides your achievements and life direction.</p>                        </div>
                       </div>
 
                       <div>
@@ -1106,7 +1105,7 @@ export default function ResultsDisplay({ result, onReset }: Props) {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8 }}
         >
-          <KarmaLeaderboard />
+          <KarmaLeaderboard result={result} />
         </motion.div>
 
         <motion.div
