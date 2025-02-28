@@ -16,27 +16,6 @@ interface Line {
   opacity: number;
 }
 
-// Calculate mood colors based on numerology numbers
-function calculateMoodColors(result: NumerologyResult) {
-  // Life Path influences primary color
-  const lifePath = result.lifePath;
-  const baseHue = (lifePath * 30) % 360; // Spread colors across spectrum
-
-  // Destiny number influences intensity
-  const destiny = result.destiny;
-  const intensity = 0.3 + (destiny / 11) * 0.4; // Scale 0.3-0.7
-
-  // Expression number influences secondary color
-  const expression = result.expression;
-  const secondaryHue = ((baseHue + 180 + expression * 20) % 360);
-
-  return {
-    primary: `hsl(${baseHue}, 70%, ${intensity * 100}%)`,
-    secondary: `hsl(${secondaryHue}, 60%, ${(intensity * 0.8) * 100}%)`,
-    accent: `hsl(${(baseHue + 120) % 360}, 80%, ${(intensity * 0.9) * 100}%)`
-  };
-}
-
 interface Props {
   result: NumerologyResult;
 }
@@ -44,11 +23,10 @@ interface Props {
 export function ResultsBackground({ result }: Props) {
   const [stars, setStars] = useState<Star[]>([]);
   const [lines, setLines] = useState<Line[]>([]);
-  const colors = calculateMoodColors(result);
 
   useEffect(() => {
     // Generate stars across the entire viewport
-    const newStars = Array.from({ length: 80 }, (_, i) => ({
+    const newStars = Array.from({ length: 100 }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
       y: Math.random() * 100,
@@ -76,35 +54,34 @@ export function ResultsBackground({ result }: Props) {
   }, []);
 
   return (
-    <div className="fixed inset-0 w-full h-full pointer-events-none">
-      {/* Animated gradient background */}
+    <div className="fixed inset-0 w-full h-full pointer-events-none overflow-hidden">
+      {/* Glowing background effect */}
       <motion.div
         className="absolute inset-0"
+        style={{
+          background: "radial-gradient(circle at center, hsl(var(--background)) 0%, hsl(var(--primary) / 0.4) 20%, hsl(var(--primary) / 0.2) 40%, hsl(var(--background)) 100%)",
+          backgroundSize: "400% 400%"
+        }}
         animate={{
-          background: [
-            `radial-gradient(circle at 30% 30%, ${colors.primary}, transparent 60%),
-             radial-gradient(circle at 70% 70%, ${colors.secondary}, transparent 60%),
-             radial-gradient(circle at 50% 50%, ${colors.accent}, transparent 60%)`,
-            `radial-gradient(circle at 70% 30%, ${colors.secondary}, transparent 60%),
-             radial-gradient(circle at 30% 70%, ${colors.primary}, transparent 60%),
-             radial-gradient(circle at 50% 50%, ${colors.accent}, transparent 60%)`
-          ]
+          backgroundPosition: ["0% 0%", "100% 100%", "0% 0%"]
         }}
         transition={{
-          duration: 20,
+          duration: 15,
           repeat: Infinity,
-          repeatType: "reverse",
           ease: "linear"
         }}
       />
 
-      <svg className="w-full h-full" viewBox="0 0 100 100">
-        {/* Define gradient for star glow */}
+      <svg className="w-full h-full absolute" viewBox="0 0 100 100">
+        {/* Define glow effect */}
         <defs>
-          <radialGradient id="star-glow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor={colors.primary} stopOpacity="0.3" />
-            <stop offset="100%" stopColor={colors.primary} stopOpacity="0" />
-          </radialGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+            <feMerge>
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
         </defs>
 
         {/* Constellation lines */}
@@ -115,12 +92,13 @@ export function ResultsBackground({ result }: Props) {
             y1={line.start.y}
             x2={line.end.x}
             y2={line.end.y}
-            stroke={colors.primary}
-            strokeWidth="0.15"
+            stroke="currentColor"
+            strokeWidth="0.1"
+            className="text-primary/10"
             initial={{ pathLength: 0, opacity: 0 }}
             animate={{ 
               pathLength: 1, 
-              opacity: [line.opacity * 0.5, line.opacity, line.opacity * 0.5] 
+              opacity: [line.opacity * 0.3, line.opacity * 0.6, line.opacity * 0.3] 
             }}
             transition={{
               pathLength: {
@@ -144,11 +122,12 @@ export function ResultsBackground({ result }: Props) {
               cx={star.x}
               cy={star.y}
               r={star.size}
-              fill={colors.primary}
+              className="fill-primary/30"
+              filter="url(#glow)"
               initial={{ scale: 0, opacity: 0 }}
               animate={{ 
                 scale: [1, 1.2, 1],
-                opacity: [0.4, 0.8, 0.4] 
+                opacity: [0.3, 0.7, 0.3] 
               }}
               transition={{
                 duration: 2 + Math.random(),
@@ -158,31 +137,12 @@ export function ResultsBackground({ result }: Props) {
               }}
             />
 
-            {/* Star glow */}
-            <motion.circle
-              cx={star.x}
-              cy={star.y}
-              r={star.size * 3}
-              fill="url(#star-glow)"
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ 
-                scale: [1.2, 1.8, 1.2],
-                opacity: [0.3, 0.6, 0.3] 
-              }}
-              transition={{
-                duration: 3 + Math.random(),
-                delay: star.delay,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            />
-
-            {/* Sparkle effect */}
+            {/* Star sparkle */}
             <motion.circle
               cx={star.x}
               cy={star.y}
               r={star.size * 2}
-              fill={colors.secondary}
+              className="fill-primary/10"
               initial={{ scale: 0, opacity: 0 }}
               animate={{
                 scale: [1, 2, 1],

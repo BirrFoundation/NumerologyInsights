@@ -308,7 +308,7 @@ export default function ResultsDisplay({ result, onReset }: Props) {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen w-full relative space-y-6 pb-12"
+      className="min-h-screen w-full relative space-y-8 pb-12"
     >
       <div className="fixed inset-0 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/50 to-background/90 backdrop-blur-[2px]" />
@@ -319,7 +319,7 @@ export default function ResultsDisplay({ result, onReset }: Props) {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center"
+          className="text-center mb-8"
         >
           <h2 className="text-2xl font-semibold mb-2">
             Numerology Reading for {result.name}
@@ -333,7 +333,7 @@ export default function ResultsDisplay({ result, onReset }: Props) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-4"
+          className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
         >
           <NumberDisplay number={result.lifePath} title="Life Path Number" />
           <NumberDisplay number={result.destiny} title="Destiny Number" />
@@ -344,23 +344,23 @@ export default function ResultsDisplay({ result, onReset }: Props) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-4"
+          className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
         >
           <NumberDisplay number={result.expression} title="Expression Number" />
           <NumberDisplay number={result.personality} title="Personality Number" />
           <NumberDisplay number={result.attribute} title="Attribute Number" />
         </motion.div>
 
-        <Separator />
+        <Separator className="my-8" />
 
-        <div className="space-y-8">
+        <div className="space-y-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="overflow-x-auto pb-4 -mx-4 px-4 sm:mx-0 sm:px-0"
+            className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0"
           >
-            <h3 className="text-xl font-semibold mb-4">Numerological Profile</h3>
+            <h3 className="text-xl font-semibold mb-6">Numerological DNA Pattern</h3>
             <div className="min-w-[800px] sm:min-w-0">
               <DNAVisualization result={result} />
             </div>
@@ -371,7 +371,7 @@ export default function ResultsDisplay({ result, onReset }: Props) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
           >
-            <h3 className="text-xl font-semibold mb-4">Personal Traits Analysis</h3>
+            <h3 className="text-xl font-semibold mb-6">Personal Traits Analysis</h3>
             <StrengthsWeaknessesChart items={[
               {
                 label: "Leadership & Independence",
@@ -417,6 +417,7 @@ export default function ResultsDisplay({ result, onReset }: Props) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
           >
+            <h3 className="text-xl font-semibold mb-6">Daily Cosmic Forecast</h3>
             <DailyForecast result={result} />
           </motion.div>
 
@@ -425,7 +426,7 @@ export default function ResultsDisplay({ result, onReset }: Props) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
           >
-            <h3 className="text-xl font-semibold mb-4">Detailed Analysis</h3>
+            <h3 className="text-xl font-semibold mb-6">Detailed Analysis</h3>
             <Accordion
               type="single"
               collapsible
@@ -669,335 +670,6 @@ export default function ResultsDisplay({ result, onReset }: Props) {
                   </div>
                 </AccordionContent>
               </AccordionItem>
-
-              <AccordionItem value="completeSummary">
-                <AccordionTrigger>Complete Profile Summary</AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-4">
-                    <div className="mt-6 space-y-4 bg-primary/5 p-6 rounded-lg">
-                      <h4 className="font-medium text-lg">Complete Numerological Profile Summary</h4>
-
-                      <div className="grid gap-4">
-                        <div>
-                          <h5 className="font-medium text-primary">Core Numbers</h5>
-                          <div className="mt-2 space-y-2">
-                            <p className="text-sm"><span className="font-medium">Life Path {result.lifePath}:</span> As {NUMBER_MEANINGS[result.lifePath as keyof typeof NUMBER_MEANINGS].title}, your fundamental purpose centers on {NUMBER_MEANINGS[result.lifePath as keyof typeof NUMBER_MEANINGS].strengths[0].toLowerCase()}. This number influences every aspect of your journey.</p>
-
-                            <p className="text-sm"><span className="font-medium">Destiny {result.destiny}:</span> Your Destiny number as {NUMBER_MEANINGS[result.destiny as keyof typeof NUMBER_MEANINGS].title} reveals your ultimate life goals and the talents you're meant to develop. This number guides your achievements and life direction.</p>
-                          </div>
-                        </div>
-
-                        <div>
-                          <h5 className="font-medium text-primary">Inner Aspects</h5>
-                          <div className="mt-2 space-y-2">
-                            <p className="text-sm"><span className="font-medium">Heart's Desire {result.heartDesire}:</span> As {NUMBER_MEANINGS[result.heartDesire as keyof typeof NUMBER_MEANINGS].title}, your inner motivations drive you toward {NUMBER_MEANINGS[result.heartDesire as keyof typeof NUMBER_MEANINGS].strengths[0].toLowerCase()}. This represents your deepest wishes and emotional needs.</p>
-
-                            <p className="text-sm"><span className="font-medium">Expression {result.expression}:</span> Your Expression number shows your natural talents as {NUMBER_MEANINGS[result.expression as keyof typeof NUMBER_MEANINGS].title}, particularly in {NUMBER_MEANINGS[result.expression as keyof typeof NUMBER_MEANINGS].strengths[0].toLowerCase()}. This represents how you express your true self.</p>
-                          </div>
-                        </div>
-
-                        <div>
-                          <h5 className="font-medium text-primary">External Influences</h5>
-                          <div className="mt-2 space-y-2">
-                            <p className="text-sm"><span className="font-medium">Personality {result.personality}:</span> As {NUMBER_MEANINGS[result.personality as keyof typeof NUMBER_MEANINGS].title}, you present yourself to the world through {NUMBER_MEANINGS[result.personality as keyof typeof NUMBER_MEANINGS].strengths[0].toLowerCase()}. This shapes others' first impressions of you.</p>
-
-                            <p className="text-sm"><span className="font-medium">Attribute {result.attribute}:</span> Your Attribute number adds the quality of {NUMBER_MEANINGS[result.attribute as keyof typeof NUMBER_MEANINGS].strengths[0].toLowerCase()}, enhancing your overall energy.</p>
-
-                            <p className="text-sm"><span className="font-medium">Birth Date {result.birthDateNum}:</span> Your Birth Date number as {NUMBER_MEANINGS[result.birthDateNum as keyof typeof NUMBER_MEANINGS].title} indicates innate talents in {NUMBER_MEANINGS[result.birthDateNum as keyof typeof NUMBER_MEANINGS].strengths[0].toLowerCase()}.</p>
-                          </div>
-                        </div>
-
-                        <div>
-                          <h5 className="font-medium text-primary">Numerological Dynamics</h5>
-                          <div className="mt-2 space-y-2">
-                            <p className="text-sm">
-                              <span className="font-medium">Primary Challenge:</span> The interaction between your Life Path {result.lifePath} and Expression {result.expression} numbers {result.lifePath === result.expression ?"shows natural alignment" : "creates a dynamic tension"} that influences your personal growth.
-                            </p>
-
-                            <p className="text-sm">
-                              <span className="font-medium">Soul Purpose:</span> Your Destiny {result.destiny} and Heart's Desire {result.heartDesire} numbers {result.destiny === result.heartDesire ? "are harmoniously aligned" : "create an interesting interplay"} between your life goals and inner wishes.
-                            </p>
-
-                            <p className="text-sm">
-                              <span className="font-medium">Growth Path:</span> The combination of your Birth Date {result.birthDateNum} and Attribute {result.attribute} numbers suggests a natural inclination toward {result.birthDateNum === result.attribute ? "focused development" : "diverse growth opportunities"}.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="lifepath">
-                <AccordionTrigger>Life Path Number {result.lifePath}</AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-4">
-                    <p className="text-sm">
-                      Your Life Path number {result.lifePath} is one of the most significant numbers in your numerological profile. As {NUMBER_MEANINGS[result.lifePath as keyof typeof NUMBER_MEANINGS].title}, you embody qualities that shape your life's journey and core lessons.
-                    </p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <h4 className="font-medium mb-2">Core Strengths</h4>
-                        <ul className="list-disc pl-4 space-y-1">
-                          {NUMBER_MEANINGS[result.lifePath as keyof typeof NUMBER_MEANINGS].strengths.map((strength, index) => (
-                            <li key={index} className="text-sm">{strength}</li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div>
-                        <h4 className="font-medium mb-2">Growth Areas</h4>
-                        <ul className="list-disc pl-4 space-y-1">
-                          {NUMBER_MEANINGS[result.lifePath as keyof typeof NUMBER_MEANINGS].weaknesses.map((weakness, index) => (
-                            <li key={index} className="text-sm">{weakness}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                    <div className="mt-4 bg-primary/5 p-4 rounded-lg">
-                      <h4 className="font-medium mb-2">Life Path {result.lifePath} in Relation to Other Numbers</h4>
-                      <p className="text-sm">
-                        {result.lifePath === result.destiny ?
-                          "Your Life Path and Destiny numbers are the same, amplifying your core purpose and providing clear direction." :
-                          `Your Life Path ${result.lifePath} works with your Destiny number ${result.destiny} to create a dynamic path of growth and achievement.`}
-                      </p>
-                    </div>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="destiny">
-                <AccordionTrigger>Destiny Number {result.destiny}</AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-4">
-                    <p className="text-sm">
-                      Your Destiny number {result.destiny}, also known as the Expression number, reveals your life's purpose and the qualities you must develop to fulfill your potential. As {NUMBER_MEANINGS[result.destiny as keyof typeof NUMBER_MEANINGS].title}, you have a unique mission and set of talents.
-                    </p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <h4 className="font-medium mb-2">Natural Talents</h4>
-                        <ul className="list-disc pl-4 space-y-1">
-                          {NUMBER_MEANINGS[result.destiny as keyof typeof NUMBER_MEANINGS].strengths.map((strength, index) => (
-                            <li key={index} className="text-sm">{strength}</li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div>
-                        <h4 className="font-medium mb-2">Potential Challenges</h4>
-                        <ul className="list-disc pl-4 space-y-1">
-                          {NUMBER_MEANINGS[result.destiny as keyof typeof NUMBER_MEANINGS].weaknesses.map((weakness, index) => (
-                            <li key={index} className="text-sm">{weakness}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="heartdesire">
-                <AccordionTrigger>Heart's Desire Number {result.heartDesire}</AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-4">
-                    <p className="text-sm">
-                      The Heart's Desire number {result.heartDesire}, also known as the Soul Urge number, reveals your inner motivations, what truly fulfills you, and your deepest aspirations. As {NUMBER_MEANINGS[result.heartDesire as keyof typeof NUMBER_MEANINGS].title}, your inner world is rich with specific desires and needs.
-                    </p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <h4 className="font-medium mb-2">Inner Strengths</h4>
-                        <ul className="list-disc pl-4 space-y-1">
-                          {NUMBER_MEANINGS[result.heartDesire as keyof typeof NUMBER_MEANINGS].strengths.map((strength, index) => (
-                            <li key={index} className="text-sm">{strength}</li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div>
-                        <h4 className="font-medium mb-2">Inner Challenges</h4>
-                        <ul className="list-disc pl-4 space-y-1">
-                          {NUMBER_MEANINGS[result.heartDesire as keyof typeof NUMBER_MEANINGS].weaknesses.map((weakness, index) => (
-                            <li key={index} className="text-sm">{weakness}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="expression">
-                <AccordionTrigger>Expression Number {result.expression}</AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-4">
-                    <p className="text-sm">
-                      Your Expression number {result.expression} reveals your natural talents, abilities, and the ways you express yourself to the world. As {NUMBER_MEANINGS[result.expression as keyof typeof NUMBER_MEANINGS].title}, you have unique gifts and ways of sharing them.
-                    </p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <h4 className="font-medium mb-2">Expression Strengths</h4>
-                        <ul className="list-disc pl-4 space-y-1">
-                          {NUMBER_MEANINGS[result.expression as keyof typeof NUMBER_MEANINGS].strengths.map((strength, index) => (
-                            <li key={index} className="text-sm">{strength}</li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div>
-                        <h4 className="font-medium mb-2">Expression Challenges</h4>
-                        <ul className="list-disc pl-4 space-y-1">
-                          {NUMBER_MEANINGS[result.expression as keyof typeof NUMBER_MEANINGS].weaknesses.map((weakness, index) => (
-                            <li key={index} className="text-sm">{weakness}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="personality">
-                <AccordionTrigger>Personality Number {result.personality}</AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-4">
-                    <p className="text-sm">
-                      Your Personality number {result.personality} represents how others see you and your first impression on the world. As {NUMBER_MEANINGS[result.personality as keyof typeof NUMBER_MEANINGS].title}, you have a distinct way of presenting yourself and interacting with others.
-                    </p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <h4 className="font-medium mb-2">Social Strengths</h4>
-                        <ul className="list-disc pl-4 space-y-1">
-                          {NUMBER_MEANINGS[result.personality as keyof typeof NUMBER_MEANINGS].strengths.map((strength, index) => (
-                            <li key={index} className="text-sm">{strength}</li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div>
-                        <h4 className="font-medium mb-2">Social Challenges</h4>
-                        <ul className="list-disc pl-4 space-y-1">
-                          {NUMBER_MEANINGS[result.personality as keyof typeof NUMBER_MEANINGS].weaknesses.map((weakness, index) => (
-                            <li key={index} className="text-sm">{weakness}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="attribute">
-                <AccordionTrigger>Attribute Number {result.attribute}</AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-4">
-                    <p className="text-sm">
-                      Your Attribute number {result.attribute} reveals special qualities and hidden talents that enhance your numerological profile. As {NUMBER_MEANINGS[result.attribute as keyof typeof NUMBER_MEANINGS].title}, you possess unique attributes that color your entire life experience.
-                    </p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <h4 className="font-medium mb-2">Special Qualities</h4>
-                        <ul className="list-disc pl-4 space-y-1">
-                          {NUMBER_MEANINGS[result.attribute as keyof typeof NUMBER_MEANINGS].strengths.map((strength, index) => (
-                            <li key={index} className="text-sm">{strength}</li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div>
-                        <h4 className="font-medium mb-2">Growth Opportunities</h4>
-                        <ul className="list-disc pl-4 space-y-1">
-                          {NUMBER_MEANINGS[result.attribute as keyof typeof NUMBER_MEANINGS].weaknesses.map((weakness, index) => (
-                            <li key={index} className="text-sm">{weakness}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="birthdate">
-                <AccordionTrigger>Birth Date Number {result.birthDateNum}</AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-4">
-                    <p className="text-sm">
-                      Your Birth Date number {result.birthDateNum} reveals specific talents and potential that were present from birth. As {NUMBER_MEANINGS[result.birthDateNum as keyof typeof NUMBER_MEANINGS].title}, you have innate qualities that influence your life path.
-                    </p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <h4 className="font-medium mb-2">Innate Talents</h4>
-                        <ul className="list-disc pl-4 space-y-1">
-                          {NUMBER_MEANINGS[result.birthDateNum as keyof typeof NUMBER_MEANINGS].strengths.map((strength, index) => (
-                            <li key={index} className="text-sm">{strength}</li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div>
-                        <h4 className="font-medium mb-2">Natural Challenges</h4>
-                        <ul className="list-disc pl-4 space-y-1">
-                          {NUMBER_MEANINGS[result.birthDateNum as keyof typeof NUMBER_MEANINGS].weaknesses.map((weakness, index) => (
-                            <li key={index} className="text-sm">{weakness}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="completeSummary">
-                <AccordionTrigger>Complete Profile Summary</AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-4">
-                    <div className="mt-6 space-y-4 bg-primary/5 p-6 rounded-lg">
-                      <h4 className="font-medium text-lg">Complete Numerological Profile Summary</h4>
-
-                      <div className="grid gap-4">
-                        <div>
-                          <h5 className="font-medium text-primary">Core Numbers</h5>
-                          <div className="mt-2 space-y-2">
-                            <p className="text-sm"><span className="font-medium">Life Path {result.lifePath}:</span> As {NUMBER_MEANINGS[result.lifePath as keyof typeof NUMBER_MEANINGS].title}, your fundamental purpose centers on {NUMBER_MEANINGS[result.lifePath as keyof typeof NUMBER_MEANINGS].strengths[0].toLowerCase()}. This number influences every aspect of your journey.</p>
-
-                            <p className="text-sm"><span className="font-medium">Destiny {result.destiny}:</span> Your Destiny number as {NUMBER_MEANINGS[result.destiny as keyof typeof NUMBER_MEANINGS].title} reveals your ultimate life goals and the talents you're meant to develop. This number guides your achievements and life direction.</p>
-                          </div>
-                        </div>
-
-                        <div>
-                          <h5 className="font-medium text-primary">Inner Aspects</h5>
-                          <div className="mt-2 space-y-2">
-                            <p className="text-sm"><span className="font-medium">Heart's Desire {result.heartDesire}:</span> As {NUMBER_MEANINGS[result.heartDesire as keyof typeof NUMBER_MEANINGS].title}, your inner motivations drive you toward {NUMBER_MEANINGS[result.heartDesire as keyof typeof NUMBER_MEANINGS].strengths[0].toLowerCase()}. This represents your deepest wishes and emotional needs.</p>
-
-                            <p className="text-sm"><span className="font-medium">Expression {result.expression}:</span> Your Expression number shows your natural talents as {NUMBER_MEANINGS[result.expression as keyof typeof NUMBER_MEANINGS].title}, particularly in {NUMBER_MEANINGS[result.expression as keyof typeof NUMBER_MEANINGS].strengths[0].toLowerCase()}. This represents how you express your true self.</p>
-                          </div>
-                        </div>
-
-                        <div>
-                          <h5 className="font-medium text-primary">External Influences</h5>
-                          <div className="mt-2 space-y-2">
-                            <p className="text-sm"><span className="font-medium">Personality {result.personality}:</span> As {NUMBER_MEANINGS[result.personality as keyof typeof NUMBER_MEANINGS].title}, you present yourself to the world through {NUMBER_MEANINGS[result.personality as keyof typeof NUMBER_MEANINGS].strengths[0].toLowerCase()}. This shapes others' first impressions of you.</p>
-
-                            <p className="text-sm"><span className="font-medium">Attribute {result.attribute}:</span> Your Attribute number adds the quality of {NUMBER_MEANINGS[result.attribute as keyof typeof NUMBER_MEANINGS].strengths[0].toLowerCase()}, enhancing your overall energy.</p>
-
-                            <p className="text-sm"><span className="font-medium">Birth Date {result.birthDateNum}:</span> Your Birth Date number as {NUMBER_MEANINGS[result.birthDateNum as keyof typeof NUMBER_MEANINGS].title} indicates innate talents in {NUMBER_MEANINGS[result.birthDateNum as keyof typeof NUMBER_MEANINGS].strengths[0].toLowerCase()}.</p>
-                          </div>
-                        </div>
-
-                        <div>
-                          <h5 className="font-medium text-primary">Numerological Dynamics</h5>
-                          <div className="mt-2 space-y-2">
-                            <p className="text-sm">
-                              <span className="font-medium">Primary Challenge:</span> The interaction between your Life Path {result.lifePath} and Expression {result.expression} numbers {result.lifePath === result.expression ?"shows natural alignment" : "creates a dynamic tension"} that influences your personal growth.
-                            </p>
-
-                            <p className="text-sm">
-                              <span className="font-medium">Soul Purpose:</span> Your Destiny {result.destiny} and Heart's Desire {result.heartDesire} numbers {result.destiny === result.heartDesire ? "are harmoniously aligned" : "create an interesting interplay"} between your life goals and inner wishes.
-                            </p>
-
-                            <p className="text-sm">
-                              <span className="font-medium">Growth Path:</span> The combination of your Birth Date {result.birthDateNum} and Attribute {result.attribute} numbers suggests a natural inclination toward {result.birthDateNum === result.attribute ? "focused development" : "diverse growth opportunities"}.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
             </Accordion>
           </motion.div>
 
@@ -1006,7 +678,7 @@ export default function ResultsDisplay({ result, onReset }: Props) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
           >
-            <h3 className="text-xl font-semibold mb-4">Personal Development Path</h3>
+            <h3 className="text-xl font-semibold mb-6">Personal Development Path</h3>
             <DevelopmentRecommendations
               recommendations={result.recommendations}
               summary={result.interpretations.developmentSummary}
@@ -1019,7 +691,7 @@ export default function ResultsDisplay({ result, onReset }: Props) {
             transition={{ delay: 0.8 }}
             className="space-y-6"
           >
-            <h3 className="text-xl font-semibold mb-4">Cosmic Energy Potential</h3>
+            <h3 className="text-xl font-semibold mb-6">Cosmic Energy Potential</h3>
             <CosmicEnergyMeter result={result} />
           </motion.div>
 
@@ -1028,7 +700,7 @@ export default function ResultsDisplay({ result, onReset }: Props) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.9 }}
           >
-            <h3 className="text-xl font-semibold mb-4">Personal Journal</h3>
+            <h3 className="text-xl font-semibold mb-6">Personal Journal</h3>
             <NumerologyJournal result={result} />
           </motion.div>
 
