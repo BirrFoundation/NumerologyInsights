@@ -1,8 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import type { NumerologyResult } from "@shared/schema";
 import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import { Plus, Minus, MoveHorizontal } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Props {
   result: NumerologyResult;
@@ -15,6 +18,7 @@ export default function DNAVisualization({ result }: Props) {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [selectedNode, setSelectedNode] = useState<number | null>(null);
+  const [showNodeDialog, setShowNodeDialog] = useState(false);
 
   useEffect(() => {
     if (!svgRef.current) return;
@@ -85,7 +89,8 @@ export default function DNAVisualization({ result }: Props) {
         node.setAttribute("data-node-id", `${i}-${y}`);
 
         node.addEventListener("click", () => {
-          setSelectedNode(selectedNode === i ? null : i);
+          setSelectedNode(i);
+          setShowNodeDialog(true);
         });
 
         nodeGroup.appendChild(node);
@@ -122,10 +127,15 @@ export default function DNAVisualization({ result }: Props) {
     setZoom(prev => Math.max(prev - 0.2, 0.5));
   };
 
+  const handleZoomChange = (value: number[]) => {
+    setZoom(value[0]);
+  };
+
   const handleReset = () => {
     setZoom(1);
     setPan({ x: 0, y: 0 });
     setSelectedNode(null);
+    setShowNodeDialog(false);
   };
 
   return (
@@ -133,47 +143,61 @@ export default function DNAVisualization({ result }: Props) {
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-xl font-semibold">Your Numerological DNA Pattern</h3>
         <TooltipProvider>
-          <div className="flex items-center gap-2">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={handleZoomIn}
-                  disabled={zoom >= 3}
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Zoom In</TooltipContent>
-            </Tooltip>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Zoom:</span>
+              <div className="w-32">
+                <Slider
+                  value={[zoom]}
+                  min={0.5}
+                  max={3}
+                  step={0.1}
+                  onValueChange={handleZoomChange}
+                />
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={handleZoomIn}
+                    disabled={zoom >= 3}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Zoom In</TooltipContent>
+              </Tooltip>
 
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={handleZoomOut}
-                  disabled={zoom <= 0.5}
-                >
-                  <Minus className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Zoom Out</TooltipContent>
-            </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={handleZoomOut}
+                    disabled={zoom <= 0.5}
+                  >
+                    <Minus className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Zoom Out</TooltipContent>
+              </Tooltip>
 
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={handleReset}
-                >
-                  <MoveHorizontal className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Reset View</TooltipContent>
-            </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={handleReset}
+                  >
+                    <MoveHorizontal className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Reset View</TooltipContent>
+              </Tooltip>
+            </div>
           </div>
         </TooltipProvider>
       </div>
@@ -193,16 +217,44 @@ export default function DNAVisualization({ result }: Props) {
         />
       </div>
 
-      {selectedNode !== null && (
-        <div className="mt-4 p-4 rounded-lg bg-background/50 backdrop-blur-sm">
-          <h4 className="text-lg font-medium mb-2">Pattern Segment {selectedNode + 1}</h4>
-          <p className="text-sm text-muted-foreground">
-            This segment represents the interaction between your Life Path ({result.lifePath}), 
-            Destiny ({result.destiny}), and Expression ({result.expression}) numbers.
-            The color intensity reflects your Attribute number ({result.attribute}).
-          </p>
-        </div>
-      )}
+      <Dialog open={showNodeDialog} onOpenChange={setShowNodeDialog}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>DNA Pattern Segment {selectedNode !== null ? selectedNode + 1 : ''}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="p-4 rounded-lg bg-primary/5">
+              <h4 className="text-lg font-medium mb-2">Numerological Influence</h4>
+              <div className="space-y-2">
+                <p className="text-sm">
+                  <span className="font-medium">Life Path Influence:</span> This segment shows the influence of your Life Path number {result.lifePath}, expressing {selectedNode !== null && selectedNode % 2 === 0 ? "active" : "receptive"} energy.
+                </p>
+                <p className="text-sm">
+                  <span className="font-medium">Destiny Connection:</span> Your Destiny number {result.destiny} manifests here through {selectedNode !== null && selectedNode % 3 === 0 ? "transformative" : "stabilizing"} patterns.
+                </p>
+                <p className="text-sm">
+                  <span className="font-medium">Expression Channel:</span> Your Expression number {result.expression} flows through this segment, creating {selectedNode !== null && selectedNode % 4 === 0 ? "dynamic" : "harmonious"} interactions.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="p-4 rounded-lg bg-background border">
+                <h5 className="font-medium mb-2">Energy Flow</h5>
+                <p className="text-sm text-muted-foreground">
+                  This segment represents a {selectedNode !== null && selectedNode % 2 === 0 ? "peak" : "valley"} in your numerological DNA pattern, indicating periods of {selectedNode !== null && selectedNode % 2 === 0 ? "heightened activity" : "introspection"}.
+                </p>
+              </div>
+              <div className="p-4 rounded-lg bg-background border">
+                <h5 className="font-medium mb-2">Pattern Significance</h5>
+                <p className="text-sm text-muted-foreground">
+                  The unique shape and color of this segment reflects the interaction between your Life Path ({result.lifePath}) and Attribute ({result.attribute}) numbers.
+                </p>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <p className="text-sm text-muted-foreground text-center mt-4">
         Click on any node to view detailed information about that pattern segment.
