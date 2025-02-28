@@ -17,13 +17,23 @@ export function DailyForecast({ result }: Props) {
   const {
     data: forecast,
     isLoading,
+    isError,
+    error,
     refetch
   } = useQuery({
     queryKey: ['/api/daily-forecast', result.id, currentDate.toISOString().split('T')[0]],
     queryFn: async () => {
-      const response = await fetch(`/api/daily-forecast?date=${currentDate.toISOString().split('T')[0]}&userId=${result.id}`);
-      if (!response.ok) throw new Error('Failed to fetch forecast');
-      return response.json();
+      try {
+        const response = await fetch(`/api/daily-forecast?date=${currentDate.toISOString().split('T')[0]}&userId=${result.id}`);
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Failed to fetch forecast');
+        }
+        return response.json();
+      } catch (err) {
+        console.error('Forecast fetch error:', err);
+        throw err;
+      }
     },
     retry: 2 // Retry failed requests twice
   });
@@ -32,14 +42,20 @@ export function DailyForecast({ result }: Props) {
     return <LoadingState type="cosmic" message="Calculating your daily energy forecast..." />;
   }
 
-  if (!forecast) {
+  if (isError || !forecast) {
     return (
       <Card className="w-full bg-background/80 backdrop-blur-sm border border-primary/20">
         <CardHeader>
           <CardTitle className="text-red-500">Unable to load forecast</CardTitle>
+          <p className="text-sm text-muted-foreground">
+            {error instanceof Error ? error.message : 'Failed to generate your daily forecast'}
+          </p>
         </CardHeader>
         <CardContent>
-          <Button onClick={() => refetch()}>Try Again</Button>
+          <Button onClick={() => refetch()}>
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Try Again
+          </Button>
         </CardContent>
       </Card>
     );

@@ -57,7 +57,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           interpretations: {} // Add empty interpretations as required by type
         });
       } catch (error) {
-        console.log('AI coaching unavailable, using fallback guidance');
+        console.log('AI coaching unavailable, using fallback guidance', error);
       }
 
       // Generate forecast response
@@ -106,7 +106,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(forecast);
     } catch (error) {
       console.error('Error generating daily forecast:', error);
-      res.status(500).json({ error: 'Failed to generate forecast' });
+      res.status(500).json({ 
+        error: 'Failed to generate forecast',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      });
     }
   });
 
