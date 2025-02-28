@@ -366,7 +366,6 @@ export default function ResultsDisplay({ result, onReset }: Props) {
       className="min-h-screen w-full relative space-y-8 pb-12"
     >
       <div className="fixed inset-0 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/50 to-background/90 backdrop-blur-[2px]" />
         <ResultsBackground result={result} />
       </div>
 
@@ -717,7 +716,7 @@ export default function ResultsDisplay({ result, onReset }: Props) {
                         <h4 className="font-medium mb-2">Natural Challenges</h4>
                         <ul className="list-disc pl-4 space-y-1">
                           {NUMBER_MEANINGS[result.birthDateNum as keyof typeof NUMBER_MEANINGS].weaknesses.map((weakness, index) => (
-                            <li key={index} className="text-sm">{weakness}</li>
+                            <li key={index} className="textsm">{weakness}</li>
                           ))}
                         </ul>
                       </div>
