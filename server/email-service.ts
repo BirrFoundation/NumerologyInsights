@@ -1,19 +1,22 @@
 import nodemailer from "nodemailer";
-import { createHash } from "crypto";
+import { scrypt, randomBytes } from "crypto";
+import { promisify } from "util";
 import cryptoRandomString from "crypto-random-string";
+
+const scryptAsync = promisify(scrypt);
 
 // Create a transporter using environment variables
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || "smtp.gmail.com",
   port: parseInt(process.env.SMTP_PORT || "587"),
-  secure: false,
+  secure: false, // true for 465, false for other ports
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS
   }
 });
 
-export async function sendVerificationEmail(email: string, code: string) {
+export async function sendVerificationEmail(email: string, code: string): Promise<void> {
   const mailOptions = {
     from: process.env.SMTP_USER,
     to: email,
@@ -27,6 +30,8 @@ export async function sendVerificationEmail(email: string, code: string) {
         </div>
         <p>This code will expire in 15 minutes.</p>
         <p>If you didn't request this verification, please ignore this email.</p>
+        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+        <p style="color: #666; font-size: 12px;">This is an automated message, please do not reply.</p>
       </div>
     `
   };
@@ -35,14 +40,34 @@ export async function sendVerificationEmail(email: string, code: string) {
     await transporter.sendMail(mailOptions);
   } catch (error) {
     console.error("Failed to send verification email:", error);
-    throw new Error("Failed to send verification email");
+    throw new Error("Failed to send verification email. Please try again later.");
   }
 }
 
 export function generateVerificationCode(): string {
-  return cryptoRandomString({ length: 6, type: "numeric" });
+  return cryptoRandomString({
+    length: 6,
+    type: 'numeric'
+  });
 }
 
-export function hashPassword(password: string): string {
-  return createHash("sha256").update(password).digest("hex");
+export async function hashPassword(password: string): Promise<string> {
+  const salt = randomBytes(16).toString('hex');
+  const buf = await scryptAsync(password, salt, 64) as Buffer;
+  return `${buf.toString('hex')}.${salt}`;
 }
+
+export async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
+  const [hash, salt] = hashedPassword.split('.');
+  const buf = await scryptAsync(password, salt, 64) as Buffer;
+  return buf.toString('hex') === hash;
+}
+
+// Verify transporter connection on startup
+transporter.verify((error) => {
+  if (error) {
+    console.error('SMTP Connection Error:', error);
+  } else {
+    console.log('SMTP Server is ready to send emails');
+  }
+});

@@ -85,26 +85,21 @@ app.use((req, res, next) => {
   // Create HTTP server first
   const server = await registerRoutes(app);
 
-  // API error handling middleware
-  app.use('/api', (err: any, req: Request, res: Response, _next: NextFunction) => {
-    console.error('API Error:', err);
-    res.status(err.status || err.statusCode || 500).json({
-      message: err.message || "Internal Server Error"
-    });
-  });
-
-  // Only handle non-API routes with Vite
+  // Handle non-API routes differently in development and production
   if (app.get("env") === "development") {
-    // Non-API routes go to Vite
-    app.use(/^(?!\/api).*/, async (req, res, next) => {
-      try {
-        await setupVite(app, server);
-        next();
-      } catch (e) {
-        next(e);
+    app.use((req, res, next) => {
+      // Skip any requests to /api
+      if (req.path.startsWith('/api')) {
+        return next();
       }
+
+      // For all other routes, let Vite handle it
+      setupVite(app, server)
+        .then(() => next())
+        .catch(next);
     });
   } else {
+    // In production, serve static files for non-API routes
     serveStatic(app);
   }
 
