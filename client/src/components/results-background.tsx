@@ -20,8 +20,8 @@ export function ResultsBackground() {
   const [lines, setLines] = useState<Line[]>([]);
 
   useEffect(() => {
-    // Generate more stars for a denser constellation effect
-    const newStars = Array.from({ length: 50 }, (_, i) => ({
+    // Generate many stars for a full-screen effect
+    const newStars = Array.from({ length: 100 }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
       y: Math.random() * 100,
@@ -29,16 +29,16 @@ export function ResultsBackground() {
       delay: i * 0.1
     }));
 
-    // Create more constellation lines between nearby stars
+    // Create constellation lines between nearby stars
     const newLines: Line[] = [];
     for (let i = 0; i < newStars.length; i++) {
       for (let j = i + 1; j < newStars.length; j++) {
         const distance = Math.hypot(newStars[i].x - newStars[j].x, newStars[i].y - newStars[j].y);
-        if (distance < 25) { // Increased connection distance
+        if (distance < 30) { // Increased connection distance
           newLines.push({
             start: newStars[i],
             end: newStars[j],
-            opacity: 1 - distance / 25
+            opacity: 1 - distance / 30
           });
         }
       }
@@ -49,9 +49,9 @@ export function ResultsBackground() {
   }, []);
 
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden">
-      <svg className="w-full h-full absolute" viewBox="0 0 100 100">
-        {/* Enhanced constellation lines */}
+    <div className="fixed inset-0 w-full h-full pointer-events-none">
+      <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+        {/* Constellation lines */}
         {lines.map((line, i) => (
           <motion.line
             key={`line-${i}`}
@@ -81,7 +81,7 @@ export function ResultsBackground() {
           />
         ))}
 
-        {/* Enhanced stars */}
+        {/* Stars */}
         {stars.map((star) => (
           <g key={star.id}>
             {/* Star core */}
@@ -103,7 +103,7 @@ export function ResultsBackground() {
               }}
             />
 
-            {/* Enhanced star glow */}
+            {/* Star glow */}
             <motion.circle
               cx={star.x}
               cy={star.y}
