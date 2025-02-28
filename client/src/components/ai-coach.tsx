@@ -121,7 +121,7 @@ export default function AICoach({ result }: Props) {
               <div className="space-y-2">
                 <p className="text-sm font-medium text-primary">Explore Further:</p>
                 <div className="flex flex-wrap gap-2">
-                  {initialCoaching.followUpQuestions.map((question, index) => (
+                  {initialCoaching.followUpQuestions.map((question: string, index: number) => (
                     <Button
                       key={index}
                       variant="outline"
@@ -160,7 +160,7 @@ export default function AICoach({ result }: Props) {
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {coachingMutation.data.followUpQuestions.map(
-                      (question, index) => (
+                      (question: string, index: number) => (
                         <Button
                           key={index}
                           variant="outline"

@@ -19,14 +19,20 @@ import { motion, AnimatePresence } from "framer-motion";
 import DevelopmentRecommendations from "./development-recommendations";
 import DNAVisualization from "./dna-visualization";
 import StrengthsWeaknessesChart from "./strengths-weaknesses-chart";
-import AICoach from "./ai-coach"; // Assuming AICoach component is imported
+import AICoach from "./ai-coach";
 
 interface Props {
   result: NumerologyResult;
   onReset: () => void;
 }
 
-const NUMBER_MEANINGS = {
+type NumberMeaningType = {
+  title: string;
+  strengths: string[];
+  weaknesses: string[];
+};
+
+const NUMBER_MEANINGS: Record<number, NumberMeaningType> = {
   1: {
     title: "The Leader",
     strengths: ["Independent", "Creative", "Original", "Ambitious", "Determined"],
@@ -126,7 +132,7 @@ function NumberDisplay({ number, title }: { number: number; title: string }) {
       "---Base 8 Challenges---",
       ...NUMBER_MEANINGS[8].weaknesses
     ]
-  } : (NUMBER_MEANINGS[number as keyof typeof NUMBER_MEANINGS] || NUMBER_MEANINGS[number % 9 || 9]);
+  } : (NUMBER_MEANINGS[number] || NUMBER_MEANINGS[number % 9 || 9]);
 
   return (
     <Dialog>
@@ -323,56 +329,56 @@ export default function ResultsDisplay({ result, onReset }: Props) {
             <AccordionItem value="overview">
               <AccordionTrigger>Overview</AccordionTrigger>
               <AccordionContent>
-                {result.interpretations.overview}
+                {result.interpretations?.overview}
               </AccordionContent>
             </AccordionItem>
 
             <AccordionItem value="lifepath">
               <AccordionTrigger>Life Path Number {result.lifePath}</AccordionTrigger>
               <AccordionContent>
-                {result.interpretations.lifePath}
+                {result.interpretations?.lifePath}
               </AccordionContent>
             </AccordionItem>
 
             <AccordionItem value="destiny">
               <AccordionTrigger>Destiny Number {result.destiny}</AccordionTrigger>
               <AccordionContent>
-                {result.interpretations.destiny}
+                {result.interpretations?.destiny}
               </AccordionContent>
             </AccordionItem>
 
             <AccordionItem value="heartdesire">
               <AccordionTrigger>Heart's Desire Number {result.heartDesire}</AccordionTrigger>
               <AccordionContent>
-                {result.interpretations.heartDesire}
+                {result.interpretations?.heartDesire}
               </AccordionContent>
             </AccordionItem>
 
             <AccordionItem value="expression">
               <AccordionTrigger>Expression Number {result.expression}</AccordionTrigger>
               <AccordionContent>
-                {result.interpretations.expression}
+                {result.interpretations?.expression}
               </AccordionContent>
             </AccordionItem>
 
             <AccordionItem value="personality">
               <AccordionTrigger>Personality Number {result.personality}</AccordionTrigger>
               <AccordionContent>
-                {result.interpretations.personality}
+                {result.interpretations?.personality}
               </AccordionContent>
             </AccordionItem>
 
             <AccordionItem value="attribute">
               <AccordionTrigger>Attribute Number {result.attribute}</AccordionTrigger>
               <AccordionContent>
-                {result.interpretations.attribute}
+                {result.interpretations?.attribute}
               </AccordionContent>
             </AccordionItem>
 
             <AccordionItem value="birthdate">
               <AccordionTrigger>Birth Date Number {result.birthDateNum}</AccordionTrigger>
               <AccordionContent>
-                {result.interpretations.birthDateNum}
+                {result.interpretations?.birthDateNum}
               </AccordionContent>
             </AccordionItem>
           </Accordion>
@@ -385,19 +391,19 @@ export default function ResultsDisplay({ result, onReset }: Props) {
         >
           <h3 className="text-xl font-semibold mb-4">Personal Development Path</h3>
           <DevelopmentRecommendations
-            recommendations={result.interpretations.recommendations}
-            summary={result.interpretations.developmentSummary}
+            recommendations={result.interpretations?.recommendations}
+            summary={result.interpretations?.developmentSummary}
           />
         </motion.div>
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 }}
-          >
-            <h3 className="text-xl font-semibold mb-4">Personal Development Coach</h3>
-            <AICoach result={result} />
-          </motion.div>
 
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+        >
+          <h3 className="text-xl font-semibold mb-4">Personal Development Coach</h3>
+          <AICoach result={result} />
+        </motion.div>
       </div>
 
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}>
