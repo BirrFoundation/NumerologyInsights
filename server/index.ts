@@ -37,15 +37,13 @@ app.use((req, res, next) => {
   next();
 });
 
-// Set JSON content type for API routes
+// Early middleware to handle API routes
 app.use('/api', (req, res, next) => {
-  res.type('application/json');
-  log(`[API Request] ${req.method} ${req.path}`);
+  log(`[API Gateway] Processing ${req.method} ${req.path}`);
+  // Force JSON content type for all API routes
+  res.setHeader('Content-Type', 'application/json');
   next();
-});
-
-// Mount API routes
-app.use('/api', apiRouter);
+}, apiRouter);
 
 // API error handling
 app.use('/api', (err: any, req: Request, res: Response, _next: NextFunction) => {
@@ -66,41 +64,38 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  // Create HTTP server
-  const server = await registerRoutes(app);
+  try {
+    // Create HTTP server
+    const server = await registerRoutes(app);
 
-  // Handle non-API routes differently in development and production
-  if (app.get("env") === "development") {
-    try {
-      app.use("*", async (req, res, next) => {
-        // Skip API and health routes
-        if (req.path === '/health' || req.path.startsWith('/api')) {
-          log(`Skipping Vite for path: ${req.path}`);
+    // Set up frontend handling after API routes
+    if (app.get("env") === "development") {
+      // Add a middleware to skip Vite for API routes
+      app.use((req, res, next) => {
+        if (req.path.startsWith('/api')) {
+          log(`[Vite Bypass] Skipping Vite middleware for API route: ${req.path}`);
           return next('route');
         }
-        log(`Handling with Vite: ${req.path}`);
         next();
       });
 
-      // Set up Vite after the catch-all route
       await setupVite(app, server);
-    } catch (e) {
-      console.error("Failed to setup Vite:", e);
-      process.exit(1);
+    } else {
+      serveStatic(app);
     }
-  } else {
-    // In production, serve static files for non-API routes
-    serveStatic(app);
-  }
 
-  const port = 5000;
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`Server running on port ${port}`);
-    log(`Environment: ${app.get("env")}`);
-    log(`Health check available at http://localhost:${port}/api/health`);
-  });
+    const port = 5000;
+    server.listen({
+      port,
+      host: "0.0.0.0",
+      reusePort: true,
+    }, () => {
+      log(`Server running on port ${port}`);
+      log(`Environment: ${app.get("env")}`);
+      log(`Health check available at http://localhost:${port}/api/healthz`);
+    });
+  } catch (error) {
+    console.error("Failed to start server:", error);
+    process.exit(1);
+  }
 })();

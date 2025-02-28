@@ -6,19 +6,22 @@ import { z } from "zod";
 import { calculateNumerology, calculateCompatibility } from "./numerology";
 import { getInterpretation } from "./ai";
 import { getPersonalizedCoaching } from "./ai-coach";
+import { log } from "./vite";
 
 const router = Router();
 
 // Ensure all routes in this router return JSON
 router.use((req, res, next) => {
   res.setHeader('Content-Type', 'application/json');
-  console.log(`[API Router] Handling ${req.method} ${req.path}`);
+  log(`[API Router] Handling ${req.method} ${req.path}`);
   next();
 });
 
 // Health check endpoint
-router.get("/health", (_req, res) => {
-  console.log('[API Router] Processing health check request');
+router.get("/healthz", (_req, res) => {
+  log('[API Router] Processing health check request');
+  // Explicitly set response type to JSON
+  res.contentType('application/json');
   res.json({
     status: "ok",
     timestamp: new Date().toISOString(),
@@ -155,21 +158,21 @@ router.post("/calculate", async (req, res) => {
       res.json(result);
     } catch (aiError: any) {
       console.error('AI Interpretation error:', aiError);
-      res.status(503).json({ 
-        message: aiError.message || "Failed to get AI interpretation. Please try again." 
+      res.status(503).json({
+        message: aiError.message || "Failed to get AI interpretation. Please try again."
       });
     }
   } catch (error) {
     console.error('Request error:', error);
     if (error instanceof z.ZodError) {
-      res.status(400).json({ 
+      res.status(400).json({
         message: "Invalid input data",
         errors: error.errors
       });
       return;
     }
-    res.status(500).json({ 
-      message: "Failed to process numerology calculation" 
+    res.status(500).json({
+      message: "Failed to process numerology calculation"
     });
   }
 });
