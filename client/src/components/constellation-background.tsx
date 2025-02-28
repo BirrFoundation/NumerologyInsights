@@ -28,9 +28,9 @@ export default function ConstellationBackground({ className = "" }: Props) {
     starsRef.current = Array.from({ length: numStars }).map(() => ({
       x: Math.random() * rect.width,
       y: Math.random() * rect.height,
-      size: Math.random() * 5 + 3, // Increased base star size
-      opacity: Math.random() * 0.9 + 0.4, // Increased opacity range
-      speed: Math.random() * 1.5 + 0.5 // Increased movement speed
+      size: Math.random() * 8 + 4, // Even larger base star size
+      opacity: Math.random() * 0.9 + 0.6, // Higher opacity range
+      speed: Math.random() * 2 + 0.8 // Faster movement speed
     }));
 
     // Animation function
@@ -39,7 +39,7 @@ export default function ConstellationBackground({ className = "" }: Props) {
       starsRef.current = starsRef.current.map(star => ({
         ...star,
         y: star.y - star.speed,
-        opacity: star.y < 0 ? Math.random() * 0.9 + 0.4 : star.opacity
+        opacity: star.y < 0 ? Math.random() * 0.9 + 0.6 : star.opacity
       }));
 
       if (container) {
@@ -65,47 +65,52 @@ export default function ConstellationBackground({ className = "" }: Props) {
       <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <radialGradient id="starGradient">
-            <stop offset="0%" stop-color="var(--primary)" stop-opacity="0.9" />
+            <stop offset="0%" stop-color="var(--primary)" stop-opacity="1" />
             <stop offset="100%" stop-color="var(--primary)" stop-opacity="0" />
           </radialGradient>
           <linearGradient id="lineGradient">
-            <stop offset="0%" stop-color="var(--primary)" stop-opacity="0.6" />
-            <stop offset="50%" stop-color="var(--primary)" stop-opacity="0.3" />
-            <stop offset="100%" stop-color="var(--primary)" stop-opacity="0.6" />
+            <stop offset="0%" stop-color="var(--primary)" stop-opacity="0.8" />
+            <stop offset="50%" stop-color="var(--primary)" stop-opacity="0.4" />
+            <stop offset="100%" stop-color="var(--primary)" stop-opacity="0.8" />
           </linearGradient>
           <filter id="glow">
-            <feGaussianBlur stdDeviation="4" result="coloredBlur"/> 
+            <feGaussianBlur stdDeviation="6" result="coloredBlur"/> 
             <feMerge>
               <feMergeNode in="coloredBlur"/>
               <feMergeNode in="SourceGraphic"/>
             </feMerge>
           </filter>
           <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="20" result="blur" />
+            <feGaussianBlur in="SourceGraphic" stdDeviation="30" result="blur" />
+            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+          </filter>
+          <filter id="ultraGlow" x="-100%" y="-100%" width="300%" height="300%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="40" result="blur" />
+            <feColorMatrix in="blur" type="saturate" values="2" />
             <feComposite in="SourceGraphic" in2="blur" operator="over" />
           </filter>
         </defs>
 
         <!-- Background particle effect -->
-        ${Array.from({ length: 40 }).map((_, i) => `
+        ${Array.from({ length: 60 }).map((_, i) => `
           <circle
             cx="${Math.random() * width}"
             cy="${Math.random() * height}"
-            r="${Math.random() * 100 + 40}"
+            r="${Math.random() * 150 + 50}"
             fill="var(--primary)"
-            opacity="0.05"
+            opacity="0.08"
             filter="url(#softGlow)"
           >
             <animate
               attributeName="opacity"
-              values="0.05;0.15;0.05"
-              dur="${7 + Math.random() * 7}s"
+              values="0.08;0.2;0.08"
+              dur="${8 + Math.random() * 8}s"
               repeatCount="indefinite"
             />
             <animate
               attributeName="r"
-              values="${Math.random() * 100 + 40};${Math.random() * 150 + 60};${Math.random() * 100 + 40}"
-              dur="${10 + Math.random() * 5}s"
+              values="${Math.random() * 150 + 50};${Math.random() * 200 + 100};${Math.random() * 150 + 50}"
+              dur="${12 + Math.random() * 6}s"
               repeatCount="indefinite"
             />
           </circle>
@@ -116,21 +121,21 @@ export default function ConstellationBackground({ className = "" }: Props) {
           <path 
             d="M ${star1.x} ${star1.y} L ${star2.x} ${star2.y}"
             stroke="url(#lineGradient)"
-            stroke-width="2.5"
-            stroke-dasharray="10,10"
+            stroke-width="3"
+            stroke-dasharray="12,12"
             class="animate-pulse"
             filter="url(#glow)"
           >
             <animate
               attributeName="stroke-dashoffset"
-              values="0;20"
-              dur="3s"
+              values="0;24"
+              dur="2s"
               repeatCount="indefinite"
             />
             <animate
               attributeName="stroke-opacity"
-              values="0.6;1;0.6"
-              dur="4s"
+              values="0.8;1;0.8"
+              dur="3s"
               repeatCount="indefinite"
             />
           </path>
@@ -138,7 +143,7 @@ export default function ConstellationBackground({ className = "" }: Props) {
 
         <!-- Enhanced star effects -->
         ${stars.map(star => `
-          <g class="animate-sparkle" filter="url(#glow)">
+          <g class="animate-sparkle" filter="url(#ultraGlow)">
             <!-- Main star -->
             <circle 
               cx="${star.x}" 
@@ -149,8 +154,8 @@ export default function ConstellationBackground({ className = "" }: Props) {
             >
               <animate 
                 attributeName="opacity"
-                values="${star.opacity};${star.opacity * 3};${star.opacity}"
-                dur="${2 + Math.random() * 2}s"
+                values="${star.opacity};${star.opacity * 4};${star.opacity}"
+                dur="${1.5 + Math.random() * 1.5}s"
                 repeatCount="indefinite"
               />
             </circle>
@@ -159,14 +164,14 @@ export default function ConstellationBackground({ className = "" }: Props) {
             <circle 
               cx="${star.x}" 
               cy="${star.y}" 
-              r="${star.size * 6}"
+              r="${star.size * 8}"
               fill="url(#starGradient)"
-              opacity="${star.opacity * 0.7}"
+              opacity="${star.opacity * 0.8}"
             >
               <animate 
                 attributeName="r"
-                values="${star.size * 6};${star.size * 10};${star.size * 6}"
-                dur="${3 + Math.random() * 2}s"
+                values="${star.size * 8};${star.size * 12};${star.size * 8}"
+                dur="${2 + Math.random() * 2}s"
                 repeatCount="indefinite"
               />
             </circle>
@@ -175,22 +180,22 @@ export default function ConstellationBackground({ className = "" }: Props) {
             <circle 
               cx="${star.x}" 
               cy="${star.y}" 
-              r="${star.size * 4}"
+              r="${star.size * 5}"
               fill="none"
               stroke="var(--primary)"
-              stroke-width="1"
-              opacity="${star.opacity * 0.5}"
+              stroke-width="1.5"
+              opacity="${star.opacity * 0.6}"
             >
               <animate 
                 attributeName="r"
-                values="${star.size * 4};${star.size * 15};${star.size * 4}"
-                dur="${4 + Math.random() * 3}s"
+                values="${star.size * 5};${star.size * 20};${star.size * 5}"
+                dur="${3 + Math.random() * 2}s"
                 repeatCount="indefinite"
               />
               <animate 
                 attributeName="opacity"
-                values="${star.opacity * 0.5};0;${star.opacity * 0.5}"
-                dur="${4 + Math.random() * 3}s"
+                values="${star.opacity * 0.6};0;${star.opacity * 0.6}"
+                dur="${3 + Math.random() * 2}s"
                 repeatCount="indefinite"
               />
             </circle>
@@ -202,7 +207,7 @@ export default function ConstellationBackground({ className = "" }: Props) {
 
   const generateConnections = (stars: Star[]) => {
     const connections: [Star, Star][] = [];
-    const maxDistance = 200; 
+    const maxDistance = 250; // Even larger connection distance
 
     stars.forEach((star1, i) => {
       stars.slice(i + 1).forEach(star2 => {
@@ -224,7 +229,7 @@ export default function ConstellationBackground({ className = "" }: Props) {
       className={`absolute inset-0 overflow-hidden bg-cosmic ${className}`}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 2.5 }}
+      transition={{ duration: 3 }}
     />
   );
 }

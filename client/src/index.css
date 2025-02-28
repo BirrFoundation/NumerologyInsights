@@ -11,12 +11,12 @@
     @apply font-sans antialiased text-foreground;
     background: radial-gradient(circle at center, 
       hsl(var(--background)) 0%,
-      hsl(var(--primary) / 0.3) 30%,
-      hsl(var(--primary) / 0.15) 50%,
+      hsl(var(--primary) / 0.4) 20%,
+      hsl(var(--primary) / 0.2) 40%,
       hsl(var(--background)) 100%
     );
-    background-size: 300% 300%;
-    animation: bgPulse 12s ease infinite;
+    background-size: 400% 400%;
+    animation: bgPulse 10s ease infinite;
   }
 }
 
@@ -50,11 +50,11 @@
   .bg-cosmic {
     background: linear-gradient(
       45deg,
-      hsl(var(--primary) / 0.25),
+      hsl(var(--primary) / 0.4),
       hsl(var(--background)),
-      hsl(var(--primary) / 0.2),
+      hsl(var(--primary) / 0.3),
       hsl(var(--background)),
-      hsl(var(--primary) / 0.25)
+      hsl(var(--primary) / 0.4)
     );
     background-size: 400% 400%;
     animation: cosmic 20s ease infinite;
@@ -67,7 +67,7 @@
     background-position: 0% 0%;
   }
   50% {
-    background-size: 200% 200%;
+    background-size: 300% 300%;
     background-position: 100% 100%;
   }
   100% {
@@ -90,10 +90,10 @@
 
 @keyframes float {
   from {
-    transform: rotate(0deg) translateX(3px) rotate(0deg);
+    transform: rotate(0deg) translateX(4px) rotate(0deg);
   }
   to {
-    transform: rotate(360deg) translateX(3px) rotate(-360deg);
+    transform: rotate(360deg) translateX(4px) rotate(-360deg);
   }
 }
 
@@ -103,7 +103,7 @@
     opacity: 0.8;
   }
   50% {
-    transform: translateX(12px) scale(1.1);
+    transform: translateX(15px) scale(1.2);
     opacity: 1;
   }
 }
@@ -114,7 +114,7 @@
     opacity: 0.8;
   }
   50% {
-    transform: scale(2);
+    transform: scale(2.5);
     opacity: 1;
   }
 }
@@ -125,7 +125,7 @@
     opacity: 0.5;
   }
   50% {
-    transform: scale(2);
+    transform: scale(2.5);
     opacity: 1;
   }
 }
@@ -135,7 +135,7 @@
     transform: rotate(0deg) scale(1);
   }
   50% {
-    transform: rotate(180deg) scale(1.2);
+    transform: rotate(180deg) scale(1.3);
   }
   to {
     transform: rotate(360deg) scale(1);
