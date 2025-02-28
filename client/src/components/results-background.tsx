@@ -20,8 +20,8 @@ export function ResultsBackground() {
   const [lines, setLines] = useState<Line[]>([]);
 
   useEffect(() => {
-    // Generate random stars
-    const newStars = Array.from({ length: 30 }, (_, i) => ({
+    // Generate more stars for a denser constellation effect
+    const newStars = Array.from({ length: 50 }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
       y: Math.random() * 100,
@@ -29,16 +29,16 @@ export function ResultsBackground() {
       delay: i * 0.1
     }));
 
-    // Create constellation lines between nearby stars
+    // Create more constellation lines between nearby stars
     const newLines: Line[] = [];
     for (let i = 0; i < newStars.length; i++) {
       for (let j = i + 1; j < newStars.length; j++) {
         const distance = Math.hypot(newStars[i].x - newStars[j].x, newStars[i].y - newStars[j].y);
-        if (distance < 20) {
+        if (distance < 25) { // Increased connection distance
           newLines.push({
             start: newStars[i],
             end: newStars[j],
-            opacity: 1 - distance / 20
+            opacity: 1 - distance / 25
           });
         }
       }
@@ -51,7 +51,7 @@ export function ResultsBackground() {
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden">
       <svg className="w-full h-full absolute" viewBox="0 0 100 100">
-        {/* Constellation lines */}
+        {/* Enhanced constellation lines */}
         {lines.map((line, i) => (
           <motion.line
             key={`line-${i}`}
@@ -61,11 +61,11 @@ export function ResultsBackground() {
             y2={line.end.y}
             stroke="currentColor"
             strokeWidth="0.2"
-            className="text-primary/10"
+            className="text-primary/20"
             initial={{ pathLength: 0, opacity: 0 }}
             animate={{ 
               pathLength: 1, 
-              opacity: [line.opacity * 0.3, line.opacity * 0.6, line.opacity * 0.3] 
+              opacity: [line.opacity * 0.4, line.opacity * 0.8, line.opacity * 0.4] 
             }}
             transition={{
               pathLength: {
@@ -80,8 +80,8 @@ export function ResultsBackground() {
             }}
           />
         ))}
-        
-        {/* Stars */}
+
+        {/* Enhanced stars */}
         {stars.map((star) => (
           <g key={star.id}>
             {/* Star core */}
@@ -89,11 +89,11 @@ export function ResultsBackground() {
               cx={star.x}
               cy={star.y}
               r={star.size}
-              className="fill-primary/30"
+              className="fill-primary/40"
               initial={{ scale: 0, opacity: 0 }}
               animate={{ 
                 scale: [1, 1.2, 1],
-                opacity: [0.3, 0.7, 0.3] 
+                opacity: [0.4, 0.8, 0.4] 
               }}
               transition={{
                 duration: 2 + Math.random(),
@@ -102,17 +102,17 @@ export function ResultsBackground() {
                 ease: "easeInOut"
               }}
             />
-            
-            {/* Star glow */}
+
+            {/* Enhanced star glow */}
             <motion.circle
               cx={star.x}
               cy={star.y}
               r={star.size * 2}
-              className="fill-primary/10"
+              className="fill-primary/20"
               initial={{ scale: 0, opacity: 0 }}
               animate={{ 
                 scale: [1.2, 1.8, 1.2],
-                opacity: [0.1, 0.3, 0.1] 
+                opacity: [0.2, 0.4, 0.2] 
               }}
               transition={{
                 duration: 3 + Math.random(),

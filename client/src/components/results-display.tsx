@@ -28,6 +28,7 @@ import { NumerologySoundtrack } from "./numerology-soundtrack";
 import { KarmaLeaderboard } from "./karma-leaderboard";
 import { DailyForecast } from "./daily-forecast";
 import { ResultsBackground } from "./results-background";
+import Sparkles from "./sparkles"; // Assuming Sparkles component exists
 
 interface Props {
   result: NumerologyResult;
@@ -308,11 +309,35 @@ export default function ResultsDisplay({ result, onReset }: Props) {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="space-y-6 relative"
+      className="space-y-6 relative backdrop-blur-sm"
     >
-      <div className="absolute inset-0 -z-10 pointer-events-none">
+      <div className="absolute inset-0 -z-10">
+        <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/50 to-background/90" />
         <ResultsBackground />
       </div>
+
+      {Array.from({ length: 10 }).map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute w-2 h-2"
+          style={{
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+          }}
+          animate={{
+            scale: [0.5, 1, 0.5],
+            opacity: [0.3, 0.7, 0.3],
+            rotate: [0, 180, 360],
+          }}
+          transition={{
+            duration: 2 + Math.random() * 2,
+            repeat: Infinity,
+            delay: i * 0.2,
+          }}
+        >
+          <Sparkles className="w-full h-full text-primary/30" />
+        </motion.div>
+      ))}
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -690,7 +715,7 @@ export default function ResultsDisplay({ result, onReset }: Props) {
                         <div className="mt-2 space-y-2">
                           <p className="text-sm"><span className="font-medium">Heart's Desire {result.heartDesire}:</span> As {NUMBER_MEANINGS[result.heartDesire as keyof typeof NUMBER_MEANINGS].title}, your inner motivations drive you toward {NUMBER_MEANINGS[result.heartDesire as keyof typeof NUMBER_MEANINGS].strengths[0].toLowerCase()}. This represents your deepest wishes and emotional needs.</p>
 
-                          <p className="text-sm"><span className="font-medium">Expression {result.expression}:</span> Your Expression number shows your natural talents as {NUMBER_MEANINGS[result.expression as keyof typeof NUMBER_MEANINGS].title}, particularly in {NUMBER_MEANINGS[result.expression as keyof typeof NUMBER_MEANINGS].strengths[0].toLowerCase()}. This represents how you express your true self.</p>
+                          <p className="text-sm"><span className="font-medium">Expression {result.expression}:</span> Your Expression number shows your natural talents as {NUMBER_MEANINGS[result.expression as keyof typeof NUMBER_MEANINGS].title}, particularlyin {NUMBER_MEANINGS[result.expression as keyof typeof NUMBER_MEANINGS].strengths[0].toLowerCase()}. This represents how you express your true self.</p>
                         </div>
                       </div>
 
