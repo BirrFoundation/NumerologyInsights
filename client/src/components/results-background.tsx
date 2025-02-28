@@ -20,25 +20,25 @@ export function ResultsBackground() {
   const [lines, setLines] = useState<Line[]>([]);
 
   useEffect(() => {
-    // Generate many stars for a full-screen effect
-    const newStars = Array.from({ length: 100 }, (_, i) => ({
+    // Generate stars in a more balanced pattern
+    const newStars = Array.from({ length: 40 }, (_, i) => ({
       id: i,
-      x: Math.random() * 100,
+      x: 20 + Math.random() * 60, // Keep stars more centered
       y: Math.random() * 100,
-      size: Math.random() * 2 + 1,
-      delay: i * 0.1
+      size: Math.random() * 1.2 + 0.3, // Even smaller for more delicate effect
+      delay: i * 0.15
     }));
 
-    // Create constellation lines between nearby stars
+    // Create more natural constellation patterns
     const newLines: Line[] = [];
     for (let i = 0; i < newStars.length; i++) {
       for (let j = i + 1; j < newStars.length; j++) {
         const distance = Math.hypot(newStars[i].x - newStars[j].x, newStars[i].y - newStars[j].y);
-        if (distance < 30) { // Increased connection distance
+        if (distance < 15) { // Shorter connections for more delicate patterns
           newLines.push({
             start: newStars[i],
             end: newStars[j],
-            opacity: 1 - distance / 30
+            opacity: (1 - distance / 15) * 0.2 // Even more subtle lines
           });
         }
       }
@@ -49,8 +49,8 @@ export function ResultsBackground() {
   }, []);
 
   return (
-    <div className="fixed inset-0 w-full h-full pointer-events-none">
-      <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+    <div className="absolute inset-0 w-full h-full pointer-events-none">
+      <svg className="w-full h-full" viewBox="0 0 100 100">
         {/* Constellation lines */}
         {lines.map((line, i) => (
           <motion.line
@@ -60,12 +60,12 @@ export function ResultsBackground() {
             x2={line.end.x}
             y2={line.end.y}
             stroke="currentColor"
-            strokeWidth="0.2"
-            className="text-primary/20"
+            strokeWidth="0.08" // Thinner lines
+            className="text-primary/5" // More subtle opacity
             initial={{ pathLength: 0, opacity: 0 }}
             animate={{ 
               pathLength: 1, 
-              opacity: [line.opacity * 0.4, line.opacity * 0.8, line.opacity * 0.4] 
+              opacity: [line.opacity * 0.2, line.opacity * 0.4, line.opacity * 0.2] 
             }}
             transition={{
               pathLength: {
@@ -89,11 +89,11 @@ export function ResultsBackground() {
               cx={star.x}
               cy={star.y}
               r={star.size}
-              className="fill-primary/40"
+              className="fill-primary/20"
               initial={{ scale: 0, opacity: 0 }}
               animate={{ 
                 scale: [1, 1.2, 1],
-                opacity: [0.4, 0.8, 0.4] 
+                opacity: [0.2, 0.4, 0.2] 
               }}
               transition={{
                 duration: 2 + Math.random(),
@@ -108,11 +108,11 @@ export function ResultsBackground() {
               cx={star.x}
               cy={star.y}
               r={star.size * 2}
-              className="fill-primary/20"
+              className="fill-primary/5"
               initial={{ scale: 0, opacity: 0 }}
               animate={{ 
                 scale: [1.2, 1.8, 1.2],
-                opacity: [0.2, 0.4, 0.2] 
+                opacity: [0.05, 0.1, 0.05] 
               }}
               transition={{
                 duration: 3 + Math.random(),
