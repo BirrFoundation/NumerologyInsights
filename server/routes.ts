@@ -10,24 +10,22 @@ import { z } from "zod";
 export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/calculate", async (req, res) => {
     try {
-      // Validate input data
       const data = numerologyInputSchema.parse(req.body);
       console.log('Received data:', data);
 
-      // Calculate numerology numbers
       const numbers = calculateNumerology(data.name, data.birthdate);
       console.log('Calculated numbers:', numbers);
 
       try {
-        // Get AI interpretation
         const interpretations = await getInterpretation(numbers, data.name);
         console.log('Got interpretations');
 
-        // Store result
+        const userId = req.session.userId || null;
         const result = await storage.createResult({
           ...data,
           ...numbers,
-          interpretations
+          interpretations,
+          userId
         });
 
         res.json(result);
@@ -54,11 +52,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/compatibility", async (req, res) => {
     try {
-      // Validate input data
       const data = compatibilityInputSchema.parse(req.body);
       console.log('Received compatibility data:', data);
 
-      // Calculate compatibility
       const result = calculateCompatibility(
         data.name1,
         data.birthdate1,
@@ -82,7 +78,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // New AI Coaching endpoint
   app.post("/api/coaching", async (req, res) => {
     try {
       if (!req.body.numerologyResult) {
