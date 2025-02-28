@@ -7,7 +7,7 @@ import Home from "@/pages/home";
 
 function Router() {
   return (
-    <div className="min-h-screen pt-8 md:pt-12 px-4 md:px-6">
+    <div className="min-h-screen pt-6 md:pt-10 px-4 md:px-6">
       <Switch>
         <Route path="/" component={Home} />
         <Route component={NotFound} />
