@@ -69,12 +69,15 @@ app.use('/api/*', (req, res) => {
 
 (async () => {
   try {
+    log('Starting server initialization...');
     const server = createServer(app);
 
     // Set up frontend handling after API routes
     if (app.get("env") === "development") {
+      log('Setting up Vite middleware for development...');
       await setupVite(app, server);
     } else {
+      log('Setting up static file serving for production...');
       serveStatic(app);
     }
 
