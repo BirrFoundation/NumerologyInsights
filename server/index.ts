@@ -37,10 +37,19 @@ app.use((req, res, next) => {
   next();
 });
 
-// API request handling
-app.use('/api', (req, res, next) => {
+// Set JSON content type for API and health routes
+app.use(['/api', '/health'], (req, res, next) => {
   res.type('application/json');
-  console.log(`[API Request] ${req.method} ${req.path}`);
+  next();
+});
+
+// Regular request logging
+app.use((req, res, next) => {
+  const start = Date.now();
+  res.on("finish", () => {
+    const duration = Date.now() - start;
+    log(`${req.method} ${req.path} ${res.statusCode} in ${duration}ms`);
+  });
   next();
 });
 
@@ -55,32 +64,30 @@ app.use('/api', (err: any, req: Request, res: Response, _next: NextFunction) => 
   });
 });
 
-// Regular request logging
-app.use((req, res, next) => {
-  const start = Date.now();
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    log(`${req.method} ${req.path} ${res.statusCode} in ${duration}ms`);
-  });
-  next();
-});
-
 (async () => {
   // Create HTTP server
   const server = await registerRoutes(app);
 
   // Handle non-API routes differently in development and production
   if (app.get("env") === "development") {
-    app.use((req, res, next) => {
-      // Skip any requests to /api
-      if (req.path.startsWith('/api')) {
-        return next();
-      }
-      // For all other routes, let Vite handle it
-      setupVite(app, server)
-        .then(() => next())
-        .catch(next);
-    });
+    try {
+      // Add catch-all route for non-API/health requests
+      app.use("*", async (req, res, next) => {
+        // Skip API and health routes
+        if (req.path === '/health' || req.path.startsWith('/api')) {
+          log(`Skipping Vite for path: ${req.path}`);
+          return next('route');
+        }
+        log(`Handling with Vite: ${req.path}`);
+        next();
+      });
+
+      // Set up Vite after the catch-all route
+      await setupVite(app, server);
+    } catch (e) {
+      console.error("Failed to setup Vite:", e);
+      process.exit(1);
+    }
   } else {
     // In production, serve static files for non-API routes
     serveStatic(app);
@@ -93,5 +100,7 @@ app.use((req, res, next) => {
     reusePort: true,
   }, () => {
     log(`Server running on port ${port}`);
+    log(`Environment: ${app.get("env")}`);
+    log(`Health check available at http://localhost:${port}/health`);
   });
 })();

@@ -9,6 +9,15 @@ import { getPersonalizedCoaching } from "./ai-coach";
 
 const router = Router();
 
+// Health check endpoint
+router.get("/health", (_req, res) => {
+  res.status(200).json({
+    status: "ok",
+    timestamp: new Date().toISOString(),
+    env: process.env.NODE_ENV || 'development'
+  });
+});
+
 // Authentication Routes
 router.post("/register", async (req, res) => {
   try {
@@ -24,7 +33,7 @@ router.post("/register", async (req, res) => {
     // Create user with hashed password
     const user = await storage.createUser({
       email: data.email,
-      password: hashPassword(data.password)
+      password: await hashPassword(data.password)
     });
 
     // Generate and store verification code
