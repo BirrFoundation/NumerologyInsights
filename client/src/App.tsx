@@ -8,7 +8,7 @@ import DreamJournal from "@/pages/dream-journal";
 
 function Router() {
   return (
-    <div className="min-h-screen pt-6 md:pt-10 px-4 md:px-6">
+    <div className="min-h-screen pt-4 md:pt-8 px-4 md:px-6">
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/dreams" component={DreamJournal} />
