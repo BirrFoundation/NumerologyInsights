@@ -26,29 +26,34 @@ function getBirthNumber(date: Date): number {
 
   console.log(`\nCalculating Life Path number for date: ${month}/${day}/${year}`);
 
-  // Keep day as is if it's a master number
-  const dayValue = [11, 22, 33].includes(day) ? day : day;
-
-  // For month, simply use the value (no master numbers possible in months 1-12)
-  const monthValue = month;
-
-  // For year, add digits together but keep master numbers
+  // Convert numbers to strings for manipulation
+  const dayStr = day.toString();
+  const monthStr = month.toString();
   const yearStr = year.toString();
-  let yearValue = 0;
-  if (yearStr.startsWith('11')) {
-    yearValue = 11 + parseInt(yearStr.slice(2).split('').reduce((sum, digit) => sum + parseInt(digit), '0'));
-  } else if (yearStr.startsWith('22')) {
-    yearValue = 22 + parseInt(yearStr.slice(2).split('').reduce((sum, digit) => sum + parseInt(digit), '0'));
-  } else if (yearStr.startsWith('33')) {
-    yearValue = 33 + parseInt(yearStr.slice(2).split('').reduce((sum, digit) => sum + parseInt(digit), '0'));
+
+  // Initialize components array to store numbers
+  let components: number[] = [];
+
+  // Handle day - preserve master numbers
+  if ([11, 22, 33].includes(day)) {
+    components.push(day);
   } else {
-    yearValue = yearStr.split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+    components.push(...dayStr.split('').map(Number));
   }
 
-  console.log(`Component values - Day: ${dayValue}, Month: ${monthValue}, Year: ${yearValue}`);
+  // Handle month - preserve master numbers
+  if ([11, 22, 33].includes(month)) {
+    components.push(month);
+  } else {
+    components.push(...monthStr.split('').map(Number));
+  }
 
-  // Calculate the total while preserving master numbers
-  const totalSum = dayValue + monthValue + yearValue;
+  // Handle year - add each digit
+  components.push(...yearStr.split('').map(Number));
+
+  // Calculate total sum
+  const totalSum = components.reduce((sum, num) => sum + num, 0);
+  console.log(`Components for addition:`, components);
   console.log(`Total sum before reduction: ${totalSum}`);
 
   // Check for master numbers and special numbers in the total
