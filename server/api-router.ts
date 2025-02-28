@@ -1,12 +1,13 @@
 import { Router } from "express";
 import { storage } from "./storage";
 import { generateVerificationCode, sendVerificationEmail, hashPassword } from "./email-service";
-import { userAuthSchema, verificationSchema, numerologyInputSchema, compatibilityInputSchema } from "@shared/schema";
+import { userAuthSchema, verificationSchema, numerologyInputSchema, compatibilityInputSchema, dreamInputSchema } from "@shared/schema";
 import { z } from "zod";
 import { calculateNumerology, calculateCompatibility } from "./numerology";
 import { getInterpretation } from "./ai";
 import { getPersonalizedCoaching } from "./ai-coach";
 import { log } from "./vite";
+import { interpretDream } from "./dream-interpreter";
 
 const router = Router();
 
@@ -233,6 +234,78 @@ router.post("/coaching", async (req, res) => {
     console.error('AI Coaching error:', error);
     res.status(503).json({
       message: "Failed to get coaching insights. Please try again."
+    });
+  }
+});
+
+// Dream interpretation route
+router.post("/dreams/interpret", async (req, res) => {
+  try {
+    const data = dreamInputSchema.parse(req.body);
+    console.log('Processing dream interpretation request:', data);
+
+    const userId = req.session.userId || null;
+    let userBirthdate = "2000-01-01"; // Default fallback
+    let userName = "Anonymous";
+
+    // If user is logged in, get their details
+    if (userId) {
+      const user = await storage.getUserByEmail(req.body.email);
+      if (user) {
+        const numerologyResult = await storage.getLatestNumerologyResult(userId);
+        if (numerologyResult) {
+          userBirthdate = numerologyResult.birthdate;
+          userName = numerologyResult.name;
+        }
+      }
+    }
+
+    const { interpretation, numerologyFactors } = await interpretDream(
+      data.description,
+      data.emotions,
+      data.symbols,
+      userBirthdate,
+      userName
+    );
+
+    // Store the dream record
+    const dreamRecord = await storage.createDreamRecord({
+      ...data,
+      userId,
+      numerologyFactors,
+      interpretation
+    });
+
+    res.json(dreamRecord);
+  } catch (error) {
+    console.error('Dream interpretation error:', error);
+    if (error instanceof z.ZodError) {
+      res.status(400).json({
+        message: "Invalid input data",
+        errors: error.errors
+      });
+      return;
+    }
+    res.status(500).json({
+      message: "Failed to process dream interpretation"
+    });
+  }
+});
+
+// Fetch dream records for user
+router.get("/dreams", async (req, res) => {
+  try {
+    const userId = req.session.userId;
+    if (!userId) {
+      return res.status(401).json({ message: "Please log in to view your dream records" });
+    }
+
+    const dreams = await storage.getDreamRecordsByUserId(userId);
+    res.json(dreams);
+  } catch (error) {
+    console.error('Error fetching dream records:', error);
+    res.status(500).json({
+      message: "Failed to fetch dream records"
     });
   }
 });

@@ -1,11 +1,10 @@
-import { type NumerologyResult, type InsertNumerology, type NumerologyInterpretation, type User, type InsertUser, type VerificationCode } from "@shared/schema";
+import { type NumerologyResult, type InsertNumerology, type NumerologyInterpretation, type User, type InsertUser, type VerificationCode, type DreamRecord, type InsertDream } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
 
 const MemoryStore = createMemoryStore(session);
 
 export interface IStorage {
-  // Existing numerology methods
   createResult(result: InsertNumerology & {
     lifePath: number;
     destiny: number;
@@ -14,14 +13,22 @@ export interface IStorage {
     userId?: number | null;
   }): Promise<NumerologyResult>;
 
-  // User authentication methods
   createUser(user: InsertUser): Promise<User>;
   getUserByEmail(email: string): Promise<User | null>;
   verifyUser(userId: number): Promise<void>;
   createVerificationCode(code: { userId: number; code: string; expiresAt: Date }): Promise<VerificationCode>;
   getLatestVerificationCode(userId: number): Promise<VerificationCode | null>;
 
-  // Session store
+  // Dream record methods
+  createDreamRecord(record: InsertDream & {
+    userId?: number | null;
+    numerologyFactors: Record<string, number>;
+    interpretation: Record<string, any>;
+  }): Promise<DreamRecord>;
+
+  getDreamRecordsByUserId(userId: number): Promise<DreamRecord[]>;
+  getDreamRecord(id: number): Promise<DreamRecord | null>;
+
   sessionStore: session.Store;
 }
 
@@ -29,6 +36,7 @@ export class MemStorage implements IStorage {
   private results: Map<number, NumerologyResult>;
   private users: Map<number, User>;
   private verificationCodes: Map<number, VerificationCode>;
+  private dreamRecords: Map<number, DreamRecord>;
   private currentId: number;
   sessionStore: session.Store;
 
@@ -36,6 +44,7 @@ export class MemStorage implements IStorage {
     this.results = new Map();
     this.users = new Map();
     this.verificationCodes = new Map();
+    this.dreamRecords = new Map();
     this.currentId = 1;
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000 // 24 hours
@@ -110,6 +119,35 @@ export class MemStorage implements IStorage {
     }
 
     return latestCode;
+  }
+
+  async createDreamRecord(data: InsertDream & {
+    userId?: number | null;
+    numerologyFactors: Record<string, number>;
+    interpretation: Record<string, any>;
+  }): Promise<DreamRecord> {
+    const id = this.currentId++;
+    const dreamRecord: DreamRecord = {
+      id,
+      userId: data.userId || null,
+      dreamDate: new Date(data.dreamDate),
+      description: data.description,
+      emotions: data.emotions,
+      symbols: data.symbols,
+      numerologyFactors: data.numerologyFactors,
+      interpretation: data.interpretation
+    };
+    this.dreamRecords.set(id, dreamRecord);
+    return dreamRecord;
+  }
+
+  async getDreamRecordsByUserId(userId: number): Promise<DreamRecord[]> {
+    return Array.from(this.dreamRecords.values())
+      .filter(record => record.userId === userId);
+  }
+
+  async getDreamRecord(id: number): Promise<DreamRecord | null> {
+    return this.dreamRecords.get(id) || null;
   }
 }
 

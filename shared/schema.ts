@@ -33,6 +33,17 @@ export const numerologyResults = pgTable("numerology_results", {
   interpretations: jsonb("interpretations").notNull()
 });
 
+export const dreamRecords = pgTable("dream_records", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id),
+  dreamDate: timestamp("dream_date").notNull(),
+  description: text("description").notNull(),
+  emotions: text("emotions").array().notNull(),
+  symbols: text("symbols").array().notNull(),
+  numerologyFactors: jsonb("numerology_factors").notNull(),
+  interpretation: jsonb("interpretation").notNull()
+});
+
 // User schemas
 export const userAuthSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -62,6 +73,17 @@ export const compatibilityInputSchema = z.object({
   birthdate2: z.string().regex(/^\d{4}-\d{2}-\d{2}$/)
 });
 
+// Dream input schema
+export const dreamInputSchema = z.object({
+  description: z.string().min(10, "Please provide a more detailed description of your dream"),
+  dreamDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {
+    message: "Please enter a valid date in YYYY-MM-DD format"
+  }),
+  emotions: z.array(z.string()).min(1, "Please select at least one emotion"),
+  symbols: z.array(z.string()).min(1, "Please identify at least one symbol from your dream")
+});
+
+
 // Create insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({ 
   id: true, 
@@ -77,6 +99,13 @@ export const insertVerificationSchema = createInsertSchema(verificationCodes).om
 export const insertNumerologySchema = createInsertSchema(numerologyResults).omit({ 
   id: true,
   userId: true 
+});
+
+export const insertDreamSchema = createInsertSchema(dreamRecords).omit({
+  id: true,
+  userId: true,
+  numerologyFactors: true,
+  interpretation: true
 });
 
 // Export types
@@ -108,3 +137,20 @@ export type NumerologyInterpretation = {
   developmentSummary: string;
   compatibility?: CompatibilityResult;
 };
+
+export type InsertDream = z.infer<typeof dreamInputSchema>;
+export type DreamRecord = typeof dreamRecords.$inferSelect;
+
+export interface DreamInterpretation {
+  overview: string;
+  symbolism: {
+    [key: string]: string;
+  };
+  numerologicalInsights: {
+    numbers: number[];
+    meanings: string[];
+    guidance: string;
+  };
+  actionSteps: string[];
+  personalGrowth: string;
+}
