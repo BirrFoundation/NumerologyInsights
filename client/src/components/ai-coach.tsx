@@ -105,6 +105,18 @@ export default function AICoach({ result }: Props) {
     }
   });
 
+  const handleAskQuestion = () => {
+    if (!userQuery && !selectedQuestion) return;
+    const queryToAsk = selectedQuestion || userQuery;
+    coachingMutation.mutate(queryToAsk);
+  };
+
+  const handleQuestionClick = (question: string) => {
+    setSelectedQuestion(question);
+    setUserQuery("");
+    coachingMutation.mutate(question);
+  };
+
   if (initialError || coachingMutation.error) {
     return (
       <Card className="overflow-hidden">
