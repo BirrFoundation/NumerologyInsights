@@ -153,4 +153,9 @@ export interface DreamInterpretation {
   };
   actionSteps: string[];
   personalGrowth: string;
+  cosmicInfluences: {
+    currentCycle: string;
+    karmicLessons: string;
+    spiritualGuidance: string;
+  };
 }

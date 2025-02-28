@@ -15,8 +15,8 @@ interface DreamInterpretationProps {
 export function DreamInterpretation({ interpretation }: DreamInterpretationProps) {
   return (
     <Card className="p-6">
-      <h3 className="text-xl font-semibold mb-4">Dream Interpretation</h3>
-      <ScrollArea className="h-[400px] pr-4">
+      <h3 className="text-xl font-semibold mb-4">Numerological Dream Interpretation</h3>
+      <ScrollArea className="h-[500px] pr-4">
         <div className="space-y-6">
           <div>
             <h4 className="font-medium mb-2">Overview</h4>
@@ -25,7 +25,7 @@ export function DreamInterpretation({ interpretation }: DreamInterpretationProps
 
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="symbolism">
-              <AccordionTrigger>Symbolism Analysis</AccordionTrigger>
+              <AccordionTrigger>Symbolism & Numerology</AccordionTrigger>
               <AccordionContent>
                 <div className="space-y-2">
                   {Object.entries(interpretation.symbolism).map(([symbol, meaning]) => (
@@ -52,7 +52,7 @@ export function DreamInterpretation({ interpretation }: DreamInterpretationProps
                     </div>
                   </div>
                   <div>
-                    <h5 className="font-medium mb-2">Meanings</h5>
+                    <h5 className="font-medium mb-2">Numerological Meanings</h5>
                     <ul className="list-disc pl-4 space-y-1">
                       {interpretation.numerologicalInsights.meanings.map((meaning, idx) => (
                         <li key={idx}>{meaning}</li>
@@ -60,9 +60,35 @@ export function DreamInterpretation({ interpretation }: DreamInterpretationProps
                     </ul>
                   </div>
                   <div>
-                    <h5 className="font-medium mb-2">Guidance</h5>
+                    <h5 className="font-medium mb-2">Numerological Guidance</h5>
                     <p className="text-muted-foreground">
                       {interpretation.numerologicalInsights.guidance}
+                    </p>
+                  </div>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="cosmic">
+              <AccordionTrigger>Cosmic Influences</AccordionTrigger>
+              <AccordionContent>
+                <div className="space-y-4">
+                  <div>
+                    <h5 className="font-medium mb-2">Current Numerological Cycle</h5>
+                    <p className="text-muted-foreground">
+                      {interpretation.cosmicInfluences.currentCycle}
+                    </p>
+                  </div>
+                  <div>
+                    <h5 className="font-medium mb-2">Karmic Lessons</h5>
+                    <p className="text-muted-foreground">
+                      {interpretation.cosmicInfluences.karmicLessons}
+                    </p>
+                  </div>
+                  <div>
+                    <h5 className="font-medium mb-2">Spiritual Guidance</h5>
+                    <p className="text-muted-foreground">
+                      {interpretation.cosmicInfluences.spiritualGuidance}
                     </p>
                   </div>
                 </div>
@@ -82,7 +108,7 @@ export function DreamInterpretation({ interpretation }: DreamInterpretationProps
           </Accordion>
 
           <div>
-            <h4 className="font-medium mb-2">Personal Growth Insights</h4>
+            <h4 className="font-medium mb-2">Personal Growth & Transformation</h4>
             <p className="text-muted-foreground">{interpretation.personalGrowth}</p>
           </div>
         </div>
