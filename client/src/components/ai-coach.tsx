@@ -11,12 +11,13 @@ import {
   Star,
   Target,
   Heart,
-  RefreshCcw
+  RefreshCcw,
+  BookOpen
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { NumerologyResult } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
-import { LoadingState, SpinnerOverlay } from "./loading-states";
+import { LoadingState } from "./loading-states";
 
 interface Props {
   result: NumerologyResult;
@@ -116,25 +117,26 @@ export default function AICoach({ result }: Props) {
     coachingMutation.mutate(question);
   };
 
+  // When AI service is unavailable, show personalized recommendations
   if (initialError || coachingMutation.error) {
     return (
       <Card className="overflow-hidden">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center text-lg font-medium">
-            <AlertTriangle className="mr-2 h-5 w-5 text-amber-500" />
-            AI Coach Taking a Break
+            <BookOpen className="mr-2 h-5 w-5 text-primary" />
+            Personal Development Guide
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            Our AI Coach is recharging. Here are some personalized insights based on your numerology:
+            Here are your personalized numerology-based development recommendations:
           </p>
 
           <div className="space-y-4">
             <div className="flex items-start gap-2">
-              <Star className="h-5 w-5 text-primary mt-0.5" />
+              <Star className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
               <div>
-                <h4 className="text-sm font-medium">Personal Insight</h4>
+                <h4 className="text-sm font-medium">Life Path Guidance</h4>
                 <p className="text-sm text-muted-foreground">
                   {getPersonalInsight(result.lifePath)}
                 </p>
@@ -142,45 +144,26 @@ export default function AICoach({ result }: Props) {
             </div>
 
             <div className="flex items-start gap-2">
-              <Target className="h-5 w-5 text-primary mt-0.5" />
+              <Target className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
               <div>
-                <h4 className="text-sm font-medium">Focus Area</h4>
-                <p className="text-sm text-muted-foreground">
-                  Your Expression number {result.expression} suggests focusing on {
-                    result.expression === 1 ? "leadership and innovation" :
-                    result.expression === 2 ? "cooperation and diplomacy" :
-                    result.expression === 3 ? "creative self-expression" :
-                    result.expression === 4 ? "building and organizing" :
-                    result.expression === 5 ? "freedom and adaptability" :
-                    result.expression === 6 ? "responsibility and service" :
-                    result.expression === 7 ? "analysis and research" :
-                    result.expression === 8 ? "business and achievement" :
-                    result.expression === 9 ? "humanitarian work" :
-                    result.expression === 11 ? "inspirational leadership" :
-                    result.expression === 22 ? "large-scale projects" :
-                    "teaching and healing"
-                  }.
-                </p>
+                <h4 className="text-sm font-medium">Key Development Areas</h4>
+                <ul className="text-sm text-muted-foreground list-disc pl-4 space-y-1 mt-1">
+                  {result.recommendations.growthAreas.slice(0, 3).map((area, index) => (
+                    <li key={index}>{area}</li>
+                  ))}
+                </ul>
               </div>
             </div>
 
             <div className="flex items-start gap-2">
-              <Heart className="h-5 w-5 text-primary mt-0.5" />
+              <Heart className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
               <div>
-                <h4 className="text-sm font-medium">Heart's Desire</h4>
-                <p className="text-sm text-muted-foreground">
-                  Your Heart's Desire number {result.heartDesire} reveals your inner motivation for {
-                    result.heartDesire === 1 ? "independence and achievement" :
-                    result.heartDesire === 2 ? "harmony and connection" :
-                    result.heartDesire === 3 ? "creative expression" :
-                    result.heartDesire === 4 ? "stability and order" :
-                    result.heartDesire === 5 ? "freedom and adventure" :
-                    result.heartDesire === 6 ? "love and nurturing" :
-                    result.heartDesire === 7 ? "wisdom and understanding" :
-                    result.heartDesire === 8 ? "success and recognition" :
-                    "universal love and compassion"
-                  }.
-                </p>
+                <h4 className="text-sm font-medium">Recommended Practices</h4>
+                <ul className="text-sm text-muted-foreground list-disc pl-4 space-y-1 mt-1">
+                  {result.recommendations.practices.slice(0, 3).map((practice, index) => (
+                    <li key={index}>{practice}</li>
+                  ))}
+                </ul>
               </div>
             </div>
 
@@ -191,7 +174,7 @@ export default function AICoach({ result }: Props) {
               onClick={() => refetch()}
             >
               <RefreshCcw className="mr-2 h-4 w-4" />
-              Check if AI Coach is Available
+              Check AI Coach Availability
             </Button>
           </div>
         </CardContent>
@@ -211,7 +194,7 @@ export default function AICoach({ result }: Props) {
           >
             <LoadingState
               type="ai"
-              message={isInitialLoading ? "Initializing AI Coach..." : "Processing your question..."}
+              message={isInitialLoading ? "Connecting with your AI Coach..." : "Processing your question..."}
             />
           </motion.div>
         )}
@@ -225,7 +208,6 @@ export default function AICoach({ result }: Props) {
       </CardHeader>
 
       <CardContent className="space-y-4">
-        {/* Initial Coaching Advice */}
         {initialCoaching && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -236,7 +218,6 @@ export default function AICoach({ result }: Props) {
               <p className="text-sm leading-relaxed">{initialCoaching.advice}</p>
             </div>
 
-            {/* Follow-up Questions */}
             <div className="space-y-2">
               <p className="text-sm font-medium text-primary">Explore Further:</p>
               <div className="flex flex-wrap gap-2">
@@ -256,7 +237,6 @@ export default function AICoach({ result }: Props) {
           </motion.div>
         )}
 
-        {/* Question Input */}
         <div className="flex gap-2 mt-4">
           <Input
             placeholder="Ask a specific question about your numerological path..."
@@ -271,16 +251,25 @@ export default function AICoach({ result }: Props) {
             onClick={handleAskQuestion}
             disabled={(!userQuery && !selectedQuestion) || coachingMutation.isPending}
           >
-            {coachingMutation.isPending ? (
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-              >
-                <SendHorizontal className="h-4 w-4" />
-              </motion.div>
-            ) : (
-              <SendHorizontal className="h-4 w-4" />
-            )}
+            <AnimatePresence mode="wait">
+              {coachingMutation.isPending ? (
+                <motion.div
+                  key="loading"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                >
+                  <SendHorizontal className="h-4 w-4" />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="send"
+                  initial={{ scale: 0.8 }}
+                  animate={{ scale: 1 }}
+                >
+                  <SendHorizontal className="h-4 w-4" />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </Button>
         </div>
       </CardContent>
