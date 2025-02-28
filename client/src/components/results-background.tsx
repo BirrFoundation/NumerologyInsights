@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import type { NumerologyResult } from "@shared/schema";
 
 interface Star {
   id: number;
@@ -15,9 +16,35 @@ interface Line {
   opacity: number;
 }
 
-export function ResultsBackground() {
+// Calculate mood colors based on numerology numbers
+function calculateMoodColors(result: NumerologyResult) {
+  // Life Path influences primary color
+  const lifePath = result.lifePath;
+  const baseHue = (lifePath * 30) % 360; // Spread colors across spectrum
+
+  // Destiny number influences intensity
+  const destiny = result.destiny;
+  const intensity = 0.3 + (destiny / 11) * 0.4; // Scale 0.3-0.7
+
+  // Expression number influences secondary color
+  const expression = result.expression;
+  const secondaryHue = ((baseHue + 180 + expression * 20) % 360);
+
+  return {
+    primary: `hsl(${baseHue}, 70%, ${intensity * 100}%)`,
+    secondary: `hsl(${secondaryHue}, 60%, ${(intensity * 0.8) * 100}%)`,
+    accent: `hsl(${(baseHue + 120) % 360}, 80%, ${(intensity * 0.9) * 100}%)`
+  };
+}
+
+interface Props {
+  result: NumerologyResult;
+}
+
+export function ResultsBackground({ result }: Props) {
   const [stars, setStars] = useState<Star[]>([]);
   const [lines, setLines] = useState<Line[]>([]);
+  const colors = calculateMoodColors(result);
 
   useEffect(() => {
     // Generate stars across the entire viewport
@@ -50,12 +77,33 @@ export function ResultsBackground() {
 
   return (
     <div className="fixed inset-0 w-full h-full pointer-events-none">
+      {/* Animated gradient background */}
+      <motion.div
+        className="absolute inset-0"
+        animate={{
+          background: [
+            `radial-gradient(circle at 30% 30%, ${colors.primary}, transparent 60%),
+             radial-gradient(circle at 70% 70%, ${colors.secondary}, transparent 60%),
+             radial-gradient(circle at 50% 50%, ${colors.accent}, transparent 60%)`,
+            `radial-gradient(circle at 70% 30%, ${colors.secondary}, transparent 60%),
+             radial-gradient(circle at 30% 70%, ${colors.primary}, transparent 60%),
+             radial-gradient(circle at 50% 50%, ${colors.accent}, transparent 60%)`
+          ]
+        }}
+        transition={{
+          duration: 20,
+          repeat: Infinity,
+          repeatType: "reverse",
+          ease: "linear"
+        }}
+      />
+
       <svg className="w-full h-full" viewBox="0 0 100 100">
-        {/* Animated gradient background */}
+        {/* Define gradient for star glow */}
         <defs>
           <radialGradient id="star-glow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="currentColor" stopOpacity="0.2" />
-            <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
+            <stop offset="0%" stopColor={colors.primary} stopOpacity="0.3" />
+            <stop offset="100%" stopColor={colors.primary} stopOpacity="0" />
           </radialGradient>
         </defs>
 
@@ -67,9 +115,8 @@ export function ResultsBackground() {
             y1={line.start.y}
             x2={line.end.x}
             y2={line.end.y}
-            stroke="currentColor"
+            stroke={colors.primary}
             strokeWidth="0.15"
-            className="text-primary/30"
             initial={{ pathLength: 0, opacity: 0 }}
             animate={{ 
               pathLength: 1, 
@@ -97,7 +144,7 @@ export function ResultsBackground() {
               cx={star.x}
               cy={star.y}
               r={star.size}
-              className="fill-primary/40"
+              fill={colors.primary}
               initial={{ scale: 0, opacity: 0 }}
               animate={{ 
                 scale: [1, 1.2, 1],
@@ -117,7 +164,6 @@ export function ResultsBackground() {
               cy={star.y}
               r={star.size * 3}
               fill="url(#star-glow)"
-              className="text-primary"
               initial={{ scale: 0, opacity: 0 }}
               animate={{ 
                 scale: [1.2, 1.8, 1.2],
@@ -136,7 +182,7 @@ export function ResultsBackground() {
               cx={star.x}
               cy={star.y}
               r={star.size * 2}
-              className="fill-primary/20"
+              fill={colors.secondary}
               initial={{ scale: 0, opacity: 0 }}
               animate={{
                 scale: [1, 2, 1],
