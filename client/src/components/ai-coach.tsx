@@ -7,17 +7,16 @@ import {
   MessageCircle,
   Sparkles,
   SendHorizontal,
-  Loader2,
   AlertTriangle,
-  BookOpen,
-  RefreshCcw,
   Star,
   Target,
-  Heart
+  Heart,
+  RefreshCcw
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import type { NumerologyResult } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
+import { LoadingState, SpinnerOverlay } from "./loading-states";
 
 interface Props {
   result: NumerologyResult;
@@ -185,9 +184,9 @@ export default function AICoach({ result }: Props) {
               </div>
             </div>
 
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               className="w-full mt-4"
               onClick={() => refetch()}
             >
@@ -201,77 +200,88 @@ export default function AICoach({ result }: Props) {
   }
 
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden relative">
+      <AnimatePresence>
+        {(isInitialLoading || coachingMutation.isPending) && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-10"
+          >
+            <LoadingState
+              type="ai"
+              message={isInitialLoading ? "Initializing AI Coach..." : "Processing your question..."}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center text-lg font-medium">
           <Sparkles className="mr-2 h-5 w-5 text-primary" />
           AI Personal Development Coach
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          {/* Initial Coaching Advice */}
-          {isInitialLoading ? (
-            <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+
+      <CardContent className="space-y-4">
+        {/* Initial Coaching Advice */}
+        {initialCoaching && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-4"
+          >
+            <div className="bg-primary/5 p-4 rounded-lg">
+              <p className="text-sm leading-relaxed">{initialCoaching.advice}</p>
             </div>
-          ) : initialCoaching && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="space-y-4"
-            >
-              <div className="bg-primary/5 p-4 rounded-lg">
-                <p className="text-sm leading-relaxed">{initialCoaching.advice}</p>
-              </div>
 
-              {/* Follow-up Questions */}
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-primary">Explore Further:</p>
-                <div className="flex flex-wrap gap-2">
-                  {initialCoaching.followUpQuestions.map((question, index) => (
-                    <Button
-                      key={index}
-                      variant="outline"
-                      size="sm"
-                      className={`text-xs ${
-                        selectedQuestion === question ? "bg-primary/10" : ""
-                      }`}
-                      onClick={() => handleQuestionClick(question)}
-                    >
-                      {question}
-                    </Button>
-                  ))}
-                </div>
+            {/* Follow-up Questions */}
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-primary">Explore Further:</p>
+              <div className="flex flex-wrap gap-2">
+                {initialCoaching.followUpQuestions.map((question, index) => (
+                  <Button
+                    key={index}
+                    variant="outline"
+                    size="sm"
+                    className={`text-xs ${selectedQuestion === question ? "bg-primary/10" : ""}`}
+                    onClick={() => handleQuestionClick(question)}
+                  >
+                    {question}
+                  </Button>
+                ))}
               </div>
-            </motion.div>
-          )}
+            </div>
+          </motion.div>
+        )}
 
-          {/* Question Input */}
-          <div className="flex gap-2 mt-4">
-            <Input
-              placeholder="Ask a specific question about your numerological path..."
-              value={userQuery}
-              onChange={(e) => {
-                setUserQuery(e.target.value);
-                setSelectedQuestion(null);
-              }}
-              className="flex-1"
-            />
-            <Button
-              onClick={handleAskQuestion}
-              disabled={
-                (!userQuery && !selectedQuestion) ||
-                coachingMutation.isPending
-              }
-            >
-              {coachingMutation.isPending ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
+        {/* Question Input */}
+        <div className="flex gap-2 mt-4">
+          <Input
+            placeholder="Ask a specific question about your numerological path..."
+            value={userQuery}
+            onChange={(e) => {
+              setUserQuery(e.target.value);
+              setSelectedQuestion(null);
+            }}
+            className="flex-1"
+          />
+          <Button
+            onClick={handleAskQuestion}
+            disabled={(!userQuery && !selectedQuestion) || coachingMutation.isPending}
+          >
+            {coachingMutation.isPending ? (
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              >
                 <SendHorizontal className="h-4 w-4" />
-              )}
-            </Button>
-          </div>
+              </motion.div>
+            ) : (
+              <SendHorizontal className="h-4 w-4" />
+            )}
+          </Button>
         </div>
       </CardContent>
     </Card>
