@@ -23,6 +23,7 @@ import StrengthsWeaknessesChart from "./strengths-weaknesses-chart";
 import AICoach from "./ai-coach";
 import NumerologyJournal from "./numerology-journal";
 import ConstellationBackground from "./constellation-background";
+import { CosmicEnergyMeter } from "./cosmic-energy-meter";
 
 interface Props {
   result: NumerologyResult;
@@ -218,7 +219,6 @@ export default function ResultsDisplay({ result, onReset }: Props) {
       animate={{ opacity: 1 }}
       className="space-y-6 relative"
     >
-      {/* Position constellation background with negative z-index and no pointer events */}
       <div className="absolute inset-0 -z-10 pointer-events-none">
         <ConstellationBackground className="opacity-10" />
       </div>
@@ -403,30 +403,31 @@ export default function ResultsDisplay({ result, onReset }: Props) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}
+          className="space-y-6"
         >
-          <h3 className="text-xl font-semibold mb-4">Personal Development Coach</h3>
-          <AICoach result={result} />
+          <h3 className="text-xl font-semibold mb-4">Cosmic Energy Potential</h3>
+          <CosmicEnergyMeter result={result} />
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.9 }}
+        >
+          <h3 className="text-xl font-semibold mb-4">Personal Journal</h3>
+          <NumerologyJournal result={result} />
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.0 }}
+        >
+          <Button variant="outline" onClick={onReset} className="w-full">
+            Calculate Another Reading
+          </Button>
         </motion.div>
       </div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.9 }}
-      >
-        <h3 className="text-xl font-semibold mb-4">Personal Journal</h3>
-        <NumerologyJournal result={result} />
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.0 }}
-      >
-        <Button variant="outline" onClick={onReset} className="w-full">
-          Calculate Another Reading
-        </Button>
-      </motion.div>
     </motion.div>
   );
 }
