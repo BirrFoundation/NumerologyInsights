@@ -21,7 +21,7 @@ export function DailyForecast({ result }: Props) {
     error,
     refetch
   } = useQuery({
-    queryKey: ['/api/daily-forecast', result.userId, currentDate.toISOString().split('T')[0]],
+    queryKey: ['/api/daily-forecast', result.userId || result.id, currentDate.toISOString().split('T')[0]],
     queryFn: async () => {
       try {
         const response = await fetch(`/api/daily-forecast?date=${currentDate.toISOString().split('T')[0]}&userId=${result.userId || result.id}`);
@@ -29,7 +29,9 @@ export function DailyForecast({ result }: Props) {
           const errorData = await response.json().catch(() => ({ message: 'Failed to fetch forecast' }));
           throw new Error(errorData.message || 'Failed to fetch forecast');
         }
-        return response.json();
+        const data = await response.json();
+        console.log('Forecast data received:', data);
+        return data;
       } catch (err) {
         console.error('Forecast fetch error:', err);
         throw err;

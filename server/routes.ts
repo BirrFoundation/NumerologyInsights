@@ -117,6 +117,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Register API routes before creating server
+  app.use('/api/*', (req, res) => {
+    res.status(404).json({ error: 'API endpoint not found' });
+  });
+
   log("Created HTTP server");
 
   return httpServer;
