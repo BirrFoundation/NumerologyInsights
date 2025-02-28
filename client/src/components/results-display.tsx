@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import DevelopmentRecommendations from "./development-recommendations";
 import DNAVisualization from "./dna-visualization";
 import StrengthsWeaknessesChart from "./strengths-weaknesses-chart";
@@ -26,8 +26,6 @@ import { CosmicEnergyMeter } from "./cosmic-energy-meter";
 import { NumerologySoundtrack } from "./numerology-soundtrack";
 import { KarmaLeaderboard } from "./karma-leaderboard";
 import { DailyForecast } from "./daily-forecast";
-import { ResultsBackground } from "./results-background";
-import Sparkles from "./sparkles";
 
 interface Props {
   result: NumerologyResult;
@@ -225,9 +223,9 @@ function NumberDisplay({ number, title }: { number: number; title: string }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const meaning = number === 44 ? NUMBER_MEANINGS[44] :
-                 number === 28 ? NUMBER_MEANINGS[28] :
-                 (NUMBER_MEANINGS[number as keyof typeof NUMBER_MEANINGS] ||
-                 NUMBER_MEANINGS[(number % 9 || 9) as keyof typeof NUMBER_MEANINGS]);
+    number === 28 ? NUMBER_MEANINGS[28] :
+      (NUMBER_MEANINGS[number as keyof typeof NUMBER_MEANINGS] ||
+        NUMBER_MEANINGS[(number % 9 || 9) as keyof typeof NUMBER_MEANINGS]);
 
   const isMasterNumber = [11, 22, 33, 44].includes(number);
   const isWealthNumber = number === 28;
@@ -240,7 +238,7 @@ function NumberDisplay({ number, title }: { number: number; title: string }) {
           className={`text-center p-4 rounded-lg cursor-pointer transition-colors
             ${isMasterNumber ? 'bg-primary/20 hover:bg-primary/30' :
               isWealthNumber ? 'bg-amber-500/20 hover:bg-amber-500/30' :
-              'bg-primary/5 hover:bg-primary/10'}`}
+                'bg-primary/5 hover:bg-primary/10'}`}
           onClick={() => setIsOpen(true)}
         >
           <motion.div
@@ -365,10 +363,6 @@ export default function ResultsDisplay({ result, onReset }: Props) {
       animate={{ opacity: 1 }}
       className="min-h-screen w-full relative space-y-8 pb-12"
     >
-      <div className="fixed inset-0 overflow-hidden">
-        <ResultsBackground result={result} />
-      </div>
-
       <div className="relative z-10 max-w-4xl mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -716,11 +710,10 @@ export default function ResultsDisplay({ result, onReset }: Props) {
                         <h4 className="font-medium mb-2">Natural Challenges</h4>
                         <ul className="list-disc pl-4 space-y-1">
                           {NUMBER_MEANINGS[result.birthDateNum as keyof typeof NUMBER_MEANINGS].weaknesses.map((weakness, index) => (
-                            <li key={index} className="textsm">{weakness}</li>
+                            <li key={index} className="text-sm">{weakness}</li>
                           ))}
                         </ul>
-                      </div>
-                    </div>
+                      </div                    </div>
                   </div>
                 </AccordionContent>
               </AccordionItem>
@@ -831,6 +824,34 @@ export default function ResultsDisplay({ result, onReset }: Props) {
                 </AccordionContent>
               </AccordionItem>
 
+              <AccordionItem value="birthdate">
+                <AccordionTrigger>Birth Date Number {result.birthDateNum}</AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-4">
+                    <p className="text-sm">
+                      Your Birth Date number {result.birthDateNum} reveals specific talents and potential that were present from birth. As {NUMBER_MEANINGS[result.birthDateNum as keyof typeof NUMBER_MEANINGS].title}, you have innate qualities that influence your life path.
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <h4 className="font-medium mb-2">Innate Talents</h4>
+                        <ul className="list-disc pl-4 space-y-1">
+                          {NUMBER_MEANINGS[result.birthDateNum as keyof typeof NUMBER_MEANINGS].strengths.map((strength, index) => (
+                            <li key={index} className="text-sm">{strength}</li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div>
+                        <h4 className="font-medium mb-2">Natural Challenges</h4>
+                        <ul className="list-disc pl-4 space-y-1">
+                          {NUMBER_MEANINGS[result.birthDateNum as keyof typeof NUMBER_MEANINGS].weaknesses.map((weakness, index) => (
+                            <li key={index} className="text-sm">{weakness}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
             </Accordion>
           </motion.div>
 
