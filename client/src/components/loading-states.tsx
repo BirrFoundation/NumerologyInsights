@@ -22,6 +22,7 @@ export function LoadingState({ type = "ai", message }: LoadingStateProps) {
                         type === "numerology" ? "Decoding your numerological DNA..." :
                         "Analyzing numerology patterns...";
 
+  // Generate constellation points
   const particles = Array.from({ length: 20 }, (_, i) => ({
     id: i,
     delay: Math.random() * 2,
@@ -29,6 +30,14 @@ export function LoadingState({ type = "ai", message }: LoadingStateProps) {
     x: Math.random() * 100,
     y: Math.random() * 100,
   }));
+
+  // Create constellation lines by connecting nearby points
+  const lines = particles.flatMap((p1, i) => 
+    particles.slice(i + 1).map(p2 => {
+      const distance = Math.hypot(p1.x - p2.x, p1.y - p2.y);
+      return distance < 30 ? { from: p1, to: p2, opacity: 1 - distance / 30 } : null;
+    }).filter(Boolean)
+  );
 
   const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 22, 33, 44];
 
@@ -55,7 +64,7 @@ export function LoadingState({ type = "ai", message }: LoadingStateProps) {
         >
           <Icon className="w-12 h-12 text-primary relative z-10" />
 
-          {/* Cosmic glow effect */}
+          {/* Enhanced cosmic glow effect */}
           <motion.div
             className="absolute inset-0 bg-primary/20 rounded-full blur-xl"
             animate={{
@@ -69,7 +78,7 @@ export function LoadingState({ type = "ai", message }: LoadingStateProps) {
             }}
           />
 
-          {/* Orbiting numbers */}
+          {/* Orbiting numbers with twinkling effect */}
           {numbers.map((num, i) => (
             <motion.div
               key={num}
@@ -90,6 +99,7 @@ export function LoadingState({ type = "ai", message }: LoadingStateProps) {
                 }}
                 animate={{
                   opacity: [0.4, 1, 0.4],
+                  scale: [1, 1.2, 1],
                 }}
                 transition={{
                   duration: 2,
@@ -102,7 +112,7 @@ export function LoadingState({ type = "ai", message }: LoadingStateProps) {
             </motion.div>
           ))}
 
-          {/* Rotating rings */}
+          {/* Rotating rings with shimmer */}
           {[...Array(3)].map((_, i) => (
             <motion.div
               key={i}
@@ -110,6 +120,7 @@ export function LoadingState({ type = "ai", message }: LoadingStateProps) {
               animate={{
                 rotate: [0, 360],
                 scale: [1 + i * 0.1, 1.2 + i * 0.1, 1 + i * 0.1],
+                opacity: [0.3, 0.6, 0.3],
               }}
               transition={{
                 duration: 3 + i,
@@ -120,7 +131,7 @@ export function LoadingState({ type = "ai", message }: LoadingStateProps) {
           ))}
         </motion.div>
 
-        {/* Message with sparkle effect */}
+        {/* Message with shimmer effect */}
         <motion.div
           className="text-center space-y-2"
           animate={{
@@ -140,49 +151,69 @@ export function LoadingState({ type = "ai", message }: LoadingStateProps) {
           </p>
         </motion.div>
 
-        {/* Floating particles */}
-        {particles.map((particle) => (
-          <motion.div
-            key={particle.id}
-            className="absolute w-1 h-1 bg-primary/30 rounded-full"
-            style={{
-              left: `${particle.x}%`,
-              top: `${particle.y}%`,
-            }}
-            animate={{
-              scale: [0, 1, 0],
-              opacity: [0, 1, 0],
-              y: [0, -20, 0],
-            }}
-            transition={{
-              duration: particle.duration,
-              repeat: Infinity,
-              delay: particle.delay,
-              ease: "easeInOut",
-            }}
-          />
-        ))}
-
-        {/* Background constellation effect */}
+        {/* Constellation effect with lines */}
         <div className="absolute inset-0 -z-10">
+          {/* Connecting lines */}
+          {lines.map((line, i) => (
+            <motion.div
+              key={`line-${i}`}
+              className="absolute h-px bg-primary/10"
+              style={{
+                left: `${line.from.x}%`,
+                top: `${line.from.y}%`,
+                width: `${Math.hypot(line.to.x - line.from.x, line.to.y - line.from.y)}%`,
+                transform: `rotate(${Math.atan2(line.to.y - line.from.y, line.to.x - line.from.x)}rad)`,
+                transformOrigin: '0 0',
+                opacity: line.opacity * 0.5,
+              }}
+              animate={{
+                opacity: [0, line.opacity * 0.5, 0],
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                delay: Math.random() * 2,
+              }}
+            />
+          ))}
+
+          {/* Star points with twinkling effect */}
           {particles.map((particle) => (
             <motion.div
-              key={`constellation-${particle.id}`}
-              className="absolute w-px h-px bg-primary/20"
+              key={`star-${particle.id}`}
+              className="absolute w-1 h-1"
               style={{
                 left: `${particle.x}%`,
                 top: `${particle.y}%`,
               }}
-              animate={{
-                opacity: [0, 0.5, 0],
-                scale: [1, 1.5, 1],
-              }}
-              transition={{
-                duration: particle.duration * 1.5,
-                repeat: Infinity,
-                delay: particle.delay,
-              }}
-            />
+            >
+              {/* Core star */}
+              <motion.div
+                className="w-full h-full bg-primary/30 rounded-full"
+                animate={{
+                  scale: [1, 1.5, 1],
+                  opacity: [0.3, 0.7, 0.3],
+                }}
+                transition={{
+                  duration: particle.duration,
+                  repeat: Infinity,
+                  delay: particle.delay,
+                }}
+              />
+              {/* Star glow */}
+              <motion.div
+                className="absolute inset-0 bg-primary/20 rounded-full blur-sm"
+                animate={{
+                  scale: [1.2, 2, 1.2],
+                  opacity: [0.2, 0.5, 0.2],
+                }}
+                transition={{
+                  duration: particle.duration * 1.2,
+                  repeat: Infinity,
+                  delay: particle.delay,
+                }}
+              />
+            </motion.div>
           ))}
         </div>
       </motion.div>
@@ -208,7 +239,7 @@ export function SpinnerOverlay() {
         }}
       >
         <Loader2 className="w-8 h-8 text-primary" />
-        {/* Cosmic trail effect */}
+        {/* Enhanced cosmic trail effect */}
         <motion.div
           className="absolute inset-0 bg-primary/20 rounded-full blur-md"
           animate={{
