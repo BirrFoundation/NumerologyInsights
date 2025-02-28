@@ -51,20 +51,30 @@ export function CosmicEnergyMeter({ result }: Props) {
   };
 
   return (
-    <div className="relative p-6 rounded-xl bg-background/80 backdrop-blur-sm border">
+    <div className="relative p-6 rounded-xl bg-background/80 backdrop-blur-sm border border-primary/20">
       <h3 className="text-xl font-semibold mb-6 text-center">Cosmic Energy Meter</h3>
-      
+
       <div className="relative aspect-square">
-        {/* Circular background with animated particles */}
+        {/* Animated background ring with particles */}
         <div className="absolute inset-0 rounded-full bg-background/50 border-2 border-primary/20">
           <div className="absolute inset-0 animate-spin-slow opacity-20">
-            {Array.from({ length: 12 }).map((_, i) => (
-              <div
+            {Array.from({ length: 24 }).map((_, i) => (
+              <motion.div
                 key={i}
                 className="absolute w-1 h-1 rounded-full bg-primary/50"
+                initial={{ scale: 0.8, opacity: 0.3 }}
+                animate={{ 
+                  scale: [0.8, 1.2, 0.8],
+                  opacity: [0.3, 0.8, 0.3]
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  delay: i * 0.2,
+                }}
                 style={{
-                  top: `${50 + 45 * Math.cos((i * Math.PI * 2) / 12)}%`,
-                  left: `${50 + 45 * Math.sin((i * Math.PI * 2) / 12)}%`,
+                  top: `${50 + 45 * Math.cos((i * Math.PI * 2) / 24)}%`,
+                  left: `${50 + 45 * Math.sin((i * Math.PI * 2) / 24)}%`,
                 }}
               />
             ))}
@@ -76,14 +86,14 @@ export function CosmicEnergyMeter({ result }: Props) {
           {Object.entries(ENERGY_ASPECTS).map(([key, aspect], index) => {
             const rotation = (index * 360) / Object.keys(ENERGY_ASPECTS).length;
             const energyLevel = calculateEnergyLevel(key as keyof typeof ENERGY_ASPECTS);
-            
+
             return (
               <TooltipProvider key={key}>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <motion.div
                       className={cn(
-                        "absolute h-1 origin-left rounded-full cursor-pointer",
+                        "absolute h-1.5 origin-left rounded-full cursor-pointer shadow-lg shadow-primary/10",
                         `bg-gradient-to-r ${aspect.color}`,
                         selectedAspect && selectedAspect !== key && "opacity-30"
                       )}
@@ -91,11 +101,22 @@ export function CosmicEnergyMeter({ result }: Props) {
                         width: "45%",
                         transform: `rotate(${rotation}deg) scaleX(${energyLevel / 100})`,
                       }}
-                      whileHover={{ scale: 1.1 }}
+                      whileHover={{ 
+                        scale: 1.1,
+                        filter: "brightness(1.2)",
+                      }}
+                      animate={{
+                        opacity: selectedAspect === key ? [0.8, 1] : [0.6, 0.8],
+                        boxShadow: selectedAspect === key ? "0 0 20px rgba(var(--primary), 0.3)" : "none",
+                      }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
                       onClick={() => setSelectedAspect(selectedAspect === key ? null : key)}
                     />
                   </TooltipTrigger>
-                  <TooltipContent side="top" className="text-sm">
+                  <TooltipContent 
+                    side="top" 
+                    className="text-sm bg-background/95 backdrop-blur-sm border-primary/20"
+                  >
                     <p className="font-medium">{aspect.label}</p>
                     <p className="text-muted-foreground">{aspect.description}</p>
                     <p className="mt-1 font-mono">Energy Level: {Math.round(energyLevel)}%</p>
@@ -106,15 +127,20 @@ export function CosmicEnergyMeter({ result }: Props) {
           })}
         </div>
 
-        {/* Center Point */}
+        {/* Dynamic Center Point */}
         <motion.div 
-          className="absolute top-1/2 left-1/2 w-4 h-4 -mt-2 -ml-2 rounded-full bg-gradient-to-br from-primary to-primary/50"
+          className="absolute top-1/2 left-1/2 -mt-3 -ml-3 w-6 h-6 rounded-full bg-gradient-to-br from-primary to-primary/50"
           animate={{
-            scale: [1, 1.2, 1],
+            scale: [1, 1.3, 1],
             opacity: [0.5, 1, 0.5],
+            boxShadow: [
+              "0 0 20px rgba(var(--primary), 0.3)",
+              "0 0 40px rgba(var(--primary), 0.5)",
+              "0 0 20px rgba(var(--primary), 0.3)",
+            ],
           }}
           transition={{
-            duration: 2,
+            duration: 3,
             repeat: Infinity,
             ease: "easeInOut",
           }}
@@ -127,7 +153,7 @@ export function CosmicEnergyMeter({ result }: Props) {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="p-4 rounded-lg bg-primary/5"
+            className="p-4 rounded-lg bg-primary/5 border border-primary/10 backdrop-blur-sm"
           >
             <h4 className="font-medium">{ENERGY_ASPECTS[selectedAspect as keyof typeof ENERGY_ASPECTS].label}</h4>
             <p className="text-sm text-muted-foreground mt-1">
