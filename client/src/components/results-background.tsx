@@ -20,25 +20,25 @@ export function ResultsBackground() {
   const [lines, setLines] = useState<Line[]>([]);
 
   useEffect(() => {
-    // Generate stars in a more balanced pattern
-    const newStars = Array.from({ length: 40 }, (_, i) => ({
+    // Generate stars across the entire viewport
+    const newStars = Array.from({ length: 80 }, (_, i) => ({
       id: i,
-      x: 20 + Math.random() * 60, // Keep stars more centered
+      x: Math.random() * 100,
       y: Math.random() * 100,
-      size: Math.random() * 1.2 + 0.3, // Even smaller for more delicate effect
-      delay: i * 0.15
+      size: Math.random() * 1.5 + 0.5,
+      delay: i * 0.1
     }));
 
-    // Create more natural constellation patterns
+    // Create constellation patterns
     const newLines: Line[] = [];
     for (let i = 0; i < newStars.length; i++) {
       for (let j = i + 1; j < newStars.length; j++) {
         const distance = Math.hypot(newStars[i].x - newStars[j].x, newStars[i].y - newStars[j].y);
-        if (distance < 15) { // Shorter connections for more delicate patterns
+        if (distance < 25) {
           newLines.push({
             start: newStars[i],
             end: newStars[j],
-            opacity: (1 - distance / 15) * 0.2 // Even more subtle lines
+            opacity: (1 - distance / 25) * 0.5
           });
         }
       }
@@ -49,8 +49,16 @@ export function ResultsBackground() {
   }, []);
 
   return (
-    <div className="absolute inset-0 w-full h-full pointer-events-none">
+    <div className="fixed inset-0 w-full h-full pointer-events-none">
       <svg className="w-full h-full" viewBox="0 0 100 100">
+        {/* Animated gradient background */}
+        <defs>
+          <radialGradient id="star-glow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="currentColor" stopOpacity="0.2" />
+            <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
+          </radialGradient>
+        </defs>
+
         {/* Constellation lines */}
         {lines.map((line, i) => (
           <motion.line
@@ -60,12 +68,12 @@ export function ResultsBackground() {
             x2={line.end.x}
             y2={line.end.y}
             stroke="currentColor"
-            strokeWidth="0.08" // Thinner lines
-            className="text-primary/5" // More subtle opacity
+            strokeWidth="0.15"
+            className="text-primary/30"
             initial={{ pathLength: 0, opacity: 0 }}
             animate={{ 
               pathLength: 1, 
-              opacity: [line.opacity * 0.2, line.opacity * 0.4, line.opacity * 0.2] 
+              opacity: [line.opacity * 0.5, line.opacity, line.opacity * 0.5] 
             }}
             transition={{
               pathLength: {
@@ -89,11 +97,11 @@ export function ResultsBackground() {
               cx={star.x}
               cy={star.y}
               r={star.size}
-              className="fill-primary/20"
+              className="fill-primary/40"
               initial={{ scale: 0, opacity: 0 }}
               animate={{ 
                 scale: [1, 1.2, 1],
-                opacity: [0.2, 0.4, 0.2] 
+                opacity: [0.4, 0.8, 0.4] 
               }}
               transition={{
                 duration: 2 + Math.random(),
@@ -107,15 +115,36 @@ export function ResultsBackground() {
             <motion.circle
               cx={star.x}
               cy={star.y}
-              r={star.size * 2}
-              className="fill-primary/5"
+              r={star.size * 3}
+              fill="url(#star-glow)"
+              className="text-primary"
               initial={{ scale: 0, opacity: 0 }}
               animate={{ 
                 scale: [1.2, 1.8, 1.2],
-                opacity: [0.05, 0.1, 0.05] 
+                opacity: [0.3, 0.6, 0.3] 
               }}
               transition={{
                 duration: 3 + Math.random(),
+                delay: star.delay,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            />
+
+            {/* Sparkle effect */}
+            <motion.circle
+              cx={star.x}
+              cy={star.y}
+              r={star.size * 2}
+              className="fill-primary/20"
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{
+                scale: [1, 2, 1],
+                opacity: [0, 0.3, 0],
+                rotate: [0, 180]
+              }}
+              transition={{
+                duration: 4 + Math.random() * 2,
                 delay: star.delay,
                 repeat: Infinity,
                 ease: "easeInOut"
