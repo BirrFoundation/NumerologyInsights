@@ -24,6 +24,20 @@ app.use(session({
   }
 }));
 
+// Enable CORS for all origins (adjust as needed for production)
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+    return;
+  }
+  next();
+});
+
 // API Routes - Mount first with explicit JSON handling
 app.use('/api', (req, res, next) => {
   // Force JSON responses for API routes
@@ -41,18 +55,9 @@ app.use('/api', (err: any, req: Request, res: Response, _next: NextFunction) => 
   });
 });
 
-// Enable CORS for all origins (adjust as needed for production)
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-
-  // Handle preflight requests
-  if (req.method === 'OPTIONS') {
-    res.sendStatus(200);
-    return;
-  }
-  next();
+// API catch-all route (before Vite middleware)
+app.all('/api/*', (req, res) => {
+  res.status(404).json({ error: 'API endpoint not found' });
 });
 
 // Regular request logging
