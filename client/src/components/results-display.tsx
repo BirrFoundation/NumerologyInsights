@@ -129,13 +129,13 @@ function NumberDisplay({ number, title }: { number: number; title: string }) {
       "---Base 8 Challenges---",
       ...NUMBER_MEANINGS[8].weaknesses
     ]
-  } : (NUMBER_MEANINGS[number as keyof typeof NUMBER_MEANINGS] || 
-       NUMBER_MEANINGS[(number % 9 || 9) as keyof typeof NUMBER_MEANINGS]);
+  } : (NUMBER_MEANINGS[number as keyof typeof NUMBER_MEANINGS] ||
+    NUMBER_MEANINGS[(number % 9 || 9) as keyof typeof NUMBER_MEANINGS]);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <div 
+        <div
           className="text-center p-4 rounded-lg bg-primary/5 cursor-pointer hover:bg-primary/10 transition-colors"
           onClick={() => setIsOpen(true)}
         >
@@ -213,17 +213,20 @@ export default function ResultsDisplay({ result, onReset }: Props) {
   };
 
   return (
-    <motion.div 
-      initial={{ opacity: 0 }} 
-      animate={{ opacity: 1 }} 
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       className="space-y-6 relative"
     >
-      <ConstellationBackground className="opacity-10" />
+      {/* Position constellation background with negative z-index and no pointer events */}
+      <div className="absolute inset-0 -z-10 pointer-events-none">
+        <ConstellationBackground className="opacity-10" />
+      </div>
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center"
+        className="text-center relative z-10"
       >
         <h2 className="text-2xl font-semibold mb-2">
           Numerology Reading for {result.name}
@@ -237,7 +240,7 @@ export default function ResultsDisplay({ result, onReset }: Props) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="grid grid-cols-1 md:grid-cols-3 gap-4"
+        className="grid grid-cols-1 md:grid-cols-3 gap-4 relative z-10"
       >
         <NumberDisplay number={result.lifePath} title="Life Path Number" />
         <NumberDisplay number={result.destiny} title="Destiny Number" />
@@ -248,7 +251,7 @@ export default function ResultsDisplay({ result, onReset }: Props) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="grid grid-cols-1 md:grid-cols-3 gap-4"
+        className="grid grid-cols-1 md:grid-cols-3 gap-4 relative z-10"
       >
         <NumberDisplay number={result.expression} title="Expression Number" />
         <NumberDisplay number={result.personality} title="Personality Number" />
@@ -319,9 +322,9 @@ export default function ResultsDisplay({ result, onReset }: Props) {
           transition={{ delay: 0.6 }}
         >
           <h3 className="text-xl font-semibold mb-4">Detailed Analysis</h3>
-          <Accordion 
-            type="single" 
-            collapsible 
+          <Accordion
+            type="single"
+            collapsible
             value={activeAccordion}
             onValueChange={setActiveAccordion}
             className="w-full"
@@ -415,9 +418,9 @@ export default function ResultsDisplay({ result, onReset }: Props) {
         <NumerologyJournal result={result} />
       </motion.div>
 
-      <motion.div 
-        initial={{ opacity: 0 }} 
-        animate={{ opacity: 1 }} 
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
         transition={{ delay: 1.0 }}
       >
         <Button variant="outline" onClick={onReset} className="w-full">
