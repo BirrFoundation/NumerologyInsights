@@ -37,52 +37,36 @@ app.use((req, res, next) => {
   next();
 });
 
-// Set content type for API routes
+// API request handling
 app.use('/api', (req, res, next) => {
   res.type('application/json');
   console.log(`[API Request] ${req.method} ${req.path}`);
   next();
 });
 
-// Mount API routes before any other middleware
+// Mount API routes
 app.use('/api', apiRouter);
 
-// API request logging middleware
+// API error handling
+app.use('/api', (err: any, req: Request, res: Response, _next: NextFunction) => {
+  console.error('API Error:', err);
+  res.status(err.status || err.statusCode || 500).json({
+    message: err.message || "Internal Server Error"
+  });
+});
+
+// Regular request logging
 app.use((req, res, next) => {
-  // Only log API requests
-  if (!req.path.startsWith('/api')) {
-    return next();
-  }
-
   const start = Date.now();
-  const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
-
-  const originalResJson = res.json;
-  res.json = function (bodyJson, ...args) {
-    capturedJsonResponse = bodyJson;
-    return originalResJson.apply(res, [bodyJson, ...args]);
-  };
-
   res.on("finish", () => {
     const duration = Date.now() - start;
-    let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-    if (capturedJsonResponse) {
-      logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
-    }
-
-    if (logLine.length > 80) {
-      logLine = logLine.slice(0, 79) + "…";
-    }
-
-    log(logLine);
+    log(`${req.method} ${req.path} ${res.statusCode} in ${duration}ms`);
   });
-
   next();
 });
 
 (async () => {
-  // Create HTTP server first
+  // Create HTTP server
   const server = await registerRoutes(app);
 
   // Handle non-API routes differently in development and production
@@ -92,7 +76,6 @@ app.use((req, res, next) => {
       if (req.path.startsWith('/api')) {
         return next();
       }
-
       // For all other routes, let Vite handle it
       setupVite(app, server)
         .then(() => next())
@@ -109,6 +92,6 @@ app.use((req, res, next) => {
     host: "0.0.0.0",
     reusePort: true,
   }, () => {
-    log(`serving on port ${port}`);
+    log(`Server running on port ${port}`);
   });
 })();
