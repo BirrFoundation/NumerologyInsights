@@ -8,9 +8,11 @@ import {
   Sparkles,
   SendHorizontal,
   Loader2,
-  AlertTriangle
+  AlertTriangle,
+  BookOpen,
+  RefreshCcw
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import type { NumerologyResult } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 
@@ -46,7 +48,7 @@ export default function AICoach({ result }: Props) {
     return response.json();
   };
 
-  const { data: initialCoaching, isLoading: isInitialLoading, error: initialError } = useQuery<CoachingResponse>({
+  const { data: initialCoaching, isLoading: isInitialLoading, error: initialError, refetch } = useQuery<CoachingResponse>({
     queryKey: ["/api/coaching", result],
     queryFn: () => getCoaching(),
     retry: 2
@@ -83,15 +85,50 @@ export default function AICoach({ result }: Props) {
       <Card className="overflow-hidden">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center text-lg font-medium">
-            <AlertTriangle className="mr-2 h-5 w-5 text-destructive" />
-            AI Coach Temporarily Unavailable
+            <AlertTriangle className="mr-2 h-5 w-5 text-amber-500" />
+            AI Coach Taking a Break
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            We're experiencing some technical difficulties with the AI coaching feature.
-            Please try again later or explore your detailed numerology analysis above.
+            Our AI Coach is currently recharging. In the meantime, here are some personalized insights based on your numerology:
           </p>
+
+          <div className="space-y-3">
+            <div className="flex items-start gap-2">
+              <BookOpen className="h-5 w-5 text-primary mt-0.5" />
+              <div>
+                <h4 className="text-sm font-medium">Focus on Your Life Path {result.lifePath}</h4>
+                <p className="text-sm text-muted-foreground">
+                  Your Life Path number indicates a journey of {
+                    result.lifePath === 1 ? "leadership and independence" :
+                    result.lifePath === 2 ? "cooperation and harmony" :
+                    result.lifePath === 3 ? "creative expression" :
+                    result.lifePath === 4 ? "building solid foundations" :
+                    result.lifePath === 5 ? "freedom and change" :
+                    result.lifePath === 6 ? "responsibility and nurturing" :
+                    result.lifePath === 7 ? "spiritual wisdom" :
+                    result.lifePath === 8 ? "material mastery" :
+                    result.lifePath === 9 ? "humanitarian service" :
+                    result.lifePath === 11 ? "spiritual mastery" :
+                    result.lifePath === 22 ? "master building" :
+                    result.lifePath === 33 ? "spiritual teaching" :
+                    "universal wisdom"
+                  }.
+                </p>
+              </div>
+            </div>
+
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="w-full"
+              onClick={() => refetch()}
+            >
+              <RefreshCcw className="mr-2 h-4 w-4" />
+              Check if AI Coach is Available
+            </Button>
+          </div>
         </CardContent>
       </Card>
     );
@@ -143,45 +180,6 @@ export default function AICoach({ result }: Props) {
               </div>
             </motion.div>
           )}
-
-          {/* Additional Coaching Responses */}
-          <AnimatePresence>
-            {coachingMutation.data && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="space-y-4"
-              >
-                <div className="bg-primary/5 p-4 rounded-lg">
-                  <p className="text-sm leading-relaxed">
-                    {coachingMutation.data.advice}
-                  </p>
-                </div>
-
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-primary">
-                    Follow-up Insights:
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {coachingMutation.data.followUpQuestions.map(
-                      (question, index) => (
-                        <Button
-                          key={index}
-                          variant="outline"
-                          size="sm"
-                          className="text-xs"
-                          onClick={() => handleQuestionClick(question)}
-                        >
-                          {question}
-                        </Button>
-                      )
-                    )}
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
 
           {/* Question Input */}
           <div className="flex gap-2 mt-4">
