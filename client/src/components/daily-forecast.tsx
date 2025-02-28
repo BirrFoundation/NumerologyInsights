@@ -21,12 +21,12 @@ export function DailyForecast({ result }: Props) {
     error,
     refetch
   } = useQuery({
-    queryKey: ['/api/daily-forecast', result.id, currentDate.toISOString().split('T')[0]],
+    queryKey: ['/api/daily-forecast', result.userId, currentDate.toISOString().split('T')[0]],
     queryFn: async () => {
       try {
-        const response = await fetch(`/api/daily-forecast?date=${currentDate.toISOString().split('T')[0]}&userId=${result.id}`);
+        const response = await fetch(`/api/daily-forecast?date=${currentDate.toISOString().split('T')[0]}&userId=${result.userId || result.id}`);
         if (!response.ok) {
-          const errorData = await response.json();
+          const errorData = await response.json().catch(() => ({ message: 'Failed to fetch forecast' }));
           throw new Error(errorData.message || 'Failed to fetch forecast');
         }
         return response.json();
@@ -35,7 +35,8 @@ export function DailyForecast({ result }: Props) {
         throw err;
       }
     },
-    retry: 2 // Retry failed requests twice
+    retry: 2, // Retry failed requests twice
+    enabled: !!(result.userId || result.id) // Only run query if we have a userId
   });
 
   if (isLoading) {
