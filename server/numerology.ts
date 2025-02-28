@@ -1,3 +1,10 @@
+type RecommendationType = {
+    strengths: string[];
+    challenges: string[];
+    growthAreas: string[];
+    practices: string[];
+};
+
 function getLocalDate(dateString: string): Date {
   const [year, month, day] = dateString.split('-').map(Number);
   return new Date(year, month - 1, day); // months are 0-based in JavaScript
@@ -126,12 +133,7 @@ function reduceToSingleDigit(num: number): number {
   return currentNum;
 }
 
-function getLifePathRecommendations(lifePath: number): {
-  strengths: string[];
-  challenges: string[];
-  growthAreas: string[];
-  practices: string[];
-} {
+function getLifePathRecommendations(lifePath: number): RecommendationType {
   const recommendations = {
     1: {
       strengths: [
@@ -539,7 +541,7 @@ function getLifePathRecommendations(lifePath: number): {
   }
 
   return recommendations[lifePath as keyof typeof recommendations] ||
-    recommendations[reduceToSingleDigit(lifePath)];
+    recommendations[reduceToSingleDigit(lifePath) as keyof typeof recommendations];
 }
 
 export function calculateNumerology(name: string, birthdate: string) {
