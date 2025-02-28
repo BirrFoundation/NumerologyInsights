@@ -7,9 +7,11 @@ import {
   MessageCircle,
   Sparkles,
   SendHorizontal,
-  Loader2
+  Loader2,
+  AlertTriangle
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import type { NumerologyResult } from "@shared/schema";
 
 interface Props {
@@ -34,17 +36,19 @@ export default function AICoach({ result }: Props) {
         userQuery: query
       })
     });
-    
+
     if (!response.ok) {
-      throw new Error("Failed to get coaching insights");
+      const error = await response.json();
+      throw new Error(error.message || "Failed to get coaching insights");
     }
-    
+
     return response.json();
   };
 
-  const { data: initialCoaching, isLoading: isInitialLoading } = useQuery<CoachingResponse>({
+  const { data: initialCoaching, isLoading: isInitialLoading, error: initialError } = useQuery<CoachingResponse>({
     queryKey: ["/api/coaching", result],
-    queryFn: () => getCoaching()
+    queryFn: () => getCoaching(),
+    retry: 1 // Only retry once for API quota issues
   });
 
   const coachingMutation = useMutation({
@@ -65,6 +69,28 @@ export default function AICoach({ result }: Props) {
     setUserQuery("");
     coachingMutation.mutate(question);
   };
+
+  if (initialError || coachingMutation.error) {
+    return (
+      <Card className="overflow-hidden">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center text-lg font-medium">
+            <Sparkles className="mr-2 h-5 w-5 text-primary" />
+            AI Personal Development Coach
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Alert className="bg-destructive/10 text-destructive">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription>
+              Our AI coach is taking a short break. Please try again later.
+              In the meantime, you can explore your detailed numerology analysis above.
+            </AlertDescription>
+          </Alert>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="overflow-hidden">
