@@ -8,7 +8,12 @@
   }
 
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply font-sans antialiased text-foreground;
+    background: radial-gradient(circle at center, 
+      hsl(var(--background)) 0%,
+      hsl(var(--primary) / 0.1) 50%,
+      hsl(var(--background)) 100%
+    );
   }
 }
 
@@ -29,6 +34,25 @@
 
   .animate-pulse {
     animation: pulse 2s ease-in-out infinite;
+  }
+
+  .animate-sparkle {
+    animation: sparkle 1.5s ease-in-out infinite;
+  }
+
+  .animate-cosmic-spin {
+    animation: cosmicSpin 30s linear infinite;
+  }
+
+  .bg-cosmic {
+    background: linear-gradient(
+      45deg,
+      hsl(var(--primary) / 0.1),
+      hsl(var(--background)),
+      hsl(var(--primary) / 0.05)
+    );
+    background-size: 200% 200%;
+    animation: cosmic 15s ease infinite;
   }
 }
 
@@ -72,5 +96,37 @@
   50% {
     transform: scale(1.5);
     opacity: 1;
+  }
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+@keyframes cosmicSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes cosmic {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 150%;
+  }
+  100% {
+    background-position: 0% 50%;
   }
 }

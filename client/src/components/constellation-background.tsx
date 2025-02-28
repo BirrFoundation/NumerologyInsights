@@ -60,7 +60,7 @@ export default function ConstellationBackground({ className = "" }: Props) {
 
   const generateSVG = (stars: Star[], width: number, height: number) => {
     const connections = generateConnections(stars);
-    
+
     return `
       <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -68,42 +68,61 @@ export default function ConstellationBackground({ className = "" }: Props) {
             <stop offset="0%" stop-color="var(--primary)" stop-opacity="0.4" />
             <stop offset="100%" stop-color="var(--primary)" stop-opacity="0" />
           </radialGradient>
+          <linearGradient id="lineGradient">
+            <stop offset="0%" stop-color="var(--primary)" stop-opacity="0.2" />
+            <stop offset="50%" stop-color="var(--primary)" stop-opacity="0.1" />
+            <stop offset="100%" stop-color="var(--primary)" stop-opacity="0.2" />
+          </linearGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+            <feMerge>
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
         </defs>
-        
+
         ${connections.map(([star1, star2]) => `
-          <line 
-            x1="${star1.x}" 
-            y1="${star1.y}" 
-            x2="${star2.x}" 
-            y2="${star2.y}"
-            stroke="var(--primary)"
+          <path 
+            d="M ${star1.x} ${star1.y} L ${star2.x} ${star2.y}"
+            stroke="url(#lineGradient)"
             stroke-width="0.5"
-            stroke-opacity="0.2"
+            stroke-dasharray="4,4"
+            class="animate-pulse"
           />
         `).join('')}
-        
+
         ${stars.map(star => `
-          <circle 
-            cx="${star.x}" 
-            cy="${star.y}" 
-            r="${star.size}"
-            fill="var(--primary)"
-            opacity="${star.opacity}"
-          >
-            <animate 
-              attributeName="opacity"
-              values="${star.opacity};${star.opacity * 1.5};${star.opacity}"
-              dur="${2 + Math.random() * 2}s"
-              repeatCount="indefinite"
-            />
-          </circle>
-          <circle 
-            cx="${star.x}" 
-            cy="${star.y}" 
-            r="${star.size * 2}"
-            fill="url(#starGradient)"
-            opacity="${star.opacity * 0.5}"
-          />
+          <g class="animate-sparkle" filter="url(#glow)">
+            <circle 
+              cx="${star.x}" 
+              cy="${star.y}" 
+              r="${star.size}"
+              fill="var(--primary)"
+              opacity="${star.opacity}"
+            >
+              <animate 
+                attributeName="opacity"
+                values="${star.opacity};${star.opacity * 1.5};${star.opacity}"
+                dur="${2 + Math.random() * 2}s"
+                repeatCount="indefinite"
+              />
+            </circle>
+            <circle 
+              cx="${star.x}" 
+              cy="${star.y}" 
+              r="${star.size * 3}"
+              fill="url(#starGradient)"
+              opacity="${star.opacity * 0.3}"
+            >
+              <animate 
+                attributeName="r"
+                values="${star.size * 3};${star.size * 4};${star.size * 3}"
+                dur="${3 + Math.random() * 2}s"
+                repeatCount="indefinite"
+              />
+            </circle>
+          </g>
         `).join('')}
       </svg>
     `;
@@ -130,7 +149,7 @@ export default function ConstellationBackground({ className = "" }: Props) {
   return (
     <motion.div
       ref={containerRef}
-      className={`absolute inset-0 overflow-hidden ${className}`}
+      className={`absolute inset-0 overflow-hidden bg-cosmic ${className}`}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 1 }}
