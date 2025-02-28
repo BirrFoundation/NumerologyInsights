@@ -6,6 +6,7 @@ import { LoadingState } from "./loading-states";
 import { Calendar, Sparkles, RefreshCw } from "lucide-react";
 import type { NumerologyResult } from "@shared/schema";
 import { useQuery } from "@tanstack/react-query";
+import { CosmicEnergyBar } from "./cosmic-energy-bar";
 
 interface Props {
   result: NumerologyResult;
@@ -37,8 +38,8 @@ export function DailyForecast({ result }: Props) {
         throw err;
       }
     },
-    retry: 2, // Retry failed requests twice
-    enabled: !!(result.userId || result.id) // Only run query if we have a userId
+    retry: 2, 
+    enabled: !!(result.userId || result.id) 
   });
 
   if (isLoading) {
@@ -92,6 +93,29 @@ export function DailyForecast({ result }: Props) {
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-4 rounded-lg bg-primary/5"
+          >
+            <CosmicEnergyBar 
+              value={forecast.cosmicNumber * 11} 
+              maxValue={99}
+              label="Daily Cosmic Energy"
+              className="mb-4"
+            />
+            <CosmicEnergyBar 
+              value={forecast.personalDayNumber * 11} 
+              maxValue={99}
+              label="Personal Energy"
+              className="mb-4"
+            />
+            <CosmicEnergyBar 
+              value={forecast.universalDayNumber * 11} 
+              maxValue={99}
+              label="Universal Energy"
+            />
+          </motion.div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
