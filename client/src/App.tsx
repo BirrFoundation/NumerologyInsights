@@ -7,10 +7,12 @@ import Home from "@/pages/home";
 
 function Router() {
   return (
-    <Switch>
-      <Route path="/" component={Home} />
-      <Route component={NotFound} />
-    </Switch>
+    <div className="min-h-screen pt-6 md:pt-8 px-4 md:px-6">
+      <Switch>
+        <Route path="/" component={Home} />
+        <Route component={NotFound} />
+      </Switch>
+    </div>
   );
 }
 
