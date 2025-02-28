@@ -20,63 +20,78 @@ function getNameNumber(name: string): number {
 
 function getBirthNumber(date: Date): number {
   // Parse individual components
-  const day = date.getDate().toString();
-  const month = (date.getMonth() + 1).toString();
-  const year = date.getFullYear().toString();
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
 
   console.log(`\nCalculating Life Path number for date: ${month}/${day}/${year}`);
 
-  // Calculate sums without reduction
-  const daySum = day.split('').reduce((sum, digit) => sum + parseInt(digit), 0);
-  const monthSum = month.split('').reduce((sum, digit) => sum + parseInt(digit), 0);
-  const yearSum = year.split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+  // Keep day as is if it's a master number
+  const dayValue = [11, 22, 33].includes(day) ? day : day;
 
-  console.log(`Initial sums - Day: ${daySum}, Month: ${monthSum}, Year: ${yearSum}`);
+  // For month, simply use the value (no master numbers possible in months 1-12)
+  const monthValue = month;
 
-  // First check if day is a master number
-  if ([11, 22, 33].includes(parseInt(day))) {
-    console.log(`Day is master number: ${day}`);
-    return parseInt(day);
+  // For year, add digits together but keep master numbers
+  const yearStr = year.toString();
+  let yearValue = 0;
+  if (yearStr.startsWith('11')) {
+    yearValue = 11 + parseInt(yearStr.slice(2).split('').reduce((sum, digit) => sum + parseInt(digit), '0'));
+  } else if (yearStr.startsWith('22')) {
+    yearValue = 22 + parseInt(yearStr.slice(2).split('').reduce((sum, digit) => sum + parseInt(digit), '0'));
+  } else if (yearStr.startsWith('33')) {
+    yearValue = 33 + parseInt(yearStr.slice(2).split('').reduce((sum, digit) => sum + parseInt(digit), '0'));
+  } else {
+    yearValue = yearStr.split('').reduce((sum, digit) => sum + parseInt(digit), 0);
   }
 
-  // Keep track of the full sum before any reductions
-  const fullSum = daySum + monthSum + yearSum;
-  console.log(`Full sum before reduction: ${fullSum}`);
+  console.log(`Component values - Day: ${dayValue}, Month: ${monthValue}, Year: ${yearValue}`);
 
-  // First check if the full sum is a master number or special number
-  if ([11, 22, 33, 44].includes(fullSum)) {
-    console.log(`Direct match to master number ${fullSum}`);
-    return fullSum;
+  // Calculate the total while preserving master numbers
+  const totalSum = dayValue + monthValue + yearValue;
+  console.log(`Total sum before reduction: ${totalSum}`);
+
+  // Check for master numbers and special numbers in the total
+  if ([11, 22, 33, 44].includes(totalSum)) {
+    console.log(`Found master/special number in total: ${totalSum}`);
+    return totalSum;
   }
 
   // Special check for 44/8
-  if (fullSum === 44) {
+  if (totalSum === 44) {
     console.log('Found special number 44');
     return 44;
   }
 
-  // Now reduce monthSum and yearSum if they're not master numbers
-  let reducedSum = fullSum;
-  while (reducedSum > 9 && ![11, 22, 33].includes(reducedSum)) {
-    reducedSum = reducedSum.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
-    console.log(`Reduced to: ${reducedSum}`);
+  // If not a master number, reduce while checking for master numbers in reduction
+  let currentNum = totalSum;
+  while (currentNum > 9) {
+    // Before reducing, check for master numbers
+    if ([11, 22, 33].includes(currentNum)) {
+      console.log(`Found master number during reduction: ${currentNum}`);
+      return currentNum;
+    }
 
-    // Check for master numbers during reduction
-    if ([11, 22, 33].includes(reducedSum)) {
-      console.log(`Found master number during reduction: ${reducedSum}`);
-      return reducedSum;
+    currentNum = currentNum.toString()
+      .split('')
+      .reduce((sum, digit) => sum + parseInt(digit), 0);
+
+    console.log(`Reduced to: ${currentNum}`);
+
+    // Check again after reduction
+    if ([11, 22, 33].includes(currentNum)) {
+      console.log(`Found master number after reduction: ${currentNum}`);
+      return currentNum;
     }
   }
 
-  // Special check for 44/8
-  // If we get an 8, check if it came from a number that could represent 44
-  if (reducedSum === 8) {
-    console.log('Found 8, checking for hidden 44 master number');
-    return 44;
+  // Special handling for karmic number 8
+  if (currentNum === 8) {
+    console.log('Found karmic number 8 - requires special attention for karmic influences');
   }
 
-  console.log(`Final number: ${reducedSum}`);
-  return reducedSum;
+  console.log(`Final number: ${currentNum}`);
+  return currentNum;
 }
 
 function getBirthDateNumber(date: Date): number {
