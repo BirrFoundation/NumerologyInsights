@@ -31,19 +31,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Calculate Cosmic Number (combines both)
       const cosmicNumber = reduceToSingleDigit(personalDayNumber + universalDayNumber);
 
-      // Get personalized coaching for the day
-      const coaching = await getPersonalizedCoaching({
-        id: parseInt(userId as string),
-        lifePath: personalDayNumber,
-        destiny: universalDayNumber,
-        birthDateNum: cosmicNumber,
-        name: "Daily Forecast",
-        birthdate: date as string,
-        heartDesire: personalDayNumber,
-        expression: universalDayNumber,
-        personality: cosmicNumber,
-        attribute: reduceToSingleDigit(personalDayNumber + cosmicNumber)
-      });
+      let aiGuidance = {
+        advice: "Focus on your inner wisdom and trust your intuition today.",
+        followUpQuestions: [
+          "How can you best utilize today's energies?",
+          "What opportunities are presenting themselves?",
+          "How can you align with today's cosmic vibrations?"
+        ]
+      };
+
+      try {
+        // Try to get AI coaching but use fallback if unavailable
+        aiGuidance = await getPersonalizedCoaching({
+          id: parseInt(userId as string),
+          lifePath: personalDayNumber,
+          destiny: universalDayNumber,
+          birthDateNum: cosmicNumber,
+          name: "Daily Forecast",
+          birthdate: date as string,
+          heartDesire: personalDayNumber,
+          expression: universalDayNumber,
+          personality: cosmicNumber,
+          attribute: reduceToSingleDigit(personalDayNumber + cosmicNumber),
+          userId: parseInt(userId as string),
+          interpretations: {} // Add empty interpretations as required by type
+        });
+      } catch (error) {
+        console.log('AI coaching unavailable, using fallback guidance');
+      }
 
       // Generate forecast response
       const forecast = {
@@ -77,8 +92,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           cosmicNumber === 7 ? "seeking inner wisdom" :
           cosmicNumber === 8 ? "manifesting abundance" :
           "completing cycles"}`,
-        dailyGuidance: coaching.advice,
-        opportunities: coaching.followUpQuestions,
+        dailyGuidance: aiGuidance.advice,
+        opportunities: aiGuidance.followUpQuestions,
         focusAreas: [
           `Harness ${personalDayNumber} energy for personal growth`,
           `Align with universal ${universalDayNumber} vibrations`,

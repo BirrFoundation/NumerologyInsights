@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,11 +24,25 @@ export function DailyForecast({ result }: Props) {
       const response = await fetch(`/api/daily-forecast?date=${currentDate.toISOString().split('T')[0]}&userId=${result.id}`);
       if (!response.ok) throw new Error('Failed to fetch forecast');
       return response.json();
-    }
+    },
+    retry: 2 // Retry failed requests twice
   });
 
   if (isLoading) {
     return <LoadingState type="cosmic" message="Calculating your daily energy forecast..." />;
+  }
+
+  if (!forecast) {
+    return (
+      <Card className="w-full bg-background/80 backdrop-blur-sm border border-primary/20">
+        <CardHeader>
+          <CardTitle className="text-red-500">Unable to load forecast</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Button onClick={() => refetch()}>Try Again</Button>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
@@ -70,10 +84,10 @@ export function DailyForecast({ result }: Props) {
                 Personal Day Number
               </h3>
               <p className="text-3xl font-light text-primary">
-                {forecast?.personalDayNumber}
+                {forecast.personalDayNumber}
               </p>
               <p className="text-sm text-muted-foreground">
-                {forecast?.personalDayMeaning}
+                {forecast.personalDayMeaning}
               </p>
             </motion.div>
 
@@ -88,10 +102,10 @@ export function DailyForecast({ result }: Props) {
                 Universal Day Energy
               </h3>
               <p className="text-3xl font-light text-primary">
-                {forecast?.universalDayNumber}
+                {forecast.universalDayNumber}
               </p>
               <p className="text-sm text-muted-foreground">
-                {forecast?.universalDayMeaning}
+                {forecast.universalDayMeaning}
               </p>
             </motion.div>
 
@@ -106,10 +120,10 @@ export function DailyForecast({ result }: Props) {
                 Cosmic Influence
               </h3>
               <p className="text-3xl font-light text-primary">
-                {forecast?.cosmicNumber}
+                {forecast.cosmicNumber}
               </p>
               <p className="text-sm text-muted-foreground">
-                {forecast?.cosmicInfluence}
+                {forecast.cosmicInfluence}
               </p>
             </motion.div>
           </div>
@@ -122,13 +136,13 @@ export function DailyForecast({ result }: Props) {
           >
             <h3 className="font-medium">Daily Guidance</h3>
             <p className="text-sm leading-relaxed">
-              {forecast?.dailyGuidance}
+              {forecast.dailyGuidance}
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               <div>
                 <h4 className="text-sm font-medium mb-2">Opportunities</h4>
                 <ul className="list-disc pl-4 space-y-1">
-                  {forecast?.opportunities.map((item: string, index: number) => (
+                  {forecast.opportunities.map((item: string, index: number) => (
                     <motion.li
                       key={index}
                       initial={{ opacity: 0, x: -20 }}
@@ -144,7 +158,7 @@ export function DailyForecast({ result }: Props) {
               <div>
                 <h4 className="text-sm font-medium mb-2">Focus Areas</h4>
                 <ul className="list-disc pl-4 space-y-1">
-                  {forecast?.focusAreas.map((item: string, index: number) => (
+                  {forecast.focusAreas.map((item: string, index: number) => (
                     <motion.li
                       key={index}
                       initial={{ opacity: 0, x: -20 }}
