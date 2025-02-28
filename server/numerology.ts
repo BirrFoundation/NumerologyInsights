@@ -142,7 +142,7 @@ function getPersonalityNumber(name: string): number {
   return reduceToSingleDigit(consonants);
 }
 
-function reduceToSingleDigit(num: number): number {
+export function reduceToSingleDigit(num: number): number {
   let currentNum = num;
   console.log(`Reducing number: ${num}`);
 

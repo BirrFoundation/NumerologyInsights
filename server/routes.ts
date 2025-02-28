@@ -12,6 +12,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/daily-forecast', async (req, res) => {
     try {
       const { date, userId } = req.query;
+      console.log('Daily forecast request received:', { date, userId });
 
       if (!date || !userId) {
         return res.status(400).json({ error: 'Date and userId are required' });
@@ -21,6 +22,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const day = currentDate.getDate();
       const month = currentDate.getMonth() + 1;
       const year = currentDate.getFullYear();
+
+      console.log('Calculating numerology for date:', { day, month, year });
 
       // Calculate Personal Day Number
       const personalDayNumber = reduceToSingleDigit(day + month + year);
@@ -103,6 +106,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ]
       };
 
+      console.log('Generated forecast:', forecast);
       res.json(forecast);
     } catch (error) {
       console.error('Error generating daily forecast:', error);
