@@ -119,16 +119,23 @@ function reduceToSingleDigit(num: number): number {
   let currentNum = num;
   console.log(`Reducing number: ${num}`);
 
-  // Check for master numbers, including 44
-  if (currentNum === 11 || currentNum === 22 || currentNum === 33 || currentNum === 44) {
-    console.log(`Preserving master number: ${currentNum}`);
+  // First check for special numbers
+  // Check for 28 (wealth number)
+  if (currentNum === 28) {
+    console.log(`Found wealth number: ${currentNum}`);
+    return 28;
+  }
+
+  // Check for master numbers and special number 44
+  if ([11, 22, 33, 44].includes(currentNum)) {
+    console.log(`Preserving master/special number: ${currentNum}`);
     return currentNum;
   }
 
   while (currentNum > 9) {
-    // Check for master numbers before reducing
-    if (currentNum === 11 || currentNum === 22 || currentNum === 33 || currentNum === 44) {
-      console.log(`Found master number during reduction: ${currentNum}`);
+    // Before reducing, check for master numbers and special number 44
+    if ([11, 22, 33, 44].includes(currentNum)) {
+      console.log(`Found master/special number during reduction: ${currentNum}`);
       return currentNum;
     }
 
@@ -139,11 +146,17 @@ function reduceToSingleDigit(num: number): number {
     console.log(`Reduced to: ${currentNum}`);
 
     // Check again after reduction for master numbers
-    if (currentNum === 11 || currentNum === 22 || currentNum === 33 || currentNum === 44) {
-      console.log(`Found master number after reduction: ${currentNum}`);
+    if ([11, 22, 33, 44].includes(currentNum)) {
+      console.log(`Found master/special number after reduction: ${currentNum}`);
       return currentNum;
     }
   }
+
+  // Special handling for the karmic number 8
+  if (currentNum === 8) {
+    console.log('Found karmic number 8 - requires special attention for karmic influences');
+  }
+
   return currentNum;
 }
 
@@ -157,31 +170,31 @@ function getLifePathRecommendations(lifePath: number): {
     1: {
       strengths: [
         "Natural leadership and pioneering spirit",
-        "Strong creative and innovative thinking",
-        "Exceptional problem-solving abilities",
+        "Strong desire for recognition and achievement",
+        "Exceptional creative abilities",
         "Self-reliant and independent nature",
-        "Determination to achieve goals"
+        "Powerful manifestation abilities"
       ],
       challenges: [
-        "Tendency to be overly dominant or controlling",
-        "Difficulty accepting help from others",
-        "Can appear egotistical or self-centered",
-        "May struggle with patience and cooperation",
-        "Risk of isolation due to independence"
+        "Tendency towards excessive ego",
+        "Need for constant recognition",
+        "Can become overly dominant",
+        "Risk of alienating others",
+        "May struggle with sharing spotlight"
       ],
       growthAreas: [
-        "Developing emotional intelligence and empathy",
-        "Learning to collaborate effectively with others",
-        "Balancing independence with interdependence",
-        "Practicing active listening and openness",
-        "Managing competitive tendencies constructively"
+        "Learning to balance ego with humility",
+        "Developing collaborative skills",
+        "Recognizing others' contributions",
+        "Building emotional intelligence",
+        "Finding inner validation"
       ],
       practices: [
-        "Daily meditation to cultivate patience",
-        "Regular team activities or group projects",
-        "Practice delegating tasks and trusting others",
-        "Journaling to process emotions and thoughts",
-        "Seeking feedback from trusted colleagues and friends"
+        "Regular gratitude exercises",
+        "Team-building activities",
+        "Mindfulness meditation",
+        "Service to others",
+        "Active listening practice"
       ]
     },
     2: {
@@ -366,32 +379,32 @@ function getLifePathRecommendations(lifePath: number): {
     },
     8: {
       strengths: [
-        "Powerful manifestation abilities",
-        "Strong karmic understanding",
-        "Natural leadership and authority",
-        "Excellence in business and finance",
-        "Ability to achieve material success"
+        "Powerful karmic manifestation abilities",
+        "Strong business and financial acumen",
+        "Natural authority and leadership",
+        "Ability to achieve material success",
+        "Understanding of cause and effect"
       ],
       challenges: [
-        "Strong ego tendencies",
-        "Immediate karmic consequences",
+        "Intense karmic consequences for actions",
         "Risk of power misuse",
-        "Can become too materialistic",
-        "Must carefully consider all actions"
+        "Strong materialistic tendencies",
+        "Must carefully consider all decisions",
+        "Karmic debt responsibilities"
       ],
       growthAreas: [
+        "Developing ethical business practices",
         "Understanding karmic responsibility",
-        "Using power wisely and ethically",
         "Balancing material and spiritual",
-        "Developing humility and service",
-        "Learning from karmic lessons"
+        "Learning from past life lessons",
+        "Building positive karma"
       ],
       practices: [
-        "Regular self-reflection",
-        "Ethical business practices",
-        "Charitable giving and service",
-        "Mindful decision-making",
-        "Studying cause and effect"
+        "Daily karmic reflection",
+        "Ethical decision-making",
+        "Regular charitable giving",
+        "Conscious business practices",
+        "Karmic cleansing meditation"
       ]
     },
     9: {
@@ -484,80 +497,97 @@ function getLifePathRecommendations(lifePath: number): {
         "Balancing ambition with self-care"
       ]
     },
-    33: {
+    28: {
       strengths: [
-        "Exceptional creative and artistic abilities",
-        "Natural charm and social charisma",
-        "Strong communication and expression",
-        "Optimistic and joyful nature",
-        "Ability to inspire and uplift others"
+        "Natural abundance attraction",
+        "Financial leadership abilities",
+        "Balance of material and spiritual",
+        "Strong manifestation power",
+        "Business acumen"
       ],
       challenges: [
-        "Tendency to scatter energy across projects",
-        "Difficulty maintaining focus and discipline",
-        "Risk of superficiality in relationships",
-        "May avoid deeper emotional issues",
-        "Challenges with follow-through"
+        "Risk of material attachment",
+        "Balancing wealth with spirituality",
+        "Managing financial responsibility",
+        "Avoiding greed",
+        "Maintaining ethical standards"
       ],
       growthAreas: [
-        "Developing self-discipline and focus",
-        "Learning to channel creativity productively",
-        "Building deeper emotional connections",
-        "Following through on commitments",
-        "Balancing expression with introspection"
+        "Developing wealth consciousness",
+        "Learning spiritual wealth principles",
+        "Building sustainable abundance",
+        "Understanding money energy",
+        "Creating wealth for greater good"
       ],
       practices: [
-        "Daily creative writing or journaling",
-        "Setting and tracking project milestones",
-        "Regular deep conversations with loved ones",
-        "Meditation for focus and concentration",
-        "Time management techniques"
+        "Abundance meditation",
+        "Conscious spending",
+        "Wealth affirmations",
+        "Charitable giving",
+        "Financial planning with spiritual alignment"
+      ]
+    },
+    33: {
+      strengths: [
+        "Highest spiritual teaching abilities",
+        "Universal love and compassion",
+        "Master healing capabilities",
+        "Enlightened creativity",
+        "Service to humanity"
+      ],
+      challenges: [
+        "Intense spiritual responsibility",
+        "Risk of avoiding higher calling",
+        "Challenge of maintaining balance",
+        "Overwhelming sensitivity",
+        "Personal sacrifice tendencies"
+      ],
+      growthAreas: [
+        "Embracing spiritual leadership",
+        "Balancing service with self-care",
+        "Developing teaching abilities",
+        "Understanding universal love",
+        "Mastering spiritual wisdom"
+      ],
+      practices: [
+        "Regular spiritual practice",
+        "Teaching and mentoring",
+        "Healing work",
+        "Compassion meditation",
+        "Service projects"
       ]
     },
     44: {
       strengths: [
-        "Amplified stability and structure",
-        "Bridge between material and spiritual realms",
-        "Exceptional discipline and ambition",
-        "Powerful organizational abilities",
-        "Strong sense of responsibility"
+        "Mastery of material and spiritual realms",
+        "Exceptional organizational abilities",
+        "Powerful manifestation capabilities",
+        "Strong sense of structure",
+        "Business mastery"
       ],
       challenges: [
-        "Tendency to hold grudges",
-        "Difficulty letting go of past hurts",
-        "Prone to blaming others",
-        "Strong need to win at all costs",
-        "Can develop victim mentality"
+        "Intense karmic responsibility",
+        "Risk of power misuse",
+        "Challenge of balancing realms",
+        "Heavy spiritual burden",
+        "Material temptations"
       ],
       growthAreas: [
-        "Learning forgiveness and release",
-        "Developing emotional flexibility",
-        "Taking personal responsibility",
-        "Balancing competition with cooperation",
-        "Building healthier perspectives"
+        "Developing spiritual business practices",
+        "Understanding universal laws",
+        "Balancing power with wisdom",
+        "Creating sustainable structures",
+        "Mastering manifestation"
       ],
       practices: [
-        "Regular forgiveness exercises",
-        "Emotional release techniques",
-        "Mindfulness and present-moment focus",
-        "Collaborative projects",
-        "Gratitude journaling"
+        "Regular grounding exercises",
+        "Spiritual business planning",
+        "Power meditation",
+        "Structure creation",
+        "Manifestation rituals"
       ]
     }
   };
-
-  // Special handling for number 44
-  if (lifePath === 44) {
-    // Combine both 44 and 8 characteristics
-    const base8 = recommendations[8];
-    const master44 = recommendations[44];
-    return {
-      strengths: [...master44.strengths, ...base8.strengths],
-      challenges: [...master44.challenges, ...base8.challenges],
-      growthAreas: [...master44.growthAreas, ...base8.growthAreas],
-      practices: [...master44.practices, ...base8.practices]
-    };
-  }
 
   return recommendations[lifePath as keyof typeof recommendations] ||
     recommendations[reduceToSingleDigit(lifePath)];
@@ -722,20 +752,20 @@ export function calculateNumerology(name: string, birthdate: string) {
     birthDateNum,
     recommendations,
     interpretations: {
-      developmentSummary: `Your Life Path number ${lifePath} indicates a journey of ${
-        lifePath === 11 ? "spiritual mastery and intuitive leadership" :
-          lifePath === 22 ? "practical mastery and material achievement" :
-            lifePath === 33 ? "mastering creative expression and communication" :
-              lifePath === 44 ? "mastering stability, structure, and the bridge between material and spiritual realms" :
-                lifePath === 1 ? "independence and leadership" :
-                  lifePath === 2 ? "cooperation and diplomacy" :
-                    lifePath === 3 ? "creative expression and communication" :
-                      lifePath === 4 ? "stability and organization" :
-                        lifePath === 5 ? "freedom and change" :
-                          lifePath === 6 ? "responsibility and nurturing" :
-                            lifePath === 7 ? "analysis and spiritual understanding" :
-                              lifePath === 8 ? "power and material success" :
-                                "completion and universal love"
+      developmentSummary: `Your Life Path number ${lifePath} indicates ${
+        lifePath === 11 ? "a journey of spiritual mastery and intuitive leadership" :
+          lifePath === 22 ? "a path of practical mastery and material achievement" :
+            lifePath === 33 ? "the highest path of spiritual teaching and healing" :
+              lifePath === 44 ? "a powerful journey of structure and manifestation" :
+                lifePath === 28 ? "a special path of wealth and abundance" :
+                  lifePath === 1 ? "a path of leadership and recognition" :
+                    lifePath === 3 ? "a creative path with potential for rule-breaking" :
+                      lifePath === 4 ? "a path of law-abiding structure" :
+                        lifePath === 5 ? "a path requiring careful management of addictive tendencies" :
+                          lifePath === 7 ? "a path of intellectual mastery and ego management" :
+                            lifePath === 8 ? "a powerful karmic path requiring careful actions" :
+                              lifePath === 9 ? "a path of adaptability and universal reflection" :
+                                "a unique numerological journey"
       }. Focus on developing your strengths while addressing your challenges for optimal growth.`
     }
   };

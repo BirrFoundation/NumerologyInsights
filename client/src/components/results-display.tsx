@@ -36,8 +36,8 @@ interface Props {
 const NUMBER_MEANINGS = {
   1: {
     title: "The Leader",
-    strengths: ["Independent", "Creative", "Original", "Ambitious", "Determined"],
-    weaknesses: ["Stubborn", "Dominant", "Impatient", "Self-centered"]
+    strengths: ["Independent", "Creative", "Original", "Ambitious", "Strong desire for recognition", "Natural leadership abilities"],
+    weaknesses: ["Overly ego-driven", "Needs constant recognition", "Dominant", "Self-centered", "Can be overly demanding"]
   },
   2: {
     title: "The Mediator",
@@ -45,19 +45,20 @@ const NUMBER_MEANINGS = {
     weaknesses: ["Oversensitive", "Indecisive", "Fearful", "Dependent"]
   },
   3: {
-    title: "The Communicator",
+    title: "The Expressor",
     strengths: ["Creative", "Expressive", "Social", "Optimistic", "Inspiring"],
-    weaknesses: ["Scattered", "Superficial", "Critical", "Unfocused"]
+    weaknesses: ["Scattered", "Risk of breaking rules/laws", "Critical", "Unfocused", "Tendency toward rebellion"]
   },
   4: {
     title: "The Builder",
-    strengths: ["Practical", "Organized", "Determined", "Reliable", "Focused"],
+    strengths: ["Law-abiding", "Organized", "Reliable", "Disciplined", "Strong sense of justice"],
     weaknesses: ["Rigid", "Stubborn", "Limited", "Too serious"]
   },
   5: {
-    title: "The Freedom Explorer",
+    title: "The Freedom Seeker",
     strengths: ["Adaptable", "Versatile", "Progressive", "Dynamic", "Adventurous"],
-    weaknesses: ["Restless", "Inconsistent", "Noncommittal", "Scattered"]
+    weaknesses: ["Addictive tendencies", "Restless", "Inconsistent", "Risk of overindulgence"],
+    guidance: "Must be careful with addictive tendencies and maintain balance in pursuits"
   },
   6: {
     title: "The Nurturer",
@@ -66,28 +67,91 @@ const NUMBER_MEANINGS = {
   },
   7: {
     title: "The Seeker",
-    strengths: ["Analytical", "Introspective", "Studious", "Refined", "Wise"],
-    weaknesses: ["Distant", "Critical", "Aloof", "Perfectionist"]
+    strengths: ["Highly intelligent", "Analytical", "Spiritual", "Deep thinker", "Wise"],
+    weaknesses: ["Ego-driven intellectual pride", "Critical", "Aloof", "Perfectionist", "Can be arrogant about intelligence"]
   },
   8: {
-    title: "The Achiever",
-    strengths: ["Powerful", "Successful", "Confident", "Authoritative", "Abundant"],
-    weaknesses: ["Materialistic", "Domineering", "Workaholic", "Unforgiving"]
+    title: "The Achiever (High Karmic Number)",
+    strengths: ["Powerful", "Successful", "Abundant", "Business-minded", "Authority"],
+    weaknesses: ["Strong karmic consequences", "Power can corrupt", "Materialistic", "Unforgiving"],
+    karmic_warning: "Must be extremely careful with actions as karmic return is amplified - both positive and negative actions return with greater force"
   },
   9: {
     title: "The Humanitarian",
-    strengths: ["Compassionate", "Generous", "Romantic", "Creative", "Universal"],
-    weaknesses: ["Aloof", "Scattered", "Unrealistic", "Resentful"]
+    strengths: ["Highly adaptable", "Mirror-like qualities", "Compassionate", "Universal", "Reflects others' energies"],
+    weaknesses: ["Can absorb too much", "Scattered", "Unrealistic", "Resentful"]
   },
   11: {
     title: "The Master Intuitive",
-    strengths: ["Intuitive", "Inspirational", "Idealistic", "Visionary", "Spiritual"],
-    weaknesses: ["Stressed", "Sensitive", "Impractical", "Dreamy"]
+    strengths: [
+      "Highly intuitive and spiritual",
+      "Inspirational leadership",
+      "Visionary abilities",
+      "Enhanced sensitivity",
+      "Channel for higher wisdom",
+      "---Base 2 Qualities---",
+      "Diplomatic abilities",
+      "Cooperative nature",
+      "Sensitivity to others",
+      "Partnership oriented"
+    ],
+    weaknesses: [
+      "Intense nervous energy",
+      "High mental stress",
+      "Can be overwhelmed by intuitive input",
+      "Difficulty grounding",
+      "---Base 2 Challenges---",
+      "Oversensitivity",
+      "Indecision",
+      "Dependency issues"
+    ]
   },
   22: {
     title: "The Master Builder",
-    strengths: ["Practical", "Powerful", "Disciplined", "Ambitious", "Achiever"],
-    weaknesses: ["Overburdened", "Anxious", "Pressured", "Unfulfilled"]
+    strengths: [
+      "Massive manifestation power",
+      "Ability to turn dreams into reality",
+      "Large-scale vision",
+      "Practical mastery",
+      "Material and spiritual balance",
+      "---Base 4 Qualities---",
+      "Strong organizational skills",
+      "Reliability",
+      "Practical approach",
+      "Detail-oriented"
+    ],
+    weaknesses: [
+      "Enormous pressure of potential",
+      "Can be overwhelmed by possibilities",
+      "Risk of not fulfilling potential",
+      "---Base 4 Challenges---",
+      "Rigidity",
+      "Overwork",
+      "Too serious"
+    ]
+  },
+  33: {
+    title: "The Master Teacher",
+    strengths: [
+      "Highest spiritual leadership",
+      "Universal compassion",
+      "Healing abilities",
+      "Enlightened creativity",
+      "Selfless service",
+      "---Base 6 Qualities---",
+      "Nurturing nature",
+      "Responsibility",
+      "Harmonious approach"
+    ],
+    weaknesses: [
+      "Burden of spiritual responsibility",
+      "May avoid their calling",
+      "Risk of martyrdom",
+      "---Base 6 Challenges---",
+      "Self-sacrifice",
+      "Worry",
+      "Interference"
+    ]
   },
   44: {
     title: "The Master Structurer (44/8)",
@@ -113,6 +177,30 @@ const NUMBER_MEANINGS = {
       "Must be careful with power",
       "Can be too focused on material success",
       "Risk of misusing authority"
+    ]
+  },
+  28: {
+    title: "The Wealth Harmonizer (28/1)",
+    strengths: [
+      "Natural wealth attraction",
+      "Leadership in financial matters",
+      "Balance of material and spiritual",
+      "Strong manifestation abilities",
+      "Good fortune in business",
+      "---Base 1 Qualities---",
+      "Independent nature",
+      "Initiative",
+      "Creative force",
+      "Leadership abilities"
+    ],
+    weaknesses: [
+      "Risk of material attachment",
+      "Can be overly focused on wealth",
+      "Challenge maintaining spiritual focus",
+      "---Base 1 Challenges---",
+      "Ego issues",
+      "Need for recognition",
+      "Can be too independent"
     ]
   }
 } as const;
