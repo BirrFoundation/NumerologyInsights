@@ -4,21 +4,32 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
-import { Plus, Minus, MoveHorizontal } from "lucide-react";
+import { Plus, Minus, MoveHorizontal, ZoomIn, Focus, Move } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface Props {
   result: NumerologyResult;
 }
 
+interface ViewportState {
+  zoom: number;
+  pan: { x: number; y: number };
+  selectedRegion: { x: number; y: number; width: number; height: number } | null;
+}
+
 export default function DNAVisualization({ result }: Props) {
   const svgRef = useRef<SVGSVGElement>(null);
-  const [zoom, setZoom] = useState(1);
-  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [viewport, setViewport] = useState<ViewportState>({
+    zoom: 1,
+    pan: { x: 0, y: 0 },
+    selectedRegion: null
+  });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [selectedNode, setSelectedNode] = useState<number | null>(null);
   const [showNodeDialog, setShowNodeDialog] = useState(false);
+  const [detailMode, setDetailMode] = useState<'overview' | 'detail'>('overview');
 
   useEffect(() => {
     if (!svgRef.current) return;
@@ -38,7 +49,7 @@ export default function DNAVisualization({ result }: Props) {
     // Clear previous content
     svgRef.current.innerHTML = '';
 
-    // Create DNA helix patterns
+    // Create DNA helix patterns with numerological influence
     for (let i = 0; i < numStrands; i++) {
       const x = i * strandGap;
       const wave1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -52,7 +63,7 @@ export default function DNAVisualization({ result }: Props) {
       let path1 = `M ${x} 0`;
       let path2 = `M ${x} ${height}`;
 
-      for (let y = 0; y <= height; y += 10) {
+      for (let y = 0; y <= height; y += 5) { // Increased resolution for smoother curves
         const offset = Math.sin(y * frequency + phase) * amplitude;
         path1 += ` L ${x + offset} ${y}`;
         path2 += ` L ${x + offset} ${height - y}`;
@@ -75,15 +86,25 @@ export default function DNAVisualization({ result }: Props) {
       wave2.setAttribute("fill", "none");
       wave2.setAttribute("class", "animate-dna");
 
-      // Add connecting nodes at intersections
+      // Add interactive nodes at intersections
       for (let y = 0; y <= height; y += 50) {
-        const node = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         const nodeGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        const node = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        const glow = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         const offset = Math.sin(y * frequency + phase) * amplitude;
 
+        // Glow effect
+        glow.setAttribute("cx", `${x + offset}`);
+        glow.setAttribute("cy", `${y}`);
+        glow.setAttribute("r", "6");
+        glow.setAttribute("fill", baseColor);
+        glow.setAttribute("opacity", "0.5");
+        glow.setAttribute("filter", "url(#glow)");
+
+        // Main node
         node.setAttribute("cx", `${x + offset}`);
         node.setAttribute("cy", `${y}`);
-        node.setAttribute("r", "3");
+        node.setAttribute("r", "4");
         node.setAttribute("fill", baseColor);
         node.setAttribute("class", "animate-pulse cursor-pointer");
         node.setAttribute("data-node-id", `${i}-${y}`);
@@ -91,8 +112,22 @@ export default function DNAVisualization({ result }: Props) {
         node.addEventListener("click", () => {
           setSelectedNode(i);
           setShowNodeDialog(true);
+          if (containerRef.current) {
+            const rect = containerRef.current.getBoundingClientRect();
+            setViewport(prev => ({
+              ...prev,
+              selectedRegion: {
+                x: x + offset - 50,
+                y: y - 50,
+                width: 100,
+                height: 100
+              }
+            }));
+            setDetailMode('detail');
+          }
         });
 
+        nodeGroup.appendChild(glow);
         nodeGroup.appendChild(node);
         svgRef.current.appendChild(nodeGroup);
       }
@@ -100,19 +135,22 @@ export default function DNAVisualization({ result }: Props) {
       svgRef.current.appendChild(wave1);
       svgRef.current.appendChild(wave2);
     }
-  }, [result, zoom, pan]);
+  }, [result, viewport.zoom, viewport.pan]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
-    setDragStart({ x: e.clientX - pan.x, y: e.clientY - pan.y });
+    setDragStart({ x: e.clientX - viewport.pan.x, y: e.clientY - viewport.pan.y });
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging) return;
-    setPan({
-      x: e.clientX - dragStart.x,
-      y: e.clientY - dragStart.y
-    });
+    setViewport(prev => ({
+      ...prev,
+      pan: {
+        x: e.clientX - dragStart.x,
+        y: e.clientY - dragStart.y
+      }
+    }));
   };
 
   const handleMouseUp = () => {
@@ -120,22 +158,43 @@ export default function DNAVisualization({ result }: Props) {
   };
 
   const handleZoomIn = () => {
-    setZoom(prev => Math.min(prev + 0.2, 3));
+    setViewport(prev => ({
+      ...prev,
+      zoom: Math.min(prev.zoom + 0.2, 3)
+    }));
   };
 
   const handleZoomOut = () => {
-    setZoom(prev => Math.max(prev - 0.2, 0.5));
+    setViewport(prev => ({
+      ...prev,
+      zoom: Math.max(prev.zoom - 0.2, 0.5)
+    }));
   };
 
   const handleZoomChange = (value: number[]) => {
-    setZoom(value[0]);
+    setViewport(prev => ({
+      ...prev,
+      zoom: value[0]
+    }));
   };
 
   const handleReset = () => {
-    setZoom(1);
-    setPan({ x: 0, y: 0 });
+    setViewport({
+      zoom: 1,
+      pan: { x: 0, y: 0 },
+      selectedRegion: null
+    });
     setSelectedNode(null);
     setShowNodeDialog(false);
+    setDetailMode('overview');
+  };
+
+  const getViewBox = () => {
+    if (detailMode === 'detail' && viewport.selectedRegion) {
+      const { x, y, width, height } = viewport.selectedRegion;
+      return `${x} ${y} ${width} ${height}`;
+    }
+    return `${-viewport.pan.x/viewport.zoom} ${-viewport.pan.y/viewport.zoom} ${800/viewport.zoom} ${400/viewport.zoom}`;
   };
 
   return (
@@ -148,7 +207,7 @@ export default function DNAVisualization({ result }: Props) {
               <span className="text-sm text-muted-foreground">Zoom:</span>
               <div className="w-32">
                 <Slider
-                  value={[zoom]}
+                  value={[viewport.zoom]}
                   min={0.5}
                   max={3}
                   step={0.1}
@@ -163,7 +222,7 @@ export default function DNAVisualization({ result }: Props) {
                     variant="outline"
                     size="icon"
                     onClick={handleZoomIn}
-                    disabled={zoom >= 3}
+                    disabled={viewport.zoom >= 3}
                   >
                     <Plus className="h-4 w-4" />
                   </Button>
@@ -177,7 +236,7 @@ export default function DNAVisualization({ result }: Props) {
                     variant="outline"
                     size="icon"
                     onClick={handleZoomOut}
-                    disabled={zoom <= 0.5}
+                    disabled={viewport.zoom <= 0.5}
                   >
                     <Minus className="h-4 w-4" />
                   </Button>
@@ -197,12 +256,32 @@ export default function DNAVisualization({ result }: Props) {
                 </TooltipTrigger>
                 <TooltipContent>Reset View</TooltipContent>
               </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setDetailMode(prev => prev === 'overview' ? 'detail' : 'overview')}
+                  >
+                    {detailMode === 'overview' ? (
+                      <ZoomIn className="h-4 w-4" />
+                    ) : (
+                      <Focus className="h-4 w-4" />
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {detailMode === 'overview' ? 'Enter Detail View' : 'Return to Overview'}
+                </TooltipContent>
+              </Tooltip>
             </div>
           </div>
         </TooltipProvider>
       </div>
 
       <div 
+        ref={containerRef}
         className="relative w-full aspect-[2/1] flex items-center justify-center cursor-move"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
@@ -212,9 +291,42 @@ export default function DNAVisualization({ result }: Props) {
         <svg
           ref={svgRef}
           className="w-full h-full"
-          viewBox={`${-pan.x/zoom} ${-pan.y/zoom} ${800/zoom} ${400/zoom}`}
+          viewBox={getViewBox()}
           preserveAspectRatio="xMidYMid meet"
-        />
+        >
+          <defs>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+              <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+        </svg>
+
+        {/* Interaction guide overlay */}
+        <AnimatePresence>
+          {!selectedNode && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 pointer-events-none flex items-center justify-center"
+            >
+              <div className="bg-background/80 backdrop-blur-sm rounded-lg p-4 shadow-lg">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Move className="h-4 w-4" />
+                  <span>Drag to pan</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2">
+                  <Focus className="h-4 w-4" />
+                  <span>Click nodes to explore</span>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       <Dialog open={showNodeDialog} onOpenChange={setShowNodeDialog}>
