@@ -25,6 +25,8 @@ import NumerologyJournal from "./numerology-journal";
 import ConstellationBackground from "./constellation-background";
 import { CosmicEnergyMeter } from "./cosmic-energy-meter";
 import { NumerologySoundtrack } from "./numerology-soundtrack"; // Added import
+import { KarmaLeaderboard } from "./karma-leaderboard"; // Added import
+
 
 interface Props {
   result: NumerologyResult;
@@ -707,10 +709,18 @@ export default function ResultsDisplay({ result, onReset }: Props) {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
+          transition={{ delay: 0.8 }}
+        >
+          <KarmaLeaderboard />
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           transition={{ delay: 1.0 }}
         >
           <Button variant="outline" onClick={onReset} className="w-full">
-            Calculate Another Reading
+            Start New Reading
           </Button>
         </motion.div>
       </div>
