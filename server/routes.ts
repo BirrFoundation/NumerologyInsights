@@ -8,6 +8,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create HTTP server
   const httpServer = createServer(app);
 
+  // Register API routes before creating server
+  app.use('/api/*', (req, res) => {
+    res.status(404).json({ error: 'API endpoint not found' });
+  });
+
   // Daily Forecast endpoint
   app.get('/api/daily-forecast', async (req, res) => {
     try {
@@ -115,11 +120,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         message: error instanceof Error ? error.message : 'Unknown error'
       });
     }
-  });
-
-  // Register API routes before creating server
-  app.use('/api/*', (req, res) => {
-    res.status(404).json({ error: 'API endpoint not found' });
   });
 
   log("Created HTTP server");
