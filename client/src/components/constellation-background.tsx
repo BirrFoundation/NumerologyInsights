@@ -28,9 +28,9 @@ export default function ConstellationBackground({ className = "" }: Props) {
     starsRef.current = Array.from({ length: numStars }).map(() => ({
       x: Math.random() * rect.width,
       y: Math.random() * rect.height,
-      size: Math.random() * 3 + 2, // Increased base star size
-      opacity: Math.random() * 0.7 + 0.3, // Increased opacity range
-      speed: Math.random() * 0.8 + 0.3 // Increased movement speed
+      size: Math.random() * 4 + 2, // Increased base star size
+      opacity: Math.random() * 0.8 + 0.4, // Increased opacity range
+      speed: Math.random() * 1.2 + 0.4 // Increased movement speed
     }));
 
     // Animation function
@@ -39,7 +39,7 @@ export default function ConstellationBackground({ className = "" }: Props) {
       starsRef.current = starsRef.current.map(star => ({
         ...star,
         y: star.y - star.speed,
-        opacity: star.y < 0 ? Math.random() * 0.7 + 0.3 : star.opacity
+        opacity: star.y < 0 ? Math.random() * 0.8 + 0.4 : star.opacity
       }));
 
       if (container) {
@@ -81,25 +81,31 @@ export default function ConstellationBackground({ className = "" }: Props) {
             </feMerge>
           </filter>
           <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+            <feGaussianBlur in="SourceGraphic" stdDeviation="15" result="blur" />
             <feComposite in="SourceGraphic" in2="blur" operator="over" />
           </filter>
         </defs>
 
         <!-- Background particle effect -->
-        ${Array.from({ length: 20 }).map((_, i) => `
+        ${Array.from({ length: 30 }).map((_, i) => `
           <circle
             cx="${Math.random() * width}"
             cy="${Math.random() * height}"
-            r="${Math.random() * 50 + 20}"
+            r="${Math.random() * 80 + 30}"
             fill="var(--primary)"
-            opacity="0.03"
+            opacity="0.04"
             filter="url(#softGlow)"
           >
             <animate
               attributeName="opacity"
-              values="0.03;0.08;0.03"
-              dur="${5 + Math.random() * 5}s"
+              values="0.04;0.1;0.04"
+              dur="${6 + Math.random() * 6}s"
+              repeatCount="indefinite"
+            />
+            <animate
+              attributeName="r"
+              values="${Math.random() * 80 + 30};${Math.random() * 100 + 50};${Math.random() * 80 + 30}"
+              dur="${8 + Math.random() * 4}s"
               repeatCount="indefinite"
             />
           </circle>
@@ -110,15 +116,21 @@ export default function ConstellationBackground({ className = "" }: Props) {
           <path 
             d="M ${star1.x} ${star1.y} L ${star2.x} ${star2.y}"
             stroke="url(#lineGradient)"
-            stroke-width="1.5"
-            stroke-dasharray="6,6"
+            stroke-width="2"
+            stroke-dasharray="8,8"
             class="animate-pulse"
             filter="url(#glow)"
           >
             <animate
               attributeName="stroke-dashoffset"
-              values="0;12"
+              values="0;16"
               dur="3s"
+              repeatCount="indefinite"
+            />
+            <animate
+              attributeName="stroke-opacity"
+              values="0.4;0.8;0.4"
+              dur="4s"
               repeatCount="indefinite"
             />
           </path>
@@ -137,7 +149,7 @@ export default function ConstellationBackground({ className = "" }: Props) {
             >
               <animate 
                 attributeName="opacity"
-                values="${star.opacity};${star.opacity * 2};${star.opacity}"
+                values="${star.opacity};${star.opacity * 2.5};${star.opacity}"
                 dur="${2 + Math.random() * 2}s"
                 repeatCount="indefinite"
               />
@@ -147,13 +159,13 @@ export default function ConstellationBackground({ className = "" }: Props) {
             <circle 
               cx="${star.x}" 
               cy="${star.y}" 
-              r="${star.size * 4}"
+              r="${star.size * 5}"
               fill="url(#starGradient)"
-              opacity="${star.opacity * 0.5}"
+              opacity="${star.opacity * 0.6}"
             >
               <animate 
                 attributeName="r"
-                values="${star.size * 4};${star.size * 6};${star.size * 4}"
+                values="${star.size * 5};${star.size * 8};${star.size * 5}"
                 dur="${3 + Math.random() * 2}s"
                 repeatCount="indefinite"
               />
@@ -163,21 +175,21 @@ export default function ConstellationBackground({ className = "" }: Props) {
             <circle 
               cx="${star.x}" 
               cy="${star.y}" 
-              r="${star.size * 2}"
+              r="${star.size * 3}"
               fill="none"
               stroke="var(--primary)"
-              stroke-width="0.5"
-              opacity="${star.opacity * 0.3}"
+              stroke-width="0.8"
+              opacity="${star.opacity * 0.4}"
             >
               <animate 
                 attributeName="r"
-                values="${star.size * 2};${star.size * 8};${star.size * 2}"
+                values="${star.size * 3};${star.size * 12};${star.size * 3}"
                 dur="${4 + Math.random() * 3}s"
                 repeatCount="indefinite"
               />
               <animate 
                 attributeName="opacity"
-                values="${star.opacity * 0.3};0;${star.opacity * 0.3}"
+                values="${star.opacity * 0.4};0;${star.opacity * 0.4}"
                 dur="${4 + Math.random() * 3}s"
                 repeatCount="indefinite"
               />
@@ -190,7 +202,7 @@ export default function ConstellationBackground({ className = "" }: Props) {
 
   const generateConnections = (stars: Star[]) => {
     const connections: [Star, Star][] = [];
-    const maxDistance = 150; // Increased connection distance
+    const maxDistance = 180; // Increased connection distance
 
     stars.forEach((star1, i) => {
       stars.slice(i + 1).forEach(star2 => {
@@ -212,7 +224,7 @@ export default function ConstellationBackground({ className = "" }: Props) {
       className={`absolute inset-0 overflow-hidden bg-cosmic ${className}`}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 1.5 }}
+      transition={{ duration: 2 }}
     />
   );
 }

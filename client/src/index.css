@@ -11,9 +11,12 @@
     @apply font-sans antialiased text-foreground;
     background: radial-gradient(circle at center, 
       hsl(var(--background)) 0%,
-      hsl(var(--primary) / 0.1) 50%,
+      hsl(var(--primary) / 0.2) 40%,
+      hsl(var(--primary) / 0.1) 60%,
       hsl(var(--background)) 100%
     );
+    background-size: 200% 200%;
+    animation: bgPulse 15s ease infinite;
   }
 }
 
@@ -47,12 +50,26 @@
   .bg-cosmic {
     background: linear-gradient(
       45deg,
+      hsl(var(--primary) / 0.15),
+      hsl(var(--background)),
       hsl(var(--primary) / 0.1),
       hsl(var(--background)),
-      hsl(var(--primary) / 0.05)
+      hsl(var(--primary) / 0.15)
     );
-    background-size: 200% 200%;
-    animation: cosmic 15s ease infinite;
+    background-size: 400% 400%;
+    animation: cosmic 20s ease infinite;
+  }
+}
+
+@keyframes bgPulse {
+  0% {
+    background-size: 100% 100%;
+  }
+  50% {
+    background-size: 150% 150%;
+  }
+  100% {
+    background-size: 100% 100%;
   }
 }
 
@@ -70,20 +87,20 @@
 
 @keyframes float {
   from {
-    transform: rotate(0deg) translateX(1px) rotate(0deg);
+    transform: rotate(0deg) translateX(2px) rotate(0deg);
   }
   to {
-    transform: rotate(360deg) translateX(1px) rotate(-360deg);
+    transform: rotate(360deg) translateX(2px) rotate(-360deg);
   }
 }
 
 @keyframes dnaFloat {
   0%, 100% {
-    transform: translateX(0);
+    transform: translateX(0) scale(1);
     opacity: 0.8;
   }
   50% {
-    transform: translateX(5px);
+    transform: translateX(8px) scale(1.05);
     opacity: 1;
   }
 }
@@ -94,7 +111,7 @@
     opacity: 0.8;
   }
   50% {
-    transform: scale(1.5);
+    transform: scale(1.8);
     opacity: 1;
   }
 }
@@ -105,17 +122,20 @@
     opacity: 0.5;
   }
   50% {
-    transform: scale(1.2);
+    transform: scale(1.5);
     opacity: 1;
   }
 }
 
 @keyframes cosmicSpin {
   from {
-    transform: rotate(0deg);
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.1);
   }
   to {
-    transform: rotate(360deg);
+    transform: rotate(360deg) scale(1);
   }
 }
 
@@ -123,8 +143,14 @@
   0% {
     background-position: 0% 50%;
   }
+  25% {
+    background-position: 50% 0%;
+  }
   50% {
     background-position: 100% 150%;
+  }
+  75% {
+    background-position: 50% 100%;
   }
   100% {
     background-position: 0% 50%;
