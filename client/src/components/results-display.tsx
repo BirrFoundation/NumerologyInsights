@@ -222,7 +222,7 @@ export default function ResultsDisplay({ result, onReset }: Props) {
       className="space-y-6 relative"
     >
       <div className="absolute inset-0 -z-10 pointer-events-none">
-        <ConstellationBackground className="opacity-10" />
+        <ConstellationBackground className="opacity-10" mode="light" />
       </div>
 
       <motion.div
@@ -645,7 +645,7 @@ export default function ResultsDisplay({ result, onReset }: Props) {
                         <h5 className="font-medium text-primary">Numerological Dynamics</h5>
                         <div className="mt-2 space-y-2">
                           <p className="text-sm">
-                            <span className="font-medium">Primary Challenge:</span> The interaction between your Life Path {result.lifePath} and Expression {result.expression} numbers {result.lifePath === result.expression ? "shows natural alignment" : "creates a dynamic tension"} that influences your personal growth.
+                            <span className="font-medium">Primary Challenge:</span> The interaction between your Life Path {result.lifePath} and Expression {result.expression} numbers {result.lifePath === result.expression ?"shows natural alignment" : "creates a dynamic tension"} that influences your personal growth.
                           </p>
 
                           <p className="text-sm">

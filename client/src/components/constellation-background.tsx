@@ -11,12 +11,13 @@ interface Star {
 
 interface Props {
   className?: string;
+  mode?: 'intense' | 'light';
 }
 
-export default function ConstellationBackground({ className = "" }: Props) {
+export default function ConstellationBackground({ className = "", mode = 'intense' }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const starsRef = useRef<Star[]>([]);
-  const numStars = 50;
+  const numStars = mode === 'intense' ? 50 : 20; // Fewer stars in light mode
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -24,13 +25,13 @@ export default function ConstellationBackground({ className = "" }: Props) {
     const container = containerRef.current;
     const rect = container.getBoundingClientRect();
 
-    // Generate initial stars
+    // Generate initial stars with adjusted parameters based on mode
     starsRef.current = Array.from({ length: numStars }).map(() => ({
       x: Math.random() * rect.width,
       y: Math.random() * rect.height,
-      size: Math.random() * 8 + 4, // Even larger base star size
-      opacity: Math.random() * 0.9 + 0.6, // Higher opacity range
-      speed: Math.random() * 2 + 0.8 // Faster movement speed
+      size: Math.random() * (mode === 'intense' ? 8 : 3) + (mode === 'intense' ? 4 : 2),
+      opacity: Math.random() * (mode === 'intense' ? 0.9 : 0.7) + (mode === 'intense' ? 0.6 : 0.3),
+      speed: Math.random() * (mode === 'intense' ? 2 : 1) + (mode === 'intense' ? 0.8 : 0.3)
     }));
 
     // Animation function
@@ -39,7 +40,7 @@ export default function ConstellationBackground({ className = "" }: Props) {
       starsRef.current = starsRef.current.map(star => ({
         ...star,
         y: star.y - star.speed,
-        opacity: star.y < 0 ? Math.random() * 0.9 + 0.6 : star.opacity
+        opacity: star.y < 0 ? Math.random() * (mode === 'intense' ? 0.9 : 0.7) + (mode === 'intense' ? 0.6 : 0.3) : star.opacity
       }));
 
       if (container) {
@@ -56,30 +57,34 @@ export default function ConstellationBackground({ className = "" }: Props) {
         cancelAnimationFrame(animationFrameId);
       }
     };
-  }, []);
+  }, [mode]);
 
   const generateSVG = (stars: Star[], width: number, height: number) => {
     const connections = generateConnections(stars);
+
+    const glowIntensity = mode === 'intense' ? 6 : 2;
+    const particleCount = mode === 'intense' ? 60 : 15;
 
     return `
       <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <radialGradient id="starGradient">
-            <stop offset="0%" stop-color="var(--primary)" stop-opacity="1" />
+            <stop offset="0%" stop-color="var(--primary)" stop-opacity="${mode === 'intense' ? '1' : '0.7'}" />
             <stop offset="100%" stop-color="var(--primary)" stop-opacity="0" />
           </radialGradient>
           <linearGradient id="lineGradient">
-            <stop offset="0%" stop-color="var(--primary)" stop-opacity="0.8" />
-            <stop offset="50%" stop-color="var(--primary)" stop-opacity="0.4" />
-            <stop offset="100%" stop-color="var(--primary)" stop-opacity="0.8" />
+            <stop offset="0%" stop-color="var(--primary)" stop-opacity="${mode === 'intense' ? '0.8' : '0.4'}" />
+            <stop offset="50%" stop-color="var(--primary)" stop-opacity="${mode === 'intense' ? '0.4' : '0.2'}" />
+            <stop offset="100%" stop-color="var(--primary)" stop-opacity="${mode === 'intense' ? '0.8' : '0.4'}" />
           </linearGradient>
           <filter id="glow">
-            <feGaussianBlur stdDeviation="6" result="coloredBlur"/> 
+            <feGaussianBlur stdDeviation="${glowIntensity}" result="coloredBlur"/> 
             <feMerge>
               <feMergeNode in="coloredBlur"/>
               <feMergeNode in="SourceGraphic"/>
             </feMerge>
           </filter>
+          ${mode === 'intense' ? `
           <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur in="SourceGraphic" stdDeviation="30" result="blur" />
             <feComposite in="SourceGraphic" in2="blur" operator="over" />
@@ -89,10 +94,12 @@ export default function ConstellationBackground({ className = "" }: Props) {
             <feColorMatrix in="blur" type="saturate" values="2" />
             <feComposite in="SourceGraphic" in2="blur" operator="over" />
           </filter>
+          ` : ''}
         </defs>
 
+        ${mode === 'intense' ? `
         <!-- Background particle effect -->
-        ${Array.from({ length: 60 }).map((_, i) => `
+        ${Array.from({ length: particleCount }).map((_, i) => `
           <circle
             cx="${Math.random() * width}"
             cy="${Math.random() * height}"
@@ -115,36 +122,30 @@ export default function ConstellationBackground({ className = "" }: Props) {
             />
           </circle>
         `).join('')}
+        ` : ''}
 
-        <!-- Connection lines with enhanced effects -->
+        <!-- Connection lines -->
         ${connections.map(([star1, star2]) => `
           <path 
             d="M ${star1.x} ${star1.y} L ${star2.x} ${star2.y}"
             stroke="url(#lineGradient)"
-            stroke-width="3"
-            stroke-dasharray="12,12"
+            stroke-width="${mode === 'intense' ? '3' : '1'}"
+            stroke-dasharray="${mode === 'intense' ? '12,12' : '4,4'}"
             class="animate-pulse"
             filter="url(#glow)"
           >
             <animate
               attributeName="stroke-dashoffset"
-              values="0;24"
-              dur="2s"
-              repeatCount="indefinite"
-            />
-            <animate
-              attributeName="stroke-opacity"
-              values="0.8;1;0.8"
-              dur="3s"
+              values="0;${mode === 'intense' ? '24' : '8'}"
+              dur="${mode === 'intense' ? '2s' : '3s'}"
               repeatCount="indefinite"
             />
           </path>
         `).join('')}
 
-        <!-- Enhanced star effects -->
+        <!-- Star effects -->
         ${stars.map(star => `
-          <g class="animate-sparkle" filter="url(#ultraGlow)">
-            <!-- Main star -->
+          <g class="animate-sparkle" filter="url(#${mode === 'intense' ? 'ultraGlow' : 'glow'})">
             <circle 
               cx="${star.x}" 
               cy="${star.y}" 
@@ -154,48 +155,23 @@ export default function ConstellationBackground({ className = "" }: Props) {
             >
               <animate 
                 attributeName="opacity"
-                values="${star.opacity};${star.opacity * 4};${star.opacity}"
-                dur="${1.5 + Math.random() * 1.5}s"
+                values="${star.opacity};${star.opacity * (mode === 'intense' ? 4 : 2)};${star.opacity}"
+                dur="${mode === 'intense' ? '1.5' : '2.5'}s"
                 repeatCount="indefinite"
               />
             </circle>
 
-            <!-- Outer glow -->
             <circle 
               cx="${star.x}" 
               cy="${star.y}" 
-              r="${star.size * 8}"
+              r="${star.size * (mode === 'intense' ? 8 : 4)}"
               fill="url(#starGradient)"
-              opacity="${star.opacity * 0.8}"
+              opacity="${star.opacity * (mode === 'intense' ? 0.8 : 0.4)}"
             >
               <animate 
                 attributeName="r"
-                values="${star.size * 8};${star.size * 12};${star.size * 8}"
-                dur="${2 + Math.random() * 2}s"
-                repeatCount="indefinite"
-              />
-            </circle>
-
-            <!-- Pulse effect -->
-            <circle 
-              cx="${star.x}" 
-              cy="${star.y}" 
-              r="${star.size * 5}"
-              fill="none"
-              stroke="var(--primary)"
-              stroke-width="1.5"
-              opacity="${star.opacity * 0.6}"
-            >
-              <animate 
-                attributeName="r"
-                values="${star.size * 5};${star.size * 20};${star.size * 5}"
-                dur="${3 + Math.random() * 2}s"
-                repeatCount="indefinite"
-              />
-              <animate 
-                attributeName="opacity"
-                values="${star.opacity * 0.6};0;${star.opacity * 0.6}"
-                dur="${3 + Math.random() * 2}s"
+                values="${star.size * (mode === 'intense' ? 8 : 4)};${star.size * (mode === 'intense' ? 12 : 6)};${star.size * (mode === 'intense' ? 8 : 4)}"
+                dur="${mode === 'intense' ? '2' : '3'}s"
                 repeatCount="indefinite"
               />
             </circle>
@@ -207,7 +183,7 @@ export default function ConstellationBackground({ className = "" }: Props) {
 
   const generateConnections = (stars: Star[]) => {
     const connections: [Star, Star][] = [];
-    const maxDistance = 250; // Even larger connection distance
+    const maxDistance = mode === 'intense' ? 250 : 150;
 
     stars.forEach((star1, i) => {
       stars.slice(i + 1).forEach(star2 => {
@@ -229,7 +205,7 @@ export default function ConstellationBackground({ className = "" }: Props) {
       className={`absolute inset-0 overflow-hidden bg-cosmic ${className}`}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 3 }}
+      transition={{ duration: mode === 'intense' ? 3 : 2 }}
     />
   );
 }
