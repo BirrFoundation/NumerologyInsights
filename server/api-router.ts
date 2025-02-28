@@ -9,9 +9,17 @@ import { getPersonalizedCoaching } from "./ai-coach";
 
 const router = Router();
 
+// Ensure all routes in this router return JSON
+router.use((req, res, next) => {
+  res.setHeader('Content-Type', 'application/json');
+  console.log(`[API Router] Handling ${req.method} ${req.path}`);
+  next();
+});
+
 // Health check endpoint
 router.get("/health", (_req, res) => {
-  res.status(200).json({
+  console.log('[API Router] Processing health check request');
+  res.json({
     status: "ok",
     timestamp: new Date().toISOString(),
     env: process.env.NODE_ENV || 'development'

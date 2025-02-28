@@ -37,19 +37,10 @@ app.use((req, res, next) => {
   next();
 });
 
-// Set JSON content type for API and health routes
-app.use(['/api', '/health'], (req, res, next) => {
+// Set JSON content type for API routes
+app.use('/api', (req, res, next) => {
   res.type('application/json');
-  next();
-});
-
-// Regular request logging
-app.use((req, res, next) => {
-  const start = Date.now();
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    log(`${req.method} ${req.path} ${res.statusCode} in ${duration}ms`);
-  });
+  log(`[API Request] ${req.method} ${req.path}`);
   next();
 });
 
@@ -64,6 +55,16 @@ app.use('/api', (err: any, req: Request, res: Response, _next: NextFunction) => 
   });
 });
 
+// Regular request logging
+app.use((req, res, next) => {
+  const start = Date.now();
+  res.on("finish", () => {
+    const duration = Date.now() - start;
+    log(`${req.method} ${req.path} ${res.statusCode} in ${duration}ms`);
+  });
+  next();
+});
+
 (async () => {
   // Create HTTP server
   const server = await registerRoutes(app);
@@ -71,7 +72,6 @@ app.use('/api', (err: any, req: Request, res: Response, _next: NextFunction) => 
   // Handle non-API routes differently in development and production
   if (app.get("env") === "development") {
     try {
-      // Add catch-all route for non-API/health requests
       app.use("*", async (req, res, next) => {
         // Skip API and health routes
         if (req.path === '/health' || req.path.startsWith('/api')) {
@@ -101,6 +101,6 @@ app.use('/api', (err: any, req: Request, res: Response, _next: NextFunction) => 
   }, () => {
     log(`Server running on port ${port}`);
     log(`Environment: ${app.get("env")}`);
-    log(`Health check available at http://localhost:${port}/health`);
+    log(`Health check available at http://localhost:${port}/api/health`);
   });
 })();
