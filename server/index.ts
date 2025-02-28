@@ -4,6 +4,7 @@ import { setupVite, serveStatic, log } from "./vite";
 import session from "express-session";
 import { storage } from "./storage";
 import apiRouter from "./api-router";
+import { createServer } from 'http';
 
 const app = express();
 
@@ -23,6 +24,23 @@ app.use(session({
   }
 }));
 
+// API Routes - Mount first with explicit JSON handling
+app.use('/api', (req, res, next) => {
+  // Force JSON responses for API routes
+  res.setHeader('Content-Type', 'application/json');
+  res.type('json');
+  log(`[API Gateway] Processing ${req.method} ${req.path}`);
+  next();
+}, apiRouter);
+
+// API error handling
+app.use('/api', (err: any, req: Request, res: Response, _next: NextFunction) => {
+  console.error('API Error:', err);
+  res.status(err.status || err.statusCode || 500).json({
+    message: err.message || "Internal Server Error"
+  });
+});
+
 // Enable CORS for all origins (adjust as needed for production)
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
@@ -37,22 +55,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Early middleware to handle API routes
-app.use('/api', (req, res, next) => {
-  log(`[API Gateway] Processing ${req.method} ${req.path}`);
-  // Force JSON content type for all API routes
-  res.setHeader('Content-Type', 'application/json');
-  next();
-}, apiRouter);
-
-// API error handling
-app.use('/api', (err: any, req: Request, res: Response, _next: NextFunction) => {
-  console.error('API Error:', err);
-  res.status(err.status || err.statusCode || 500).json({
-    message: err.message || "Internal Server Error"
-  });
-});
-
 // Regular request logging
 app.use((req, res, next) => {
   const start = Date.now();
@@ -65,20 +67,10 @@ app.use((req, res, next) => {
 
 (async () => {
   try {
-    // Create HTTP server
-    const server = await registerRoutes(app);
+    const server = createServer(app);
 
     // Set up frontend handling after API routes
     if (app.get("env") === "development") {
-      // Add a middleware to skip Vite for API routes
-      app.use((req, res, next) => {
-        if (req.path.startsWith('/api')) {
-          log(`[Vite Bypass] Skipping Vite middleware for API route: ${req.path}`);
-          return next('route');
-        }
-        next();
-      });
-
       await setupVite(app, server);
     } else {
       serveStatic(app);

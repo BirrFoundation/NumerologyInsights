@@ -17,15 +17,24 @@ router.use((req, res, next) => {
   next();
 });
 
-// Health check endpoint
+// Healthz check endpoint - using z instead of k to avoid conflicts
 router.get("/healthz", (_req, res) => {
   log('[API Router] Processing health check request');
-  // Explicitly set response type to JSON
-  res.contentType('application/json');
-  res.json({
-    status: "ok",
-    timestamp: new Date().toISOString(),
-    env: process.env.NODE_ENV || 'development'
+  res.format({
+    'application/json': () => {
+      res.json({
+        status: "ok",
+        timestamp: new Date().toISOString(),
+        env: process.env.NODE_ENV || 'development'
+      });
+    },
+    'default': () => {
+      res.json({
+        status: "ok",
+        timestamp: new Date().toISOString(),
+        env: process.env.NODE_ENV || 'development'
+      });
+    }
   });
 });
 
