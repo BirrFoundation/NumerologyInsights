@@ -11,133 +11,59 @@ interface CoachingResponse {
   followUpQuestions: string[];
 }
 
-function determineQuestionCategory(query: string): string {
-  const lowerQuery = query.toLowerCase();
-  if (lowerQuery.includes('career') || lowerQuery.includes('work') || lowerQuery.includes('job') || lowerQuery.includes('business')) {
-    return 'career';
-  }
-  if (lowerQuery.includes('love') || lowerQuery.includes('relationship') || lowerQuery.includes('partner')) {
-    return 'relationships';
-  }
-  if (lowerQuery.includes('spirit') || lowerQuery.includes('meditation') || lowerQuery.includes('soul')) {
-    return 'spiritual';
-  }
-  if (lowerQuery.includes('money') || lowerQuery.includes('finance') || lowerQuery.includes('wealth')) {
-    return 'financial';
-  }
-  return 'general';
-}
-
 export async function getPersonalizedCoaching(
   result: NumerologyResult,
   userQuery?: string
 ): Promise<CoachingResponse> {
   try {
-    const questionCategory = userQuery ? determineQuestionCategory(userQuery) : 'general';
-
-    const systemPrompt = `You are an expert numerology-based personal development coach.
-    Your role is to provide highly personalized coaching advice based on numerological patterns.
-    The current question category is: ${questionCategory}
-
-    Key rules:
-    1. NEVER give generic advice - every response must directly reference their specific numbers
-    2. For each response, focus on different aspects of their numerology than previous responses
-    3. Include at least one concrete action step they can take immediately
-    4. When addressing questions, explain WHY your advice connects to their specific numbers
-    5. For master number 44, always acknowledge both the 44 and 8 aspects (44/8)
-
-    Special number handling:
-    - When encountering master number 44, treat it as both 44 and 8
-    - For 44: Focus on manifestation, structure, and karmic responsibility
-    - Include the base 8 aspects: material success, power, and authority
-    - Provide balanced guidance incorporating both energies
-
-    Category-specific focus:
-    - Career questions: Analyze Life Path (${result.lifePath}), Expression (${result.expression}), and Destiny (${result.destiny})
-    - Relationship questions: Focus on Heart's Desire (${result.heartDesire}) and Personality (${result.personality})
-    - Spiritual questions: Emphasize Life Path and any master numbers present
-    - Financial questions: Focus on the 8/44 influence if present, or Expression number
-    - General questions: Provide balanced insight from all numbers
-
-    Follow-up questions should:
-    1. Never repeat previous questions
-    2. Target different aspects of their numerology each time
-    3. Help them explore practical applications
-    4. Connect to their current focus area
-    5. Lead to deeper understanding of their numbers
-
-    Format your response as JSON matching this exact structure:
+    const systemPrompt = `You are an expert numerology-based personal development coach. 
+    Use the provided numerology results to give personalized, actionable advice.
+    Focus on practical steps and insights based on the person's numbers.
+    Be encouraging but direct. Keep responses concise and actionable.
+    
+    When providing advice:
+    1. Consider all numerology numbers in the profile
+    2. Focus on strengths while acknowledging challenges
+    3. Provide specific, actionable steps
+    4. Connect advice to the person's numerological DNA pattern
+    5. Consider both spiritual and practical aspects
+    
+    Format response as JSON with:
     {
-      "advice": "string containing detailed coaching advice that directly references their numbers",
-      "followUpQuestions": ["array of 3-4 unique questions that explore different aspects"]
+      "advice": "detailed coaching advice",
+      "followUpQuestions": ["2-3 relevant follow-up questions to deepen the coaching"]
     }`;
 
-    const masterNumbers = [result.lifePath, result.destiny, result.expression, result.heartDesire]
-      .filter(num => [11, 22, 33, 44].includes(num));
-
-    const karmicNumbers = [result.lifePath, result.destiny, result.expression, result.heartDesire]
-      .filter(num => num === 8 || num === 44);
-
-    const userContent = userQuery 
-      ? `Question: "${userQuery}"
-
-        Numerological Context for ${questionCategory} question:
-        ${questionCategory === 'career' 
-          ? `Primary Career Numbers:
-            - Life Path ${result.lifePath}: Your career direction
-            - Expression ${result.expression}: Your natural talents
-            - Destiny ${result.destiny}: Your ultimate career goals`
-          : questionCategory === 'relationships'
-          ? `Key Relationship Numbers:
-            - Heart's Desire ${result.heartDesire}: Your emotional needs
-            - Personality ${result.personality}: How you interact with others`
-          : questionCategory === 'spiritual'
-          ? `Spiritual Indicators:
-            - Life Path ${result.lifePath}: Your spiritual journey
-            - Master Numbers Present: ${masterNumbers.join(', ') || 'None'}`
-          : questionCategory === 'financial'
-          ? `Financial Influences:
-            - Expression ${result.expression}: Your earning potential
-            - Karmic Numbers Present: ${karmicNumbers.join(', ') || 'None'}`
-          : `Core Numbers:
-            - Life Path ${result.lifePath}: Life direction
-            - Expression ${result.expression}: Natural talents
-            - Heart's Desire ${result.heartDesire}: Inner motivation`}
-
-        Additional Context:
-        - Master Numbers: ${masterNumbers.length > 0 ? masterNumbers.join(', ') : 'None'}
-        - Karmic Influence: ${karmicNumbers.length > 0 ? 'Strong' : 'Normal'}
-
-        Based on their numbers and this specific question, provide unique guidance that directly connects to their numerological profile.`
-      : `Provide initial coaching insights focusing on their core numbers:
-        - Life Path ${result.lifePath}: Primary life direction
-        - Expression ${result.expression}: Natural talents
-        - Heart's Desire ${result.heartDesire}: Inner motivation
-
-        Special Influences:
-        ${masterNumbers.length > 0 ? `- Master Numbers: ${masterNumbers.join(', ')}` : ''}
-        ${karmicNumbers.length > 0 ? '- Strong Karmic Influence Present' : ''}
-
-        Focus on immediate practical steps they can take based on these numbers.`;
+    const userPrompt = userQuery 
+      ? `Based on the numerology profile and this specific question: "${userQuery}", provide personalized coaching advice.`
+      : "Based on this numerology profile, provide initial coaching insights and guidance.";
 
     const response = await openai.chat.completions.create({
       model: COACHING_MODEL,
       messages: [
         { role: "system", content: systemPrompt },
-        { role: "user", content: userContent }
+        {
+          role: "user",
+          content: `
+            Numerology Profile:
+            - Life Path: ${result.lifePath}
+            - Destiny: ${result.destiny}
+            - Expression: ${result.expression}
+            - Heart's Desire: ${result.heartDesire}
+            - Personality: ${result.personality}
+            - Birth Date: ${result.birthDateNum}
+            
+            Current Question/Focus: ${userPrompt}
+          `
+        }
       ],
-      response_format: { type: "json_object" },
-      temperature: 0.7,
-      max_tokens: 1000
+      response_format: { type: "json_object" }
     });
 
-    if (!response.choices[0].message.content) {
-      throw new Error("Empty response from OpenAI");
-    }
-
-    return JSON.parse(response.choices[0].message.content) as CoachingResponse;
+    const coaching = JSON.parse(response.choices[0].message.content);
+    return coaching as CoachingResponse;
   } catch (error) {
     console.error('AI Coaching error:', error);
-    throw error; // Throw the error instead of returning default response
+    throw new Error('Failed to generate coaching insights. Please try again.');
   }
 }

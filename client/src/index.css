@@ -8,15 +8,7 @@
   }
 
   body {
-    @apply font-sans antialiased text-foreground;
-    background: radial-gradient(circle at center, 
-      hsl(var(--background)) 0%,
-      hsl(var(--primary) / 0.4) 20%,
-      hsl(var(--primary) / 0.2) 40%,
-      hsl(var(--background)) 100%
-    );
-    background-size: 400% 400%;
-    animation: bgPulse 10s ease infinite;
+    @apply font-sans antialiased bg-background text-foreground;
   }
 }
 
@@ -38,42 +30,6 @@
   .animate-pulse {
     animation: pulse 2s ease-in-out infinite;
   }
-
-  .animate-sparkle {
-    animation: sparkle 1.5s ease-in-out infinite;
-  }
-
-  .animate-cosmic-spin {
-    animation: cosmicSpin 30s linear infinite;
-  }
-
-  .bg-cosmic {
-    background: linear-gradient(
-      45deg,
-      hsl(var(--primary) / 0.4),
-      hsl(var(--background)),
-      hsl(var(--primary) / 0.3),
-      hsl(var(--background)),
-      hsl(var(--primary) / 0.4)
-    );
-    background-size: 400% 400%;
-    animation: cosmic 20s ease infinite;
-  }
-}
-
-@keyframes bgPulse {
-  0% {
-    background-size: 100% 100%;
-    background-position: 0% 0%;
-  }
-  50% {
-    background-size: 300% 300%;
-    background-position: 100% 100%;
-  }
-  100% {
-    background-size: 100% 100%;
-    background-position: 0% 0%;
-  }
 }
 
 @keyframes gradient {
@@ -90,20 +46,20 @@
 
 @keyframes float {
   from {
-    transform: rotate(0deg) translateX(4px) rotate(0deg);
+    transform: rotate(0deg) translateX(1px) rotate(0deg);
   }
   to {
-    transform: rotate(360deg) translateX(4px) rotate(-360deg);
+    transform: rotate(360deg) translateX(1px) rotate(-360deg);
   }
 }
 
 @keyframes dnaFloat {
   0%, 100% {
-    transform: translateX(0) scale(1);
+    transform: translateX(0);
     opacity: 0.8;
   }
   50% {
-    transform: translateX(15px) scale(1.2);
+    transform: translateX(5px);
     opacity: 1;
   }
 }
@@ -114,48 +70,7 @@
     opacity: 0.8;
   }
   50% {
-    transform: scale(2.5);
+    transform: scale(1.5);
     opacity: 1;
-  }
-}
-
-@keyframes sparkle {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 0.5;
-  }
-  50% {
-    transform: scale(2.5);
-    opacity: 1;
-  }
-}
-
-@keyframes cosmicSpin {
-  from {
-    transform: rotate(0deg) scale(1);
-  }
-  50% {
-    transform: rotate(180deg) scale(1.3);
-  }
-  to {
-    transform: rotate(360deg) scale(1);
-  }
-}
-
-@keyframes cosmic {
-  0% {
-    background-position: 0% 50%;
-  }
-  25% {
-    background-position: 50% 0%;
-  }
-  50% {
-    background-position: 100% 150%;
-  }
-  75% {
-    background-position: 50% 100%;
-  }
-  100% {
-    background-position: 0% 50%;
   }
 }
