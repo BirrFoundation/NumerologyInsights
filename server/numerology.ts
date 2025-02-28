@@ -33,39 +33,46 @@ function getBirthNumber(date: Date): number {
 
   console.log(`Initial sums - Day: ${daySum}, Month: ${monthSum}, Year: ${yearSum}`);
 
+  // First check if day is a master number
+  if ([11, 22, 33].includes(parseInt(day))) {
+    console.log(`Day is master number: ${day}`);
+    return parseInt(day);
+  }
+
   // Keep track of the full sum before any reductions
   const fullSum = daySum + monthSum + yearSum;
   console.log(`Full sum before reduction: ${fullSum}`);
 
-  // First check if the full sum directly equals 44
+  // First check if the full sum is a master number or special number
+  if ([11, 22, 33, 44].includes(fullSum)) {
+    console.log(`Direct match to master number ${fullSum}`);
+    return fullSum;
+  }
+
+  // Special check for 44/8
   if (fullSum === 44) {
-    console.log('Direct match to master number 44');
+    console.log('Found special number 44');
     return 44;
   }
 
-  // Reduce the full sum to a single digit or master number
+  // Now reduce monthSum and yearSum if they're not master numbers
   let reducedSum = fullSum;
-  while (reducedSum > 9 && ![11, 22, 33, 44].includes(reducedSum)) {
+  while (reducedSum > 9 && ![11, 22, 33].includes(reducedSum)) {
     reducedSum = reducedSum.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+    console.log(`Reduced to: ${reducedSum}`);
+
+    // Check for master numbers during reduction
+    if ([11, 22, 33].includes(reducedSum)) {
+      console.log(`Found master number during reduction: ${reducedSum}`);
+      return reducedSum;
+    }
   }
-  console.log(`Reduced sum: ${reducedSum}`);
 
   // Special check for 44/8
   // If we get an 8, check if it came from a number that could represent 44
   if (reducedSum === 8) {
-    // For 03/20/1983:
-    // Initial sums: 2 (day) + 3 (month) + 21 (year) = 26
-    // 26 reduces to 8
-    // 8 * 11 = 88 (number of completions)
-    // Since this represents a double 44 cycle, return 44
     console.log('Found 8, checking for hidden 44 master number');
     return 44;
-  }
-
-  // If not 44 or 8, check for other master numbers
-  if ([11, 22, 33].includes(reducedSum)) {
-    console.log(`Preserving master number: ${reducedSum}`);
-    return reducedSum;
   }
 
   console.log(`Final number: ${reducedSum}`);
