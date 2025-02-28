@@ -24,13 +24,22 @@ app.use(session({
   }
 }));
 
-// Enable CORS for all origins (adjust as needed for production)
+// Regular request logging
+app.use((req, res, next) => {
+  const start = Date.now();
+  res.on("finish", () => {
+    const duration = Date.now() - start;
+    log(`${req.method} ${req.path} ${res.statusCode} in ${duration}ms`);
+  });
+  next();
+});
+
+// Enable CORS first
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
 
-  // Handle preflight requests
   if (req.method === 'OPTIONS') {
     res.sendStatus(200);
     return;
@@ -38,10 +47,8 @@ app.use((req, res, next) => {
   next();
 });
 
-// API Routes - Mount first with explicit JSON handling
+// Mount API Router with JSON handling
 app.use('/api', (req, res, next) => {
-  // Force JSON responses for API routes
-  res.setHeader('Content-Type', 'application/json');
   res.type('json');
   log(`[API Gateway] Processing ${req.method} ${req.path}`);
   next();
@@ -55,19 +62,9 @@ app.use('/api', (err: any, req: Request, res: Response, _next: NextFunction) => 
   });
 });
 
-// API catch-all route (before Vite middleware)
-app.all('/api/*', (req, res) => {
+// API catch-all before Vite setup
+app.use('/api/*', (req, res) => {
   res.status(404).json({ error: 'API endpoint not found' });
-});
-
-// Regular request logging
-app.use((req, res, next) => {
-  const start = Date.now();
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    log(`${req.method} ${req.path} ${res.statusCode} in ${duration}ms`);
-  });
-  next();
 });
 
 (async () => {
