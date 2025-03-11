@@ -7,12 +7,17 @@ import {
   MessageCircle,
   Sparkles,
   SendHorizontal,
-  Loader2,
-  AlertTriangle
+  AlertTriangle,
+  Star,
+  Target,
+  Heart,
+  RefreshCcw,
+  BookOpen
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import type { NumerologyResult } from "@shared/schema";
+import { useToast } from "@/hooks/use-toast";
+import { LoadingState } from "./loading-states";
 
 interface Props {
   result: NumerologyResult;
@@ -23,9 +28,43 @@ interface CoachingResponse {
   followUpQuestions: string[];
 }
 
+const getPersonalInsight = (lifePath: number): string => {
+  switch (lifePath) {
+    case 1:
+      return "Focus on leadership and independence. Your natural pioneering spirit is a great asset.";
+    case 2:
+      return "Your diplomatic abilities shine. Work on building harmonious relationships.";
+    case 3:
+      return "Express your creativity freely. Your communication skills can inspire others.";
+    case 4:
+      return "Build strong foundations. Your practical approach helps create lasting structures.";
+    case 5:
+      return "Embrace change and adventure. Your adaptability is your greatest strength.";
+    case 6:
+      return "Nurture and support others. Your caring nature creates harmony.";
+    case 7:
+      return "Seek deeper understanding. Your analytical mind uncovers hidden truths.";
+    case 8:
+      return "Master the material world. Your executive abilities bring success.";
+    case 9:
+      return "Serve humanity. Your compassionate nature helps heal others.";
+    case 11:
+      return "Trust your intuition. Your spiritual awareness guides others.";
+    case 22:
+      return "Build grand visions. Your practical mastery manifests great things.";
+    case 33:
+      return "Teach and heal. Your nurturing spirit uplifts humanity.";
+    case 44:
+      return "Bridge worlds. Your unique ability to connect material and spiritual realms is powerful.";
+    default:
+      return "Focus on your personal growth journey. Each number carries unique wisdom.";
+  }
+};
+
 export default function AICoach({ result }: Props) {
   const [userQuery, setUserQuery] = useState("");
   const [selectedQuestion, setSelectedQuestion] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const getCoaching = async (query?: string) => {
     const response = await fetch("/api/coaching", {
@@ -45,10 +84,10 @@ export default function AICoach({ result }: Props) {
     return response.json();
   };
 
-  const { data: initialCoaching, isLoading: isInitialLoading, error: initialError } = useQuery<CoachingResponse>({
+  const { data: initialCoaching, isLoading: isInitialLoading, error: initialError, refetch } = useQuery<CoachingResponse>({
     queryKey: ["/api/coaching", result],
     queryFn: () => getCoaching(),
-    retry: 1 // Only retry once for API quota issues
+    retry: 2
   });
 
   const coachingMutation = useMutation({
@@ -56,12 +95,20 @@ export default function AICoach({ result }: Props) {
     onSuccess: () => {
       setUserQuery("");
       setSelectedQuestion(null);
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
     }
   });
 
   const handleAskQuestion = () => {
     if (!userQuery && !selectedQuestion) return;
-    coachingMutation.mutate(selectedQuestion || userQuery);
+    const queryToAsk = selectedQuestion || userQuery;
+    coachingMutation.mutate(queryToAsk);
   };
 
   const handleQuestionClick = (question: string) => {
@@ -70,139 +117,160 @@ export default function AICoach({ result }: Props) {
     coachingMutation.mutate(question);
   };
 
+  // When AI service is unavailable, show personalized recommendations
   if (initialError || coachingMutation.error) {
     return (
       <Card className="overflow-hidden">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center text-lg font-medium">
-            <Sparkles className="mr-2 h-5 w-5 text-primary" />
-            AI Personal Development Coach
+            <BookOpen className="mr-2 h-5 w-5 text-primary" />
+            Personal Development Guide
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <Alert className="bg-destructive/10 text-destructive">
-            <AlertTriangle className="h-4 w-4" />
-            <AlertDescription>
-              Our AI coach is taking a short break. Please try again later.
-              In the meantime, you can explore your detailed numerology analysis above.
-            </AlertDescription>
-          </Alert>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            Here are your personalized numerology-based development recommendations:
+          </p>
+
+          <div className="space-y-4">
+            <div className="flex items-start gap-2">
+              <Star className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+              <div>
+                <h4 className="text-sm font-medium">Life Path Guidance</h4>
+                <p className="text-sm text-muted-foreground">
+                  {getPersonalInsight(result.lifePath)}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-2">
+              <Target className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+              <div>
+                <h4 className="text-sm font-medium">Key Development Areas</h4>
+                <ul className="text-sm text-muted-foreground list-disc pl-4 space-y-1 mt-1">
+                  {result.recommendations.growthAreas.slice(0, 3).map((area, index) => (
+                    <li key={index}>{area}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-2">
+              <Heart className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+              <div>
+                <h4 className="text-sm font-medium">Recommended Practices</h4>
+                <ul className="text-sm text-muted-foreground list-disc pl-4 space-y-1 mt-1">
+                  {result.recommendations.practices.slice(0, 3).map((practice, index) => (
+                    <li key={index}>{practice}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full mt-4"
+              onClick={() => refetch()}
+            >
+              <RefreshCcw className="mr-2 h-4 w-4" />
+              Check AI Coach Availability
+            </Button>
+          </div>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden relative">
+      <AnimatePresence>
+        {(isInitialLoading || coachingMutation.isPending) && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-10"
+          >
+            <LoadingState
+              type="ai"
+              message={isInitialLoading ? "Connecting with your AI Coach..." : "Processing your question..."}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center text-lg font-medium">
           <Sparkles className="mr-2 h-5 w-5 text-primary" />
           AI Personal Development Coach
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          {/* Initial Coaching Advice */}
-          {isInitialLoading ? (
-            <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+
+      <CardContent className="space-y-4">
+        {initialCoaching && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-4"
+          >
+            <div className="bg-primary/5 p-4 rounded-lg">
+              <p className="text-sm leading-relaxed">{initialCoaching.advice}</p>
             </div>
-          ) : initialCoaching && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="space-y-4"
-            >
-              <div className="bg-primary/5 p-4 rounded-lg">
-                <p className="text-sm leading-relaxed">{initialCoaching.advice}</p>
+
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-primary">Explore Further:</p>
+              <div className="flex flex-wrap gap-2">
+                {initialCoaching.followUpQuestions.map((question, index) => (
+                  <Button
+                    key={index}
+                    variant="outline"
+                    size="sm"
+                    className={`text-xs ${selectedQuestion === question ? "bg-primary/10" : ""}`}
+                    onClick={() => handleQuestionClick(question)}
+                  >
+                    {question}
+                  </Button>
+                ))}
               </div>
+            </div>
+          </motion.div>
+        )}
 
-              {/* Follow-up Questions */}
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-primary">Explore Further:</p>
-                <div className="flex flex-wrap gap-2">
-                  {initialCoaching.followUpQuestions.map((question: string, index: number) => (
-                    <Button
-                      key={index}
-                      variant="outline"
-                      size="sm"
-                      className={`text-xs ${
-                        selectedQuestion === question ? "bg-primary/10" : ""
-                      }`}
-                      onClick={() => handleQuestionClick(question)}
-                    >
-                      {question}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {/* Additional Coaching Responses */}
-          <AnimatePresence>
-            {coachingMutation.data && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="space-y-4"
-              >
-                <div className="bg-primary/5 p-4 rounded-lg">
-                  <p className="text-sm leading-relaxed">
-                    {coachingMutation.data.advice}
-                  </p>
-                </div>
-
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-primary">
-                    Explore Further:
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {coachingMutation.data.followUpQuestions.map(
-                      (question: string, index: number) => (
-                        <Button
-                          key={index}
-                          variant="outline"
-                          size="sm"
-                          className="text-xs"
-                          onClick={() => handleQuestionClick(question)}
-                        >
-                          {question}
-                        </Button>
-                      )
-                    )}
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Question Input */}
-          <div className="flex gap-2 mt-4">
-            <Input
-              placeholder="Ask a specific question..."
-              value={userQuery}
-              onChange={(e) => {
-                setUserQuery(e.target.value);
-                setSelectedQuestion(null);
-              }}
-              className="flex-1"
-            />
-            <Button
-              onClick={handleAskQuestion}
-              disabled={
-                (!userQuery && !selectedQuestion) ||
-                coachingMutation.isPending
-              }
-            >
+        <div className="flex gap-2 mt-4">
+          <Input
+            placeholder="Ask a specific question about your numerological path..."
+            value={userQuery}
+            onChange={(e) => {
+              setUserQuery(e.target.value);
+              setSelectedQuestion(null);
+            }}
+            className="flex-1"
+          />
+          <Button
+            onClick={handleAskQuestion}
+            disabled={(!userQuery && !selectedQuestion) || coachingMutation.isPending}
+          >
+            <AnimatePresence mode="wait">
               {coachingMutation.isPending ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <motion.div
+                  key="loading"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                >
+                  <SendHorizontal className="h-4 w-4" />
+                </motion.div>
               ) : (
-                <SendHorizontal className="h-4 w-4" />
+                <motion.div
+                  key="send"
+                  initial={{ scale: 0.8 }}
+                  animate={{ scale: 1 }}
+                >
+                  <SendHorizontal className="h-4 w-4" />
+                </motion.div>
               )}
-            </Button>
-          </div>
+            </AnimatePresence>
+          </Button>
         </div>
       </CardContent>
     </Card>

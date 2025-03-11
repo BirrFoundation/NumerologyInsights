@@ -19,7 +19,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-primary/5 relative overflow-hidden">
+    <div className="flex min-h-screen flex-col items-center justify-start bg-gradient-to-b from-background to-primary/5 relative overflow-hidden">
       {/* Animated Number Pattern Background */}
       <div className="absolute inset-0 overflow-hidden opacity-5">
         <div className="absolute inset-0 animate-float-slow">
@@ -41,7 +41,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="relative max-w-4xl mx-auto p-4 md:p-8 pt-32 md:pt-40 space-y-12">
+      <div className="w-full max-w-4xl mx-auto px-4 md:px-8 pt-16 md:pt-24 space-y-12">
         <div className="text-center space-y-10">
           <h1 className="text-4xl md:text-7xl font-extralight bg-gradient-to-r from-primary/90 via-primary/70 to-primary/50 bg-clip-text text-transparent animate-gradient tracking-widest">
             <span className="font-light">DEB</span>

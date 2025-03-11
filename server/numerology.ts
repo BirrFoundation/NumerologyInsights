@@ -1,10 +1,3 @@
-type RecommendationType = {
-    strengths: string[];
-    challenges: string[];
-    growthAreas: string[];
-    practices: string[];
-};
-
 function getLocalDate(dateString: string): Date {
   const [year, month, day] = dateString.split('-').map(Number);
   return new Date(year, month - 1, day); // months are 0-based in JavaScript
@@ -26,36 +19,84 @@ function getNameNumber(name: string): number {
 }
 
 function getBirthNumber(date: Date): number {
-  // Parse individual components while preserving master numbers
-  const day = date.getDate().toString();
-  const month = (date.getMonth() + 1).toString();
-  const year = date.getFullYear().toString();
+  // Parse individual components
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
 
-  console.log(`Date components: Day=${day}, Month=${month}, Year=${year}`);
+  console.log(`\nCalculating Life Path number for date: ${month}/${day}/${year}`);
 
-  // Handle master numbers in day
-  let dayNum = day === "11" || day === "22" ? parseInt(day) :
-    day.split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+  // Convert numbers to strings for manipulation
+  const dayStr = day.toString();
+  const monthStr = month.toString();
+  const yearStr = year.toString();
 
-  // Handle master numbers in month
-  let monthNum = month === "11" ? 11 :
-    month.split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+  // Initialize components array to store numbers
+  let components: number[] = [];
 
-  // Calculate year sum while checking for master numbers in partial sums
-  const yearDigits = year.split('').map(d => parseInt(d));
-  let yearNum = yearDigits.reduce((sum, digit) => {
-    const newSum = sum + digit;
-    return (newSum === 11 || newSum === 22) ? newSum :
-      (newSum > 9 ? newSum.toString().split('').reduce((s, d) => s + parseInt(d), 0) : newSum);
-  }, 0);
+  // Handle day - preserve master numbers
+  if ([11, 22, 33].includes(day)) {
+    components.push(day);
+  } else {
+    components.push(...dayStr.split('').map(Number));
+  }
 
-  console.log(`Processed numbers: Day=${dayNum}, Month=${monthNum}, Year=${yearNum}`);
+  // Handle month - preserve master numbers
+  if ([11, 22, 33].includes(month)) {
+    components.push(month);
+  } else {
+    components.push(...monthStr.split('').map(Number));
+  }
 
-  // Final sum preserving master numbers
-  const total = dayNum + monthNum + yearNum;
-  console.log(`Total before final reduction: ${total}`);
+  // Handle year - add each digit
+  components.push(...yearStr.split('').map(Number));
 
-  return reduceToSingleDigit(total);
+  // Calculate total sum
+  const totalSum = components.reduce((sum, num) => sum + num, 0);
+  console.log(`Components for addition:`, components);
+  console.log(`Total sum before reduction: ${totalSum}`);
+
+  // Check for master numbers and special numbers in the total
+  if ([11, 22, 33, 44].includes(totalSum)) {
+    console.log(`Found master/special number in total: ${totalSum}`);
+    return totalSum;
+  }
+
+  // Special check for 44/8
+  if (totalSum === 44) {
+    console.log('Found special number 44');
+    return 44;
+  }
+
+  // If not a master number, reduce while checking for master numbers in reduction
+  let currentNum = totalSum;
+  while (currentNum > 9) {
+    // Before reducing, check for master numbers
+    if ([11, 22, 33].includes(currentNum)) {
+      console.log(`Found master number during reduction: ${currentNum}`);
+      return currentNum;
+    }
+
+    currentNum = currentNum.toString()
+      .split('')
+      .reduce((sum, digit) => sum + parseInt(digit), 0);
+
+    console.log(`Reduced to: ${currentNum}`);
+
+    // Check again after reduction
+    if ([11, 22, 33].includes(currentNum)) {
+      console.log(`Found master number after reduction: ${currentNum}`);
+      return currentNum;
+    }
+  }
+
+  // Special handling for karmic number 8
+  if (currentNum === 8) {
+    console.log('Found karmic number 8 - requires special attention for karmic influences');
+  }
+
+  console.log(`Final number: ${currentNum}`);
+  return currentNum;
 }
 
 function getBirthDateNumber(date: Date): number {
@@ -101,20 +142,27 @@ function getPersonalityNumber(name: string): number {
   return reduceToSingleDigit(consonants);
 }
 
-function reduceToSingleDigit(num: number): number {
+export function reduceToSingleDigit(num: number): number {
   let currentNum = num;
   console.log(`Reducing number: ${num}`);
 
-  // Check for master numbers, including 44
-  if (currentNum === 11 || currentNum === 22 || currentNum === 33 || currentNum === 44) {
-    console.log(`Preserving master number: ${currentNum}`);
+  // First check for special numbers
+  // Check for 28 (wealth number)
+  if (currentNum === 28) {
+    console.log(`Found wealth number: ${currentNum}`);
+    return 28;
+  }
+
+  // Check for master numbers and special number 44
+  if ([11, 22, 33, 44].includes(currentNum)) {
+    console.log(`Preserving master/special number: ${currentNum}`);
     return currentNum;
   }
 
   while (currentNum > 9) {
-    // Check for master numbers before reducing
-    if (currentNum === 11 || currentNum === 22 || currentNum === 33 || currentNum === 44) {
-      console.log(`Found master number during reduction: ${currentNum}`);
+    // Before reducing, check for master numbers and special number 44
+    if ([11, 22, 33, 44].includes(currentNum)) {
+      console.log(`Found master/special number during reduction: ${currentNum}`);
       return currentNum;
     }
 
@@ -125,44 +173,55 @@ function reduceToSingleDigit(num: number): number {
     console.log(`Reduced to: ${currentNum}`);
 
     // Check again after reduction for master numbers
-    if (currentNum === 11 || currentNum === 22 || currentNum === 33 || currentNum === 44) {
-      console.log(`Found master number after reduction: ${currentNum}`);
+    if ([11, 22, 33, 44].includes(currentNum)) {
+      console.log(`Found master/special number after reduction: ${currentNum}`);
       return currentNum;
     }
   }
+
+  // Special handling for the karmic number 8
+  if (currentNum === 8) {
+    console.log('Found karmic number 8 - requires special attention for karmic influences');
+  }
+
   return currentNum;
 }
 
-function getLifePathRecommendations(lifePath: number): RecommendationType {
+function getLifePathRecommendations(lifePath: number): {
+  strengths: string[];
+  challenges: string[];
+  growthAreas: string[];
+  practices: string[];
+} {
   const recommendations = {
     1: {
       strengths: [
         "Natural leadership and pioneering spirit",
-        "Strong creative and innovative thinking",
-        "Exceptional problem-solving abilities",
+        "Strong desire for recognition and achievement",
+        "Exceptional creative abilities",
         "Self-reliant and independent nature",
-        "Determination to achieve goals"
+        "Powerful manifestation abilities"
       ],
       challenges: [
-        "Tendency to be overly dominant or controlling",
-        "Difficulty accepting help from others",
-        "Can appear egotistical or self-centered",
-        "May struggle with patience and cooperation",
-        "Risk of isolation due to independence"
+        "Tendency towards excessive ego",
+        "Need for constant recognition",
+        "Can become overly dominant",
+        "Risk of alienating others",
+        "May struggle with sharing spotlight"
       ],
       growthAreas: [
-        "Developing emotional intelligence and empathy",
-        "Learning to collaborate effectively with others",
-        "Balancing independence with interdependence",
-        "Practicing active listening and openness",
-        "Managing competitive tendencies constructively"
+        "Learning to balance ego with humility",
+        "Developing collaborative skills",
+        "Recognizing others' contributions",
+        "Building emotional intelligence",
+        "Finding inner validation"
       ],
       practices: [
-        "Daily meditation to cultivate patience",
-        "Regular team activities or group projects",
-        "Practice delegating tasks and trusting others",
-        "Journaling to process emotions and thoughts",
-        "Seeking feedback from trusted colleagues and friends"
+        "Regular gratitude exercises",
+        "Team-building activities",
+        "Mindfulness meditation",
+        "Service to others",
+        "Active listening practice"
       ]
     },
     2: {
@@ -318,61 +377,61 @@ function getLifePathRecommendations(lifePath: number): RecommendationType {
     7: {
       strengths: [
         "Deep analytical and philosophical mind",
+        "Exceptional intellectual capabilities",
+        "Natural truth seeker and researcher",
         "Strong spiritual awareness",
-        "Excellence in research and investigation",
-        "Natural wisdom and understanding",
-        "Ability to see beyond surface reality"
+        "Ability to uncover hidden knowledge"
       ],
       challenges: [
-        "Tendency towards overthinking",
-        "Risk of isolation and withdrawal",
-        "Difficulty with trust and intimacy",
-        "May appear aloof or distant",
-        "Skepticism can become cynicism"
+        "Intellectual ego can be overwhelming",
+        "Risk of isolation in pursuit of truth",
+        "Can become too detached from reality",
+        "May appear distant or unapproachable",
+        "Tendency to overthink everything"
       ],
       growthAreas: [
-        "Developing social connections",
-        "Learning to trust intuition",
-        "Balancing analysis with action",
-        "Building emotional openness",
-        "Connecting wisdom with practical life"
+        "Balancing intellect with emotion",
+        "Sharing wisdom with others",
+        "Developing practical applications",
+        "Building meaningful connections",
+        "Managing intellectual pride"
       ],
       practices: [
-        "Regular social interactions and activities",
-        "Meditation and spiritual practices",
-        "Keeping a wisdom journal",
-        "Sharing knowledge through teaching",
-        "Balancing solitude with connection"
+        "Regular meditation and contemplation",
+        "Teaching or mentoring others",
+        "Writing and documenting insights",
+        "Participating in intellectual discussions",
+        "Grounding spiritual knowledge in daily life"
       ]
     },
     8: {
       strengths: [
-        "Natural business and financial acumen",
-        "Strong leadership and executive ability",
-        "Excellence in organization and management",
-        "Power to manifest abundance",
-        "Ability to achieve large-scale goals"
+        "Powerful karmic manifestation abilities",
+        "Strong business and financial acumen",
+        "Natural authority and leadership",
+        "Ability to achieve material success",
+        "Understanding of cause and effect"
       ],
       challenges: [
-        "Risk of workaholism and burnout",
-        "Tendency to value material over spiritual",
-        "May struggle with personal relationships",
-        "Can be overly controlling",
-        "Difficulty delegating power"
+        "Intense karmic consequences for actions",
+        "Risk of power misuse",
+        "Strong materialistic tendencies",
+        "Must carefully consider all decisions",
+        "Karmic debt responsibilities"
       ],
       growthAreas: [
-        "Developing work-life balance",
-        "Learning to share power and control",
-        "Building spiritual connection",
-        "Cultivating personal relationships",
-        "Managing stress and pressure"
+        "Developing ethical business practices",
+        "Understanding karmic responsibility",
+        "Balancing material and spiritual",
+        "Learning from past life lessons",
+        "Building positive karma"
       ],
       practices: [
-        "Regular meditation and spiritual practice",
-        "Scheduled family and personal time",
-        "Delegation exercises",
-        "Charitable giving and service",
-        "Stress management techniques"
+        "Daily karmic reflection",
+        "Ethical decision-making",
+        "Regular charitable giving",
+        "Conscious business practices",
+        "Karmic cleansing meditation"
       ]
     },
     9: {
@@ -465,83 +524,221 @@ function getLifePathRecommendations(lifePath: number): RecommendationType {
         "Balancing ambition with self-care"
       ]
     },
-    33: {
+    28: {
       strengths: [
-        "Exceptional creative and artistic abilities",
-        "Natural charm and social charisma",
-        "Strong communication and expression",
-        "Optimistic and joyful nature",
-        "Ability to inspire and uplift others"
+        "Natural abundance attraction",
+        "Financial leadership abilities",
+        "Balance of material and spiritual",
+        "Strong manifestation power",
+        "Business acumen"
       ],
       challenges: [
-        "Tendency to scatter energy across projects",
-        "Difficulty maintaining focus and discipline",
-        "Risk of superficiality in relationships",
-        "May avoid deeper emotional issues",
-        "Challenges with follow-through"
+        "Risk of material attachment",
+        "Balancing wealth with spirituality",
+        "Managing financial responsibility",
+        "Avoiding greed",
+        "Maintaining ethical standards"
       ],
       growthAreas: [
-        "Developing self-discipline and focus",
-        "Learning to channel creativity productively",
-        "Building deeper emotional connections",
-        "Following through on commitments",
-        "Balancing expression with introspection"
+        "Developing wealth consciousness",
+        "Learning spiritual wealth principles",
+        "Building sustainable abundance",
+        "Understanding money energy",
+        "Creating wealth for greater good"
       ],
       practices: [
-        "Daily creative writing or journaling",
-        "Setting and tracking project milestones",
-        "Regular deep conversations with loved ones",
-        "Meditation for focus and concentration",
-        "Time management techniques"
+        "Abundance meditation",
+        "Conscious spending",
+        "Wealth affirmations",
+        "Charitable giving",
+        "Financial planning with spiritual alignment"
+      ]
+    },
+    33: {
+      strengths: [
+        "Highest spiritual teaching abilities",
+        "Universal love and compassion",
+        "Master healing capabilities",
+        "Enlightened creativity",
+        "Service to humanity"
+      ],
+      challenges: [
+        "Intense spiritual responsibility",
+        "Risk of avoiding higher calling",
+        "Challenge of maintaining balance",
+        "Overwhelming sensitivity",
+        "Personal sacrifice tendencies"
+      ],
+      growthAreas: [
+        "Embracing spiritual leadership",
+        "Balancing service with self-care",
+        "Developing teaching abilities",
+        "Understanding universal love",
+        "Mastering spiritual wisdom"
+      ],
+      practices: [
+        "Regular spiritual practice",
+        "Teaching and mentoring",
+        "Healing work",
+        "Compassion meditation",
+        "Service projects"
       ]
     },
     44: {
       strengths: [
-        "Amplified stability and structure",
-        "Bridge between material and spiritual realms",
-        "Exceptional discipline and ambition",
-        "Powerful organizational abilities",
-        "Strong sense of responsibility"
+        "Mastery of material and spiritual realms",
+        "Exceptional organizational abilities",
+        "Powerful manifestation capabilities",
+        "Strong sense of structure",
+        "Business mastery"
       ],
       challenges: [
-        "Tendency to hold grudges",
-        "Difficulty letting go of past hurts",
-        "Prone to blaming others",
-        "Strong need to win at all costs",
-        "Can develop victim mentality"
+        "Intense karmic responsibility",
+        "Risk of power misuse",
+        "Challenge of balancing realms",
+        "Heavy spiritual burden",
+        "Material temptations"
       ],
       growthAreas: [
-        "Learning forgiveness and release",
-        "Developing emotional flexibility",
-        "Taking personal responsibility",
-        "Balancing competition with cooperation",
-        "Building healthier perspectives"
+        "Developing spiritual business practices",
+        "Understanding universal laws",
+        "Balancing power with wisdom",
+        "Creating sustainable structures",
+        "Mastering manifestation"
       ],
       practices: [
-        "Regular forgiveness exercises",
-        "Emotional release techniques",
-        "Mindfulness and present-moment focus",
-        "Collaborative projects",
-        "Gratitude journaling"
+        "Regular grounding exercises",
+        "Spiritual business planning",
+        "Power meditation",
+        "Structure creation",
+        "Manifestation rituals"
       ]
     }
   };
 
-  // Special handling for number 44
-  if (lifePath === 44) {
-    // Combine both 44 and 8 characteristics
-    const base8 = recommendations[8];
-    const master44 = recommendations[44];
-    return {
-      strengths: [...master44.strengths, ...base8.strengths],
-      challenges: [...master44.challenges, ...base8.challenges],
-      growthAreas: [...master44.growthAreas, ...base8.growthAreas],
-      practices: [...master44.practices, ...base8.practices]
-    };
+  return recommendations[lifePath as keyof typeof recommendations] ||
+    recommendations[reduceToSingleDigit(lifePath)];
+}
+
+function getPersonalizedRecommendations(result: {
+  lifePath: number;
+  destiny: number;
+  heartDesire: number;
+  expression: number;
+  personality: number;
+  attribute: number;
+  birthDateNum: number;
+  name: string;
+  birthdate: string;
+}): {
+  strengths: string[];
+  challenges: string[];
+  growthAreas: string[];
+  practices: string[];
+} {
+  // Start with life path recommendations
+  const lifepathRecs = getLifePathRecommendations(result.lifePath);
+
+  // Check for master numbers influence
+  const hasMasterNumbers = [result.lifePath, result.destiny, result.expression, result.heartDesire]
+    .some(num => [11, 22, 33, 44].includes(num));
+
+  // Check for karmic influence (8 or 44)
+  const hasKarmicInfluence = [result.lifePath, result.destiny, result.expression, result.heartDesire]
+    .some(num => num === 8 || num === 44);
+
+  // Enhance recommendations based on other numbers
+  const enhancedRecommendations = {
+    strengths: [...lifepathRecs.strengths],
+    challenges: [...lifepathRecs.challenges],
+    growthAreas: [...lifepathRecs.growthAreas],
+    practices: [...lifepathRecs.practices]
+  };
+
+  // Add master number specific recommendations
+  if (hasMasterNumbers) {
+    enhancedRecommendations.growthAreas.push(
+      "Work on balancing higher spiritual understanding with practical application",
+      "Focus on developing your unique gifts while staying grounded",
+      "Learn to manage the intense energy of your master numbers",
+      "Develop your spiritual awareness and intuition"
+    );
+    enhancedRecommendations.practices.push(
+      "Regular meditation to connect with your higher purpose",
+      "Keep a journal of your spiritual insights and their practical applications",
+      "Practice energy protection and grounding exercises",
+      "Set aside quiet time for spiritual development"
+    );
   }
 
-  return recommendations[lifePath as keyof typeof recommendations] ||
-    recommendations[reduceToSingleDigit(lifePath) as keyof typeof recommendations];
+  // Add karmic influence recommendations
+  if (hasKarmicInfluence) {
+    enhancedRecommendations.growthAreas.push(
+      "Understand and work with karmic patterns in your life",
+      "Focus on balanced give and take in relationships",
+      "Develop greater awareness of cause and effect",
+      "Learn to use power and influence wisely"
+    );
+    enhancedRecommendations.practices.push(
+      "Daily reflection on cause and effect in your actions",
+      "Practice conscious decision-making in all areas of life",
+      "Regular karmic cleansing and balancing practices",
+      "Mindful use of personal power and influence"
+    );
+  }
+
+  // Add expression number influence
+  if (result.expression === 1 || result.expression === 8) {
+    enhancedRecommendations.practices.push(
+      "Take on leadership roles that allow you to express your natural abilities",
+      "Practice delegating tasks while maintaining your vision",
+      "Learn to balance authority with collaboration",
+      "Develop your natural leadership style"
+    );
+  } else if (result.expression === 2 || result.expression === 6) {
+    enhancedRecommendations.practices.push(
+      "Engage in collaborative projects that utilize your diplomatic skills",
+      "Practice setting healthy boundaries while helping others",
+      "Develop your natural counseling abilities",
+      "Focus on relationship-building activities"
+    );
+  }
+
+  // Add heart's desire influence
+  if (result.heartDesire === 7 || result.heartDesire === 9) {
+    enhancedRecommendations.growthAreas.push(
+      "Balance intellectual pursuits with emotional connections",
+      "Develop ways to share your wisdom while maintaining personal space",
+      "Learn to bridge the gap between spiritual and material worlds",
+      "Cultivate deeper emotional awareness"
+    );
+  }
+
+  // Add personality number influence
+  if (result.personality === 1 || result.personality === 5) {
+    enhancedRecommendations.practices.push(
+      "Channel your dynamic energy into productive ventures",
+      "Practice patience and persistence in your endeavors",
+      "Learn to adapt your communication style to different audiences"
+    );
+  }
+
+  // Add birth number influence
+  if (result.birthDateNum === 1 || result.birthDateNum === 9) {
+    enhancedRecommendations.growthAreas.push(
+      "Embrace your natural leadership qualities while remaining humble",
+      "Learn to balance independence with interconnectedness",
+      "Develop your humanitarian instincts"
+    );
+  }
+
+  // Remove any duplicate recommendations
+  return {
+    strengths: [...new Set(enhancedRecommendations.strengths)],
+    challenges: [...new Set(enhancedRecommendations.challenges)],
+    growthAreas: [...new Set(enhancedRecommendations.growthAreas)],
+    practices: [...new Set(enhancedRecommendations.practices)]
+  };
 }
 
 export function calculateNumerology(name: string, birthdate: string) {
@@ -559,8 +756,18 @@ export function calculateNumerology(name: string, birthdate: string) {
   const attribute = getAttributeNumber(localDate);
   const birthDateNum = getBirthDateNumber(localDate);
 
-  // Get personalized recommendations based on Life Path number
-  const recommendations = getLifePathRecommendations(lifePath);
+  // Get enhanced personalized recommendations
+  const recommendations = getPersonalizedRecommendations({
+    lifePath,
+    destiny,
+    heartDesire,
+    expression,
+    personality,
+    attribute,
+    birthDateNum,
+    name,
+    birthdate
+  });
 
   const result = {
     lifePath,
@@ -572,20 +779,20 @@ export function calculateNumerology(name: string, birthdate: string) {
     birthDateNum,
     recommendations,
     interpretations: {
-      developmentSummary: `Your Life Path number ${lifePath} indicates a journey of ${
-        lifePath === 11 ? "spiritual mastery and intuitive leadership" :
-          lifePath === 22 ? "practical mastery and material achievement" :
-            lifePath === 33 ? "mastering creative expression and communication" :
-              lifePath === 44 ? "mastering stability, structure, and the bridge between material and spiritual realms" :
-                lifePath === 1 ? "independence and leadership" :
-                  lifePath === 2 ? "cooperation and diplomacy" :
-                    lifePath === 3 ? "creative expression and communication" :
-                      lifePath === 4 ? "stability and organization" :
-                        lifePath === 5 ? "freedom and change" :
-                          lifePath === 6 ? "responsibility and nurturing" :
-                            lifePath === 7 ? "analysis and spiritual understanding" :
-                              lifePath === 8 ? "power and material success" :
-                                "completion and universal love"
+      developmentSummary: `Your Life Path number ${lifePath} indicates ${
+        lifePath === 11 ? "a journey of spiritual mastery and intuitive leadership" :
+          lifePath === 22 ? "a path of practical mastery and material achievement" :
+            lifePath === 33 ? "the highest path of spiritual teaching and healing" :
+              lifePath === 44 ? "a powerful journey of structure and manifestation" :
+                lifePath === 28 ? "a special path of wealth and abundance" :
+                  lifePath === 1 ? "a path of leadership and recognition" :
+                    lifePath === 3 ? "a creative path with potential for rule-breaking" :
+                      lifePath === 4 ? "a path of law-abiding structure" :
+                        lifePath === 5 ? "a path requiring careful management of addictive tendencies" :
+                          lifePath === 7 ? "a path of intellectual mastery and ego management" :
+                            lifePath === 8 ? "a powerful karmic path requiring careful actions" :
+                              lifePath === 9 ? "a path of adaptability and universal reflection" :
+                                "a unique numerological journey"
       }. Focus on developing your strengths while addressing your challenges for optimal growth.`
     }
   };
