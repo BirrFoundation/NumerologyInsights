@@ -27,7 +27,7 @@ import { NumerologySoundtrack } from "./numerology-soundtrack";
 import { KarmaLeaderboard } from "./karma-leaderboard";
 import { DailyForecast } from "./daily-forecast";
 import { ResultsBackground } from "./results-background";
-import Sparkles from "./sparkles";
+//import Sparkles from "./sparkles"; // Removed as per intention
 
 interface Props {
   result: NumerologyResult;
@@ -225,9 +225,9 @@ function NumberDisplay({ number, title }: { number: number; title: string }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const meaning = number === 44 ? NUMBER_MEANINGS[44] :
-                 number === 28 ? NUMBER_MEANINGS[28] :
-                 (NUMBER_MEANINGS[number as keyof typeof NUMBER_MEANINGS] ||
-                 NUMBER_MEANINGS[(number % 9 || 9) as keyof typeof NUMBER_MEANINGS]);
+    number === 28 ? NUMBER_MEANINGS[28] :
+      (NUMBER_MEANINGS[number as keyof typeof NUMBER_MEANINGS] ||
+        NUMBER_MEANINGS[(number % 9 || 9) as keyof typeof NUMBER_MEANINGS]);
 
   const isMasterNumber = [11, 22, 33, 44].includes(number);
   const isWealthNumber = number === 28;
@@ -240,7 +240,7 @@ function NumberDisplay({ number, title }: { number: number; title: string }) {
           className={`text-center p-4 rounded-lg cursor-pointer transition-colors
             ${isMasterNumber ? 'bg-primary/20 hover:bg-primary/30' :
               isWealthNumber ? 'bg-amber-500/20 hover:bg-amber-500/30' :
-              'bg-primary/5 hover:bg-primary/10'}`}
+                'bg-primary/5 hover:bg-primary/10'}`}
           onClick={() => setIsOpen(true)}
         >
           <motion.div
@@ -359,17 +359,23 @@ export default function ResultsDisplay({ result, onReset }: Props) {
     return new Date(year, month - 1, day).toLocaleDateString();
   };
 
+  // Helper function to get comprehensive number interpretation
+  const getCompleteNumberMeaning = (number: number) => {
+    if (number === 11) return "11/2";
+    if (number === 22) return "22/4";
+    if (number === 33) return "33/6";
+    if (number === 44) return "44/8";
+    if (number === 28) return "28/1";
+    return number.toString();
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen w-full relative space-y-8 pb-12"
+      className="min-h-screen w-full relative pb-12"
     >
-      <div className="fixed inset-0 overflow-hidden">
-        <ResultsBackground result={result} />
-      </div>
-
-      <div className="relative z-10 max-w-4xl mx-auto px-4">
+      <div className="relative z-10 container mx-auto px-2 sm:px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -383,23 +389,48 @@ export default function ResultsDisplay({ result, onReset }: Props) {
           </p>
         </motion.div>
 
+        {/* Complete Profile Summary */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
+          transition={{ delay: 0.1 }}
+          className="mb-8 bg-background/80 backdrop-blur-sm border border-primary/20 rounded-xl p-6"
         >
-          <NumberDisplay number={result.lifePath} title="Life Path Number" />
-          <NumberDisplay number={result.destiny} title="Destiny Number" />
-          <NumberDisplay number={result.birthDateNum} title="Birth Date Number" />
+          <h3 className="text-xl font-semibold mb-4">Complete Profile Summary</h3>
+          <div className="space-y-4 text-sm">
+            <p className="leading-relaxed">
+              Your numerological profile reveals a powerful combination of energies. With a Life Path number of {getCompleteNumberMeaning(result.lifePath)}, 
+              you are fundamentally aligned with {NUMBER_MEANINGS[result.lifePath as keyof typeof NUMBER_MEANINGS].title}'s energy
+              {[11, 22, 33, 44].includes(result.lifePath) && " while also embodying the practical aspects of " + NUMBER_MEANINGS[result.lifePath % 11 || 11].title}.
+            </p>
+            <p className="leading-relaxed">
+              Your Destiny number {getCompleteNumberMeaning(result.destiny)} suggests 
+              {result.destiny === result.lifePath ? " a powerful reinforcement of your life's purpose" : " a complementary energy to your life path"}, 
+              while your Expression number {getCompleteNumberMeaning(result.expression)} shapes how you manifest these energies in the world.
+            </p>
+            <p className="leading-relaxed">
+              The Heart's Desire number {getCompleteNumberMeaning(result.heartDesire)} reveals your inner motivations, 
+              working in conjunction with your Personality number {getCompleteNumberMeaning(result.personality)} which influences how others perceive you.
+            </p>
+            {(result.birthDateNum === 28 || [11, 22, 33, 44].includes(result.birthDateNum)) && (
+              <p className="leading-relaxed text-primary">
+                Notably, your Birth Date number {getCompleteNumberMeaning(result.birthDateNum)} is 
+                {result.birthDateNum === 28 ? " a special wealth number" : " a master number"}, 
+                indicating exceptional potential and heightened spiritual awareness in your life journey.
+              </p>
+            )}
+          </div>
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
+          transition={{ delay: 0.2 }}
+          className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-6 mb-8"
         >
+          <NumberDisplay number={result.lifePath} title="Life Path Number" />
+          <NumberDisplay number={result.destiny} title="Destiny Number" />
+          <NumberDisplay number={result.birthDateNum} title="Birth Date Number" />
           <NumberDisplay number={result.expression} title="Expression Number" />
           <NumberDisplay number={result.personality} title="Personality Number" />
           <NumberDisplay number={result.attribute} title="Attribute Number" />
@@ -407,19 +438,25 @@ export default function ResultsDisplay({ result, onReset }: Props) {
 
         <Separator className="my-8" />
 
-        <div className="space-y-12">
+        <div className="space-y-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0"
           >
             <h3 className="text-xl font-semibold mb-6">Numerological DNA Pattern</h3>
-            <div className="min-w-[800px] sm:min-w-0">
-              <DNAVisualization result={result} />
+            <div className="relative overflow-hidden rounded-xl bg-background/80 backdrop-blur-sm border border-primary/20">
+              <div className="p-4 overflow-x-auto">
+                <div className="min-w-[800px] h-[400px]">
+                  <DNAVisualization result={result} />
+                </div>
+              </div>
+              <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-background/80 to-transparent pointer-events-none sm:hidden" />
+              <p className="text-sm text-muted-foreground text-center py-2 sm:hidden">
+                Scroll horizontally to view full pattern
+              </p>
             </div>
           </motion.div>
-
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -465,7 +502,6 @@ export default function ResultsDisplay({ result, onReset }: Props) {
               }
             ]} />
           </motion.div>
-
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -474,7 +510,6 @@ export default function ResultsDisplay({ result, onReset }: Props) {
             <h3 className="text-xl font-semibold mb-6">Daily Cosmic Forecast</h3>
             <DailyForecast result={result} />
           </motion.div>
-
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -513,7 +548,6 @@ export default function ResultsDisplay({ result, onReset }: Props) {
                   </div>
                 </AccordionContent>
               </AccordionItem>
-
               <AccordionItem value="lifepath">
                 <AccordionTrigger>Life Path Number {result.lifePath}</AccordionTrigger>
                 <AccordionContent>
@@ -550,7 +584,6 @@ export default function ResultsDisplay({ result, onReset }: Props) {
                   </div>
                 </AccordionContent>
               </AccordionItem>
-
               <AccordionItem value="destiny">
                 <AccordionTrigger>Destiny Number {result.destiny}</AccordionTrigger>
                 <AccordionContent>
@@ -579,7 +612,6 @@ export default function ResultsDisplay({ result, onReset }: Props) {
                   </div>
                 </AccordionContent>
               </AccordionItem>
-
               <AccordionItem value="heartdesire">
                 <AccordionTrigger>Heart's Desire Number {result.heartDesire}</AccordionTrigger>
                 <AccordionContent>
@@ -608,7 +640,6 @@ export default function ResultsDisplay({ result, onReset }: Props) {
                   </div>
                 </AccordionContent>
               </AccordionItem>
-
               <AccordionItem value="expression">
                 <AccordionTrigger>Expression Number {result.expression}</AccordionTrigger>
                 <AccordionContent>
@@ -637,7 +668,6 @@ export default function ResultsDisplay({ result, onReset }: Props) {
                   </div>
                 </AccordionContent>
               </AccordionItem>
-
               <AccordionItem value="personality">
                 <AccordionTrigger>Personality Number {result.personality}</AccordionTrigger>
                 <AccordionContent>
@@ -666,7 +696,6 @@ export default function ResultsDisplay({ result, onReset }: Props) {
                   </div>
                 </AccordionContent>
               </AccordionItem>
-
               <AccordionItem value="attribute">
                 <AccordionTrigger>Attribute Number {result.attribute}</AccordionTrigger>
                 <AccordionContent>
@@ -695,7 +724,6 @@ export default function ResultsDisplay({ result, onReset }: Props) {
                   </div>
                 </AccordionContent>
               </AccordionItem>
-
               <AccordionItem value="birthdate">
                 <AccordionTrigger>Birth Date Number {result.birthDateNum}</AccordionTrigger>
                 <AccordionContent>
@@ -716,7 +744,7 @@ export default function ResultsDisplay({ result, onReset }: Props) {
                         <h4 className="font-medium mb-2">Natural Challenges</h4>
                         <ul className="list-disc pl-4 space-y-1">
                           {NUMBER_MEANINGS[result.birthDateNum as keyof typeof NUMBER_MEANINGS].weaknesses.map((weakness, index) => (
-                            <li key={index} className="textsm">{weakness}</li>
+                            <li key={index} className="text-sm">{weakness}</li>
                           ))}
                         </ul>
                       </div>
@@ -724,7 +752,97 @@ export default function ResultsDisplay({ result, onReset }: Props) {
                   </div>
                 </AccordionContent>
               </AccordionItem>
-
+              <AccordionItem value="completeSummary">
+                <AccordionTrigger>Complete Profile Summary</AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-4">
+                    <div className="mt-6 space-y-4 bg-primary/5 p-6 rounded-lg">
+                      <h4 className="font-medium text-lg">Complete Numerological Profile Summary</h4>
+                      <div className="grid gap-4">
+                        <div>
+                          <h5 className="font-medium text-primary">Core Numbers</h5>
+                          <div className="mt-2 space-y-2">
+                            <p className="text-sm"><span className="font-medium">Life Path {result.lifePath}:</span> As {NUMBER_MEANINGS[result.lifePath as keyof typeof NUMBER_MEANINGS].title}, your fundamental purpose centers on {NUMBER_MEANINGS[result.lifePath as keyof typeof NUMBER_MEANINGS].strengths[0].toLowerCase()}. This number influences every aspect of your journey.</p>
+                            <p className="text-sm"><span className="font-medium">Destiny {result.destiny}:</span> Your Destiny number as {NUMBER_MEANINGS[result.destiny as keyof typeof NUMBER_MEANINGS].title} reveals your ultimate life goals and the talents you're meant to develop. This number guides your achievements and life direction.</p>
+                          </div>
+                        </div>
+                        <div>
+                          <h5 className="font-medium text-primary">Inner Aspects</h5>
+                          <div className="mt-2 space-y-2">
+                            <p className="text-sm"><span className="font-medium">Heart's Desire {result.heartDesire}:</span> As {NUMBER_MEANINGS[result.heartDesire as keyof typeof NUMBER_MEANINGS].title}, your inner motivations drive you toward {NUMBER_MEANINGS[result.heartDesire as keyof typeof NUMBER_MEANINGS].strengths[0].toLowerCase()}. This represents your deepest wishes and emotional needs.</p>
+                            <p className="text-sm"><span className="font-medium">Expression {result.expression}:</span> Your Expression number shows your natural talents as {NUMBER_MEANINGS[result.expression as keyof typeof NUMBER_MEANINGS].title}, particularly in {NUMBER_MEANINGS[result.expression as keyof typeof NUMBER_MEANINGS].strengths[0].toLowerCase()}. This represents how you express your true self.</p>
+                          </div>
+                        </div>
+                        <div>
+                          <h5 className="font-medium text-primary">External Influences</h5>
+                          <div className="mt-2 space-y-2">
+                            <p className="text-sm"><span className="font-medium">Personality {result.personality}:</span> As {NUMBER_MEANINGS[result.personality as keyof typeof NUMBER_MEANINGS].title}, you present yourself to the world through {NUMBER_MEANINGS[result.personality as keyof typeof NUMBER_MEANINGS].strengths[0].toLowerCase()}. This shapes others' first impressions of you.</p>
+                            <p className="text-sm"><span className="font-medium">Attribute {result.attribute}:</span> Your Attribute number adds the quality of {NUMBER_MEANINGS[result.attribute as keyof typeof NUMBER_MEANINGS].strengths[0].toLowerCase()}, enhancing your overall energy.</p>
+                            <p className="text-sm"><span className="font-medium">Birth Date {result.birthDateNum}:</span> Your Birth Date number as {NUMBER_MEANINGS[result.birthDateNum as keyof typeof NUMBER_MEANINGS].title} indicates innate talents in {NUMBER_MEANINGS[result.birthDateNum as keyof typeof NUMBER_MEANINGS].strengths[0].toLowerCase()}.</p>
+                          </div>
+                        </div>
+                        <div>
+                          <h5 className="font-medium text-primary">Special Number Properties</h5>
+                          <div className="mt-2 space-y-2">
+                            {[result.lifePath, result.destiny, result.expression, result.heartDesire].some(num => [11, 22, 33, 44].includes(num)) && (
+                              <p className="text-sm">
+                                <span className="font-medium">Master Numbers:</span> Your profile contains master number(s) ({[result.lifePath, result.destiny, result.expression, result.heartDesire].filter(num => [11, 22, 33, 44].includes(num)).join(", ")}), indicating heightened spiritual potential and responsibility.
+                              </p>
+                            )}
+                            {[result.lifePath, result.destiny, result.expression, result.heartDesire].includes(28) && (
+                              <p className="text-sm">
+                                <span className="font-medium">Wealth Number:</span> The presence of number 28 suggests natural prosperity potential, requiring balance between material and spiritual growth.
+                              </p>
+                            )}
+                            {[result.lifePath, result.destiny, result.expression, result.heartDesire].includes(8) && (
+                              <p className="text-sm">
+                                <span className="font-medium">Karmic Influence:</span> The presence of number 8 indicates strong karmic ties - both positive and negative actions will return with amplified force.
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        <div>
+                          <h5 className="font-medium text-primary">Numerological Dynamics</h5>
+                          <div className="mt-2 space-y-2">
+                            <p className="text-sm">
+                              <span className="font-medium">Primary Challenge:</span> The interaction between your Life Path {result.lifePath} and Expression {result.expression} numbers {result.lifePath === result.expression ? "shows natural alignment" : "creates a dynamic tension"} that influences your personal growth.
+                            </p>
+                            <p className="text-sm">
+                              <span className="font-medium">Soul Purpose:</span> Your Destiny {result.destiny} and Heart's Desire {result.heartDesire} numbers {result.destiny === result.heartDesire ? "are harmoniously aligned" : "create an interesting interplay"} between your life goals and inner wishes.
+                            </p>
+                            <p className="text-sm">
+                              <span className="font-medium">Growth Path:</span> The combination of your Birth Date {result.birthDateNum} and Attribute {result.attribute} numbers suggests a natural inclination toward {result.birthDateNum === result.attribute ? "focused development" : "diverse growth opportunities"}.
+                            </p>
+                          </div>
+                        </div>
+                        <div>
+                          <h5 className="font-medium text-primary">Key Behavioral Traits</h5>
+                          <div className="mt-2 space-y-2">
+                            {result.lifePath === 1 && (
+                              <p className="text-sm">⚠️ Strong desire for recognition - must balance ego and leadership.</p>
+                            )}
+                            {result.lifePath === 3 && (
+                              <p className="text-sm">⚠️ Tendency to challenge rules - maintain awareness of legal boundaries.</p>
+                            )}
+                            {result.lifePath === 4 && (
+                              <p className="text-sm">✅ Natural respect for law and order - use this for stable growth.</p>
+                            )}
+                            {result.lifePath === 5 && (
+                              <p className="text-sm">⚠️ Watch for addictive tendencies - maintain balance in pursuits.</p>
+                            )}
+                            {result.lifePath === 7 && (
+                              <p className="text-sm">⚠️ Intellectual pride - practice humility with your wisdom.</p>
+                            )}
+                            {result.lifePath === 9 && (
+                              <p className="text-sm">💫 Mirror-like adaptability - reflect and absorb energies mindfully.</p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
               <AccordionItem value="completeSummary">
                 <AccordionTrigger>Complete Profile Summary</AccordionTrigger>
                 <AccordionContent>
@@ -833,7 +951,6 @@ export default function ResultsDisplay({ result, onReset }: Props) {
 
             </Accordion>
           </motion.div>
-
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -845,7 +962,6 @@ export default function ResultsDisplay({ result, onReset }: Props) {
               summary={result.interpretations.developmentSummary}
             />
           </motion.div>
-
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -855,7 +971,6 @@ export default function ResultsDisplay({ result, onReset }: Props) {
             <h3 className="text-xl font-semibold mb-6">Cosmic Energy Potential</h3>
             <CosmicEnergyMeter result={result} />
           </motion.div>
-
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -864,7 +979,6 @@ export default function ResultsDisplay({ result, onReset }: Props) {
             <h3 className="text-xl font-semibold mb-6">Personal Journal</h3>
             <NumerologyJournal result={result} />
           </motion.div>
-
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -872,7 +986,6 @@ export default function ResultsDisplay({ result, onReset }: Props) {
           >
             <NumerologySoundtrack result={result} />
           </motion.div>
-
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -880,7 +993,6 @@ export default function ResultsDisplay({ result, onReset }: Props) {
           >
             <KarmaLeaderboard result={result} />
           </motion.div>
-
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -888,7 +1000,6 @@ export default function ResultsDisplay({ result, onReset }: Props) {
           >
             <AICoach result={result} />
           </motion.div>
-
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
