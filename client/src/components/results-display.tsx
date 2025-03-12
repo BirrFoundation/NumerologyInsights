@@ -104,6 +104,33 @@ function NumberDisplay({ number, title }: { number: number; title: string }) {
   const isMasterNumber = [11, 22, 33, 44].includes(number);
   const isWealthNumber = number === 28;
 
+  let interpretationFunction: (n: number) => string;
+  switch (title.toLowerCase().replace(/[^a-z]/g, '')) {
+    case 'lifepath':
+      interpretationFunction = basicInterpretations.lifePath;
+      break;
+    case 'destiny':
+      interpretationFunction = basicInterpretations.destiny;
+      break;
+    case 'heartsdesire':
+      interpretationFunction = basicInterpretations.heartDesire;
+      break;
+    case 'expression':
+      interpretationFunction = basicInterpretations.expression;
+      break;
+    case 'personality':
+      interpretationFunction = basicInterpretations.personality;
+      break;
+    case 'attribute':
+      interpretationFunction = basicInterpretations.attribute;
+      break;
+    case 'birthdate':
+      interpretationFunction = basicInterpretations.birthDateNum;
+      break;
+    default:
+      interpretationFunction = (n: number) => `Interpretation for ${title} number ${n}`;
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
@@ -122,11 +149,11 @@ function NumberDisplay({ number, title }: { number: number; title: string }) {
           <DialogTitle>{title}: {number}</DialogTitle>
           <DialogDescription>
             <div className="space-y-4">
-              <p>{basicInterpretations[title.toLowerCase().replace(" ", "_")](number)}</p>
+              <p className="text-sm">{interpretationFunction(number)}</p>
               <div>
                 <h4 className="mb-2 font-medium">Strengths</h4>
                 <ul className="list-disc space-y-1 pl-4 text-left">
-                  {NUMBER_MEANINGS[number as keyof typeof NUMBER_MEANINGS].strengths.map((s, i) => (
+                  {NUMBER_MEANINGS[number as keyof typeof NUMBER_MEANINGS]?.strengths.map((s, i) => (
                     <li key={i} className="text-sm">{s}</li>
                   ))}
                 </ul>
@@ -134,7 +161,7 @@ function NumberDisplay({ number, title }: { number: number; title: string }) {
               <div>
                 <h4 className="mb-2 font-medium">Challenges</h4>
                 <ul className="list-disc space-y-1 pl-4 text-left">
-                  {NUMBER_MEANINGS[number as keyof typeof NUMBER_MEANINGS].weaknesses.map((w, i) => (
+                  {NUMBER_MEANINGS[number as keyof typeof NUMBER_MEANINGS]?.weaknesses.map((w, i) => (
                     <li key={i} className="text-sm">{w}</li>
                   ))}
                 </ul>
@@ -155,14 +182,26 @@ export default function ResultsDisplay({ result, onReset, onCompatibility }: Pro
     return new Date(year, month - 1, day).toLocaleDateString();
   };
 
+  const getBasicInterpretation = () => {
+    return basicInterpretations.getBasicInterpretation({
+      lifePath: result.lifePath,
+      destiny: result.destiny,
+      heartDesire: result.heartDesire,
+      expression: result.expression,
+      personality: result.personality,
+      attribute: result.attribute,
+      birthDateNum: result.birthDateNum
+    }) as string;
+  };
+
   const recommendations = {
     strengths: [
-      ...NUMBER_MEANINGS[result.lifePath as keyof typeof NUMBER_MEANINGS].strengths,
-      ...NUMBER_MEANINGS[result.destiny as keyof typeof NUMBER_MEANINGS].strengths,
+      ...NUMBER_MEANINGS[result.lifePath as keyof typeof NUMBER_MEANINGS]?.strengths || [],
+      ...NUMBER_MEANINGS[result.destiny as keyof typeof NUMBER_MEANINGS]?.strengths || [],
     ],
     challenges: [
-      ...NUMBER_MEANINGS[result.lifePath as keyof typeof NUMBER_MEANINGS].weaknesses,
-      ...NUMBER_MEANINGS[result.destiny as keyof typeof NUMBER_MEANINGS].weaknesses,
+      ...NUMBER_MEANINGS[result.lifePath as keyof typeof NUMBER_MEANINGS]?.weaknesses || [],
+      ...NUMBER_MEANINGS[result.destiny as keyof typeof NUMBER_MEANINGS]?.weaknesses || [],
     ],
     growthAreas: [
       "Developing balance between different aspects of your numerology",
@@ -202,15 +241,7 @@ export default function ResultsDisplay({ result, onReset, onCompatibility }: Pro
               <h3 className="text-xl font-semibold">Overview</h3>
               <div>
                 <p className="leading-relaxed">
-                  {basicInterpretations.getBasicInterpretation({
-                    lifePath: result.lifePath,
-                    destiny: result.destiny,
-                    heartDesire: result.heartDesire,
-                    expression: result.expression,
-                    personality: result.personality,
-                    attribute: result.attribute,
-                    birthDateNum: result.birthDateNum
-                  })}
+                  {getBasicInterpretation()}
                 </p>
 
                 <div className="mt-8">
@@ -272,20 +303,20 @@ export default function ResultsDisplay({ result, onReset, onCompatibility }: Pro
                     { key: 'expression', title: 'Expression', number: result.expression },
                     { key: 'personality', title: 'Personality', number: result.personality },
                     { key: 'attribute', title: 'Attribute', number: result.attribute },
-                    { key: 'birthDate', title: 'Birth Date', number: result.birthDateNum }
+                    { key: 'birthDateNum', title: 'Birth Date', number: result.birthDateNum }
                   ].map(({ key, title, number }) => (
                     <AccordionItem key={key} value={key}>
                       <AccordionTrigger>{title} Number {number}</AccordionTrigger>
                       <AccordionContent>
                         <div className="space-y-4">
                           <p className="text-sm leading-relaxed">
-                            {basicInterpretations[key.toLowerCase() as keyof typeof basicInterpretations]?.(number)}
+                            {basicInterpretations[key](number)}
                           </p>
                           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                             <div>
                               <h4 className="mb-2 font-medium">Strengths</h4>
                               <ul className="list-disc space-y-1 pl-4 text-left">
-                                {NUMBER_MEANINGS[number as keyof typeof NUMBER_MEANINGS].strengths.map((strength, index) => (
+                                {NUMBER_MEANINGS[number as keyof typeof NUMBER_MEANINGS]?.strengths.map((strength, index) => (
                                   <li key={index} className="text-sm">{strength}</li>
                                 ))}
                               </ul>
@@ -293,7 +324,7 @@ export default function ResultsDisplay({ result, onReset, onCompatibility }: Pro
                             <div>
                               <h4 className="mb-2 font-medium">Challenges</h4>
                               <ul className="list-disc space-y-1 pl-4 text-left">
-                                {NUMBER_MEANINGS[number as keyof typeof NUMBER_MEANINGS].weaknesses.map((weakness, index) => (
+                                {NUMBER_MEANINGS[number as keyof typeof NUMBER_MEANINGS]?.weaknesses.map((weakness, index) => (
                                   <li key={index} className="text-sm">{weakness}</li>
                                 ))}
                               </ul>
