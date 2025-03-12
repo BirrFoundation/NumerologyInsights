@@ -41,7 +41,7 @@ export default function VerifyEmailPage() {
       setUserId(parseInt(id));
       setEmail(emailParam);
       // Automatically request verification code
-      requestVerificationCode(emailParam);
+      requestVerificationCode(parseInt(id));
     } else {
       setLocation("/login");
     }
@@ -54,9 +54,10 @@ export default function VerifyEmailPage() {
     },
   });
 
-  const requestVerificationCode = async (email: string) => {
+  const requestVerificationCode = async (userId: number) => {
     try {
-      const response = await apiRequest("POST", "/api/auth/send-verification", { email });
+      console.log("Requesting verification code for userId:", userId);
+      const response = await apiRequest("POST", "/api/auth/resend-verification", { userId });
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.error || "Failed to send verification code");
@@ -78,6 +79,7 @@ export default function VerifyEmailPage() {
     mutationFn: async (data: { code: string }) => {
       if (!userId) throw new Error("User ID not found");
       setIsLoading(true);
+      console.log("Verifying email with:", { userId, code: data.code });
       const response = await apiRequest("POST", "/api/auth/verify-email", {
         userId,
         code: data.code,
@@ -162,7 +164,7 @@ export default function VerifyEmailPage() {
             <Button
               variant="link"
               className="p-0 h-auto font-normal"
-              onClick={() => email && requestVerificationCode(email)}
+              onClick={() => userId && requestVerificationCode(userId)}
             >
               Resend code
             </Button>

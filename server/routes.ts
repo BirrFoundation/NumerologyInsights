@@ -10,9 +10,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Register API routes
   app.use('/api', apiRouter);
 
+  // Log all incoming requests for debugging
+  app.use((req, res, next) => {
+    log(`[Request] ${req.method} ${req.path}`);
+    next();
+  });
+
   // Register catch-all route last
-  app.use('/api/*', (req, res) => {
-    res.status(404).json({ error: 'API endpoint not found' });
+  app.use('*', (req, res) => {
+    log(`[404] ${req.method} ${req.path}`);
+    res.status(404).json({ error: 'Endpoint not found' });
   });
 
   log("Created HTTP server and registered API routes");
