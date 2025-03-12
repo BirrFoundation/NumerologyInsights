@@ -240,7 +240,44 @@ export default function ResultsDisplay({ result, onReset, onCompatibility }: Pro
 
             {/* Additional Components */}
             <div className="space-y-6">
-              <StrengthsWeaknessesChart result={result} />
+              <StrengthsWeaknessesChart items={[
+                {
+                  label: "Leadership & Independence",
+                  value: Math.min(100, (result.lifePath === 1 || result.expression === 1) ? 90 :
+                    (result.lifePath === 8 || result.expression === 8) ? 85 : 70),
+                  type: "strength"
+                },
+                {
+                  label: "Creativity & Expression",
+                  value: Math.min(100, (result.lifePath === 3 || result.expression === 3) ? 90 :
+                    (result.heartDesire === 3) ? 85 : 65),
+                  type: "strength"
+                },
+                {
+                  label: "Analytical Thinking",
+                  value: Math.min(100, (result.lifePath === 7 || result.expression === 7) ? 90 :
+                    (result.personality === 7) ? 85 : 75),
+                  type: "strength"
+                },
+                {
+                  label: "Emotional Sensitivity",
+                  value: Math.min(100, (result.lifePath === 2 || result.heartDesire === 2) ? 85 :
+                    (result.personality === 2) ? 80 : 70),
+                  type: result.lifePath === 2 ? "strength" : "weakness"
+                },
+                {
+                  label: "Adaptability",
+                  value: Math.min(100, (result.lifePath === 9 || result.expression === 9) ? 90 :
+                    (result.lifePath === 5 || result.expression === 5) ? 85 : 70),
+                  type: "strength"
+                },
+                {
+                  label: "Focus & Discipline",
+                  value: Math.min(100, (result.lifePath === 4 || result.expression === 4) ? 85 :
+                    (result.personality === 4) ? 80 : 65),
+                  type: result.lifePath === 4 ? "strength" : "weakness"
+                }
+              ]} />
               <DailyForecast result={result} />
               <AICoach result={result} />
               <NumerologyJournal result={result} />
