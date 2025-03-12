@@ -158,7 +158,7 @@ export default function VerifyEmailPage() {
                       render={({ slots }) => (
                         <InputOTPGroup>
                           {slots.map((slot, index) => (
-                            <InputOTPSlot key={index} slot={slot} />
+                            <InputOTPSlot key={index} {...slot} />
                           ))}
                         </InputOTPGroup>
                       )}
@@ -172,7 +172,7 @@ export default function VerifyEmailPage() {
             <Button
               className="w-full"
               type="submit"
-              disabled={isLoading || !emailSent}
+              disabled={isLoading}
             >
               {isLoading ? "Verifying..." : "Verify Email"}
             </Button>
