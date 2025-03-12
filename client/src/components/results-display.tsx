@@ -183,7 +183,7 @@ export default function ResultsDisplay({ result, onReset, onCompatibility }: Pro
   };
 
   const getBasicInterpretation = () => {
-    return basicInterpretations.getBasicInterpretation({
+    const interpretation = basicInterpretations.getBasicInterpretation({
       lifePath: result.lifePath,
       destiny: result.destiny,
       heartDesire: result.heartDesire,
@@ -191,7 +191,8 @@ export default function ResultsDisplay({ result, onReset, onCompatibility }: Pro
       personality: result.personality,
       attribute: result.attribute,
       birthDateNum: result.birthDateNum
-    }) as string;
+    });
+    return interpretation.overview || 'Your numerological profile reveals a unique combination of energies.';
   };
 
   const recommendations = {
@@ -248,19 +249,22 @@ export default function ResultsDisplay({ result, onReset, onCompatibility }: Pro
                   <h4 className="text-lg font-medium mb-4">Complete Profile Summary</h4>
                   <div className="space-y-4">
                     <p className="leading-relaxed">
-                      Your Life Path number {result.lifePath} combines with your Destiny number {result.destiny} to create a unique path: {basicInterpretations.lifePath(result.lifePath)}
+                      Your Life Path number {result.lifePath} indicates: {basicInterpretations.lifePath(result.lifePath)}
                     </p>
                     <p className="leading-relaxed">
-                      Your Heart's Desire number {result.heartDesire} reveals your inner motivation: {basicInterpretations.heartDesire(result.heartDesire)}
+                      Your Destiny number {result.destiny} shows: {basicInterpretations.destiny(result.destiny)}
                     </p>
                     <p className="leading-relaxed">
-                      This interacts with your Expression number {result.expression}: {basicInterpretations.expression(result.expression)}
+                      Your Heart's Desire number {result.heartDesire} reveals: {basicInterpretations.heartDesire(result.heartDesire)}
                     </p>
                     <p className="leading-relaxed">
-                      Your Personality number {result.personality} influences how others see you: {basicInterpretations.personality(result.personality)}
+                      Your Expression number {result.expression} indicates: {basicInterpretations.expression(result.expression)}
                     </p>
                     <p className="leading-relaxed">
-                      Your Birth Date number {result.birthDateNum} shows your innate talents: {basicInterpretations.birthDateNum(result.birthDateNum)}
+                      Your Personality number {result.personality} shows: {basicInterpretations.personality(result.personality)}
+                    </p>
+                    <p className="leading-relaxed">
+                      Your Birth Date number {result.birthDateNum} reveals: {basicInterpretations.birthDateNum(result.birthDateNum)}
                     </p>
                   </div>
                 </div>
