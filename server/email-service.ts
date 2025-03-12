@@ -44,6 +44,34 @@ export async function sendVerificationEmail(email: string, code: string): Promis
   }
 }
 
+export async function sendResetEmail(email: string, code: string): Promise<void> {
+  const mailOptions = {
+    from: process.env.SMTP_USER,
+    to: email,
+    subject: "Reset Your Numerology Password",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #333;">Password Reset Request</h2>
+        <p>You have requested to reset your password. Please use the following code to complete the process:</p>
+        <div style="background-color: #f4f4f4; padding: 15px; text-align: center; margin: 20px 0;">
+          <h1 style="color: #6366f1; letter-spacing: 5px; margin: 0;">${code}</h1>
+        </div>
+        <p>This code will expire in 15 minutes.</p>
+        <p>If you didn't request this password reset, please ignore this email and ensure your account is secure.</p>
+        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+        <p style="color: #666; font-size: 12px;">This is an automated message, please do not reply.</p>
+      </div>
+    `
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error("Failed to send reset email:", error);
+    throw new Error("Failed to send reset email. Please try again later.");
+  }
+}
+
 export function generateVerificationCode(): string {
   return cryptoRandomString({
     length: 6,

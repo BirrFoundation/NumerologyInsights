@@ -32,6 +32,7 @@ export interface IStorage {
   getDreamRecord(id: number): Promise<DreamRecord | null>;
 
   sessionStore: session.Store;
+  updatePassword(userId: number, hashedPassword: string): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -177,6 +178,14 @@ export class MemStorage implements IStorage {
 
   async getDreamRecord(id: number): Promise<DreamRecord | null> {
     return this.dreamRecords.get(id) || null;
+  }
+
+  async updatePassword(userId: number, hashedPassword: string): Promise<void> {
+    const user = this.users.get(userId);
+    if (user) {
+      user.password = hashedPassword;
+      this.users.set(userId, user);
+    }
   }
 }
 
