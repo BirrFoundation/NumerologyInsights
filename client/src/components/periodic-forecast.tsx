@@ -28,6 +28,13 @@ export function PeriodicForecast({ result }: Props) {
     refetch: refetchWeekly
   } = useQuery({
     queryKey: ['/api/weekly-forecast', result.userId || result.id, weekStart.toISOString()],
+    queryFn: async () => {
+      const response = await fetch(`/api/weekly-forecast?date=${weekStart.toISOString()}&userId=${result.userId || result.id}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch weekly forecast');
+      }
+      return response.json();
+    },
     enabled: !!(result.userId || result.id)
   });
 
@@ -40,6 +47,13 @@ export function PeriodicForecast({ result }: Props) {
     refetch: refetchMonthly
   } = useQuery({
     queryKey: ['/api/monthly-forecast', result.userId || result.id, monthStart.toISOString()],
+    queryFn: async () => {
+      const response = await fetch(`/api/monthly-forecast?date=${monthStart.toISOString()}&userId=${result.userId || result.id}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch monthly forecast');
+      }
+      return response.json();
+    },
     enabled: !!(result.userId || result.id)
   });
 
@@ -98,7 +112,7 @@ export function PeriodicForecast({ result }: Props) {
                 <div className="p-4 rounded-lg bg-primary/5">
                   <h3 className="font-medium mb-2">Weekly Essence: {weeklyForecast.weeklyEssence}</h3>
                   <p className="text-sm text-muted-foreground mb-4">{weeklyForecast.weeklyTheme}</p>
-                  
+
                   <h4 className="font-medium mb-2">Peak Energy Days:</h4>
                   <ul className="space-y-2">
                     {weeklyForecast.peakDays.map((peak, index) => (
@@ -132,7 +146,7 @@ export function PeriodicForecast({ result }: Props) {
                 <div className="p-4 rounded-lg bg-primary/5">
                   <h4 className="font-medium mb-2">Guidance for the Week</h4>
                   <p className="text-sm">{weeklyForecast.guidance}</p>
-                  
+
                   <h4 className="font-medium mt-4 mb-2">Reflection Questions</h4>
                   <ul className="space-y-1">
                     {weeklyForecast.insights.map((insight, index) => (
@@ -179,7 +193,7 @@ export function PeriodicForecast({ result }: Props) {
               <div className="space-y-6">
                 <div className="p-4 rounded-lg bg-primary/5">
                   <h3 className="font-medium mb-2">{monthlyForecast.theme}</h3>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                     <div>
                       <p className="text-sm font-medium">Personal Month Number</p>
@@ -223,10 +237,10 @@ export function PeriodicForecast({ result }: Props) {
                       <li key={index} className="text-sm">{area}</li>
                     ))}
                   </ul>
-                  
+
                   <h4 className="font-medium mt-4 mb-2">Monthly Guidance</h4>
                   <p className="text-sm">{monthlyForecast.guidance}</p>
-                  
+
                   <h4 className="font-medium mt-4 mb-2">Reflection Points</h4>
                   <ul className="space-y-1">
                     {monthlyForecast.insights.map((insight, index) => (

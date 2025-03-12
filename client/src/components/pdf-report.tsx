@@ -1,4 +1,4 @@
-import { Document, Page, Text, View, StyleSheet, PDFViewer } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 import type { NumerologyResult, CompatibilityResult } from "@shared/schema";
 import { format } from "date-fns";
 
@@ -14,62 +14,74 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   header: {
-    fontSize: 24,
-    marginBottom: 20,
+    fontSize: 20,
+    marginBottom: 15,
     textAlign: 'center',
     color: '#333333',
   },
   subHeader: {
-    fontSize: 18,
-    marginBottom: 10,
+    fontSize: 16,
+    marginBottom: 8,
     color: '#444444',
   },
   text: {
-    fontSize: 12,
-    marginBottom: 5,
+    fontSize: 10,
+    marginBottom: 4,
     color: '#666666',
     lineHeight: 1.4,
   },
   listItem: {
-    fontSize: 12,
-    marginBottom: 3,
-    marginLeft: 20,
+    fontSize: 10,
+    marginBottom: 2,
+    marginLeft: 15,
   },
   table: {
     display: 'flex',
     width: 'auto',
     borderStyle: 'solid',
-    borderWidth: 1,
+    borderWidth: 0.5,
     borderColor: '#666666',
-    marginVertical: 10,
+    marginVertical: 8,
   },
   tableRow: {
     flexDirection: 'row',
     borderBottomColor: '#666666',
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.5,
+    minHeight: 25,
     alignItems: 'center',
-    minHeight: 30,
   },
   tableCell: {
     flex: 1,
-    padding: 5,
+    padding: 4,
+    fontSize: 9,
   },
   tableCellHeader: {
-    fontSize: 12,
+    fontSize: 9,
     fontWeight: 'bold',
     color: '#333333',
   },
+  numberCell: {
+    flex: 0.3,
+    padding: 4,
+    fontSize: 9,
+    textAlign: 'center',
+  },
+  meaningCell: {
+    flex: 2,
+    padding: 4,
+    fontSize: 9,
+  },
   sectionTitle: {
-    fontSize: 16,
-    marginTop: 15,
-    marginBottom: 10,
+    fontSize: 14,
+    marginTop: 12,
+    marginBottom: 8,
     color: '#444444',
   },
   pageNumber: {
     position: 'absolute',
-    bottom: 30,
-    right: 30,
-    fontSize: 10,
+    bottom: 20,
+    right: 20,
+    fontSize: 8,
     color: '#666666',
   },
 });
