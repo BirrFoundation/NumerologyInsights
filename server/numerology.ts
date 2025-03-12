@@ -953,7 +953,7 @@ function getWorkStrengths(profile1: ReturnType<typeof calculateNumerology>, prof
   // Leadership dynamics
   if ([1, 8].includes(profile1.lifePath) && [2, 6].includes(profile2.lifePath)) {
     strengths.push("Excellent leadership-support dynamic with clear roles");
-    strengths.push("One naturally leads while the other provides essential support");
+    strengths.push("One naturally leads while the otherprovides essential support");
   }
 
   // Practical approach
@@ -1136,12 +1136,83 @@ function getFamilyChallenges(profile1: ReturnType<typeof calculateNumerology>, p
   return challenges;
 }
 
+// Add missing calculation functions that were referenced but not implemented
+function calculateBusinessCompatibility(profile1: ReturnType<typeof calculateNumerology>, profile2: ReturnType<typeof calculateNumerology>): number {
+  let score = 70;
+
+  // Strong business combinations
+  if ([8, 4].includes(profile1.lifePath) && [8, 4].includes(profile2.lifePath)) score += 20;
+  if ([1, 8].includes(profile1.expression) && [2, 6].includes(profile2.expression)) score += 15;
+
+  // Innovation and stability
+  if ([1, 5].includes(profile1.lifePath) && [4, 8].includes(profile2.lifePath)) score += 15;
+
+  return Math.min(100, Math.max(40, score));
+}
+
+function calculateFriendshipCompatibility(profile1: ReturnType<typeof calculateNumerology>, profile2: ReturnType<typeof calculateNumerology>): number {
+  let score = 70;
+
+  // Natural friendship combinations
+  if ([2, 3, 6].includes(profile1.lifePath) && [2, 3, 6].includes(profile2.lifePath)) score += 20;
+  if (profile1.heartDesire === profile2.heartDesire) score += 15;
+
+  // Complementary energies
+  if ([1, 5, 7].includes(profile1.lifePath) && [2, 3, 6].includes(profile2.lifePath)) score += 15;
+
+  return Math.min(100, Math.max(40, score));
+}
+
+function calculateFamilyCompatibility(profile1: ReturnType<typeof calculateNumerology>, profile2: ReturnType<typeof calculateNumerology>): number {
+  let score = 70;
+
+  // Strong family bonds
+  if ([6, 2].includes(profile1.lifePath) && [6, 2].includes(profile2.lifePath)) score += 20;
+  if ([4, 8].includes(profile1.lifePath) && [2, 6].includes(profile2.lifePath)) score += 15;
+
+  // Emotional understanding
+  if (profile1.heartDesire === profile2.heartDesire) score += 15;
+
+  return Math.min(100, Math.max(40, score));
+}
+
+// Fix the calculateCompatibility function return type
 export function calculateCompatibility(
   name1: string,
   birthdate1: string,
   name2: string,
   birthdate2: string
-): CompatibilityResult {
+): {
+  score: number;
+  aspects: string[];
+  lifePathScore: number;
+  expressionScore: number;
+  heartDesireScore: number;
+  dynamics: string[];
+  growthAreas: string[];
+  relationshipTypes: {
+    work: {
+      score: number;
+      strengths: string[];
+      challenges: string[];
+    };
+    business: {
+      score: number;
+      strengths: string[];
+      challenges: string[];
+    };
+    friendship: {
+      score: number;
+      strengths: string[];
+      challenges: string[];
+    };
+    family: {
+      score: number;
+      strengths: string[];
+      challenges: string[];
+    };
+  };
+} {
   const profile1 = calculateNumerology(name1, birthdate1);
   const profile2 = calculateNumerology(name2, birthdate2);
 
@@ -1163,7 +1234,28 @@ export function calculateCompatibility(
   const growthAreas = identifyGrowthAreas(profile1, profile2);
 
   // Calculate relationship type scores
-  const relationshipTypes = calculateRelationshipTypeScores(profile1, profile2);
+  const relationshipTypes = {
+    work: {
+      score: calculateWorkCompatibility(profile1, profile2),
+      strengths: getWorkStrengths(profile1, profile2),
+      challenges: getWorkChallenges(profile1, profile2)
+    },
+    business: {
+      score: calculateBusinessCompatibility(profile1, profile2),
+      strengths: getBusinessStrengths(profile1, profile2),
+      challenges: getBusinessChallenges(profile1, profile2)
+    },
+    friendship: {
+      score: calculateFriendshipCompatibility(profile1, profile2),
+      strengths: getFriendshipStrengths(profile1, profile2),
+      challenges: getFriendshipChallenges(profile1, profile2)
+    },
+    family: {
+      score: calculateFamilyCompatibility(profile1, profile2),
+      strengths: getFamilyStrengths(profile1, profile2),
+      challenges: getFamilyChallenges(profile1, profile2)
+    }
+  };
 
   return {
     score,
