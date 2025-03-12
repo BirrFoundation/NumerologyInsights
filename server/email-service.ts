@@ -14,6 +14,15 @@ function verifySmtpConfig() {
     console.error('Missing SMTP configuration:', missing.join(', '));
     return false;
   }
+
+  // Log available configuration for debugging
+  console.log('SMTP Configuration available:', {
+    host: process.env.SMTP_HOST,
+    port: process.env.SMTP_PORT,
+    user: process.env.SMTP_USER?.substring(0, 3) + '***',
+    configured: true
+  });
+
   return true;
 }
 
@@ -57,7 +66,10 @@ async function getTransporter() {
         rejectUnauthorized: process.env.NODE_ENV === 'production'
       },
       debug: process.env.NODE_ENV !== 'production',
-      logger: process.env.NODE_ENV !== 'production'
+      logger: process.env.NODE_ENV !== 'production',
+      connectionTimeout: 10000, // 10 seconds
+      greetingTimeout: 10000,
+      socketTimeout: 30000
     });
 
     // Verify connection
@@ -154,7 +166,6 @@ export async function sendResetEmail(email: string, code: string): Promise<void>
     const transport = await retryOperation(getTransporter);
     const info = await retryOperation(() => transport.sendMail(mailOptions));
     console.log('Reset email sent successfully:', info.messageId);
-    console.log('Preview URL:', nodemailer.getTestMessageUrl(info));
   } catch (error) {
     console.error('Failed to send reset email:', error);
     throw new Error(error instanceof Error ? error.message : "Failed to send reset email");
