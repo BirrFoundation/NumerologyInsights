@@ -229,7 +229,7 @@ export default function ResultsDisplay({ result, onReset, onCompatibility }: Pro
                       Your Personality number {result.personality} influences how others see you: {basicInterpretations.personality(result.personality)}
                     </p>
                     <p className="leading-relaxed">
-                      Your Birth Date number {result.birthDateNum} shows your innate talents: {basicInterpretations.birthDate(result.birthDateNum)}
+                      Your Birth Date number {result.birthDateNum} shows your innate talents: {basicInterpretations.birthDateNum(result.birthDateNum)}
                     </p>
                   </div>
                 </div>
