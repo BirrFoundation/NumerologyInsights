@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { storage } from "./storage";
 import { log } from "./vite";
-import { userAuthSchema, verificationSchema } from "@shared/schema";
+import { userAuthSchema, verificationSchema, numerologyInputSchema, compatibilityInputSchema, dreamInputSchema } from "@shared/schema";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { sendVerificationEmail, sendResetEmail, generateVerificationCode } from "./email-service";
@@ -59,9 +59,9 @@ router.post("/auth/signup", async (req, res) => {
     }
 
     // Return user ID for verification redirection
-    res.status(201).json({ 
+    res.status(201).json({
       message: "Account created successfully",
-      userId: user.id 
+      userId: user.id
     });
   } catch (error) {
     console.error("Signup error:", error);
@@ -154,7 +154,7 @@ router.post("/auth/login", async (req, res) => {
 
     // Check if user is verified
     if (!user.verified) {
-      return res.status(403).json({ 
+      return res.status(403).json({
         error: "Email not verified",
         userId: user.id
       });
@@ -213,7 +213,6 @@ router.get("/auth/me", async (req, res) => {
     res.status(500).json({ error: "Failed to get user data" });
   }
 });
-
 
 
 // Numerology Routes
@@ -606,171 +605,66 @@ router.get("/healthz", (_req, res) => {
 });
 
 
-// Numerology Routes
-router.post("/calculate", async (req, res) => {
-  try {
-    const data = numerologyInputSchema.parse(req.body);
-    console.log('Received data:', data);
+// Numerology calculation helper functions
+function calculateNumerology(name: string, birthdate: string) {
+  // Basic numerology calculations
+  const nameNumber = calculateNameNumber(name);
+  const birthdateNumber = calculateBirthdateNumber(birthdate);
 
-    const numbers = calculateNumerology(data.name, data.birthdate);
-    console.log('Calculated numbers:', numbers);
+  return {
+    lifePath: birthdateNumber,
+    destiny: nameNumber,
+    heartDesire: Math.floor(Math.random() * 9) + 1, // Placeholder
+    expression: Math.floor(Math.random() * 9) + 1, // Placeholder
+    personality: Math.floor(Math.random() * 9) + 1, // Placeholder
+    attribute: Math.floor(Math.random() * 9) + 1, // Placeholder
+    birthDateNum: birthdateNumber
+  };
+}
 
-    try {
-      const interpretations = await getInterpretation(numbers, data.name);
-      console.log('Got interpretations');
+function calculateNameNumber(name: string): number {
+  const cleanName = name.toLowerCase().replace(/[^a-z]/g, '');
+  const sum = Array.from(cleanName).reduce((acc, char) => {
+    return acc + (char.charCodeAt(0) - 96);
+  }, 0);
+  return reduceToSingleDigit(sum);
+}
 
-      const userId = req.session.userId || null;
-      const result = await storage.createResult({
-        ...data,
-        ...numbers,
-        interpretations,
-        userId
-      });
+function calculateBirthdateNumber(birthdate: string): number {
+  const dateNumbers = birthdate.split('-').map(Number);
+  const sum = dateNumbers.reduce((acc, num) => acc + reduceToSingleDigit(num), 0);
+  return reduceToSingleDigit(sum);
+}
 
-      res.json(result);
-    } catch (aiError: any) {
-      console.error('AI Interpretation error:', aiError);
-      res.status(503).json({
-        message: aiError.message || "Failed to get AI interpretation. Please try again."
-      });
-    }
-  } catch (error) {
-    console.error('Request error:', error);
-    if (error instanceof z.ZodError) {
-      res.status(400).json({
-        message: "Invalid input data",
-        errors: error.errors
-      });
-      return;
-    }
-    res.status(500).json({
-      message: "Failed to process numerology calculation"
-    });
+function reduceToSingleDigit(num: number): number {
+  while (num > 9) {
+    num = String(num).split('').reduce((acc, digit) => acc + Number(digit), 0);
   }
-});
+  return num;
+}
 
-router.post("/compatibility", async (req, res) => {
-  try {
-    const data = compatibilityInputSchema.parse(req.body);
-    console.log('Received compatibility data:', data);
+async function getInterpretation(numbers: any, name: string) {
+  // Placeholder interpretation
+  return {
+    lifePath: `Your life path number ${numbers.lifePath} indicates your journey.`,
+    destiny: `Your destiny number ${numbers.destiny} reveals your potential.`,
+    heartDesire: "Your heart's desire points to your inner motivation.",
+    expression: "Your expression number shows how you present yourself.",
+    personality: "Your personality number reflects your outer self.",
+    attribute: "Your attribute number indicates natural talents.",
+    birthDateNum: "Your birth date number reveals innate characteristics.",
+    overview: `${name}, your numerological profile suggests a unique path.`,
+    recommendations: {
+      strengths: ["Adaptability", "Creativity"],
+      challenges: ["Patience", "Focus"],
+      growthAreas: ["Communication", "Leadership"],
+      practices: ["Meditation", "Journaling"]
+    },
+    developmentSummary: "Focus on developing your natural strengths while addressing challenges."
+  };
+}
 
-    const result = calculateCompatibility(
-      data.name1,
-      data.birthdate1,
-      data.name2,
-      data.birthdate2
-    );
-
-    res.json(result);
-  } catch (error) {
-    console.error('Compatibility calculation error:', error);
-    if (error instanceof z.ZodError) {
-      res.status(400).json({
-        message: "Invalid input data",
-        errors: error.errors
-      });
-      return;
-    }
-    res.status(500).json({
-      message: "Failed to calculate compatibility"
-    });
-  }
-});
-
-router.post("/coaching", async (req, res) => {
-  try {
-    if (!req.body.numerologyResult) {
-      res.status(400).json({
-        message: "Numerology result is required"
-      });
-      return;
-    }
-
-    const coaching = await getPersonalizedCoaching(
-      req.body.numerologyResult,
-      req.body.userQuery
-    );
-
-    res.json(coaching);
-  } catch (error) {
-    console.error('AI Coaching error:', error);
-    res.status(503).json({
-      message: "Failed to get coaching insights. Please try again."
-    });
-  }
-});
-
-// Dream interpretation route
-router.post("/dreams/interpret", async (req, res) => {
-  try {
-    const data = dreamInputSchema.parse(req.body);
-    console.log('Processing dream interpretation request:', data);
-
-    const userId = req.session.userId || null;
-    let userBirthdate = "2000-01-01"; // Default fallback
-    let userName = "Anonymous";
-
-    // If user is logged in, get their details
-    if (userId) {
-      const user = await storage.getUserByEmail(req.body.email);
-      if (user) {
-        const numerologyResult = await storage.getLatestNumerologyResult(userId);
-        if (numerologyResult) {
-          userBirthdate = numerologyResult.birthdate;
-          userName = numerologyResult.name;
-        }
-      }
-    }
-
-    const { interpretation, numerologyFactors } = await interpretDream(
-      data.description,
-      data.emotions,
-      data.symbols,
-      userBirthdate,
-      userName
-    );
-
-    // Store the dream record
-    const dreamRecord = await storage.createDreamRecord({
-      ...data,
-      userId,
-      numerologyFactors,
-      interpretation
-    });
-
-    res.json(dreamRecord);
-  } catch (error) {
-    console.error('Dream interpretation error:', error);
-    if (error instanceof z.ZodError) {
-      res.status(400).json({
-        message: "Invalid input data",
-        errors: error.errors
-      });
-      return;
-    }
-    res.status(500).json({
-      message: "Failed to process dream interpretation"
-    });
-  }
-});
-
-// Fetch dream records for user
-router.get("/dreams", async (req, res) => {
-  try {
-    const userId = req.session.userId;
-    if (!userId) {
-      return res.status(401).json({ message: "Please log in to view your dream records" });
-    }
-
-    const dreams = await storage.getDreamRecordsByUserId(userId);
-    res.json(dreams);
-  } catch (error) {
-    console.error('Error fetching dream records:', error);
-    res.status(500).json({
-      message: "Failed to fetch dream records"
-    });
-  }
-});
+// Keep existing routes and export...
 
 export default router;
 
@@ -780,6 +674,50 @@ const calculateCompatibility = async (name1: string, birthdate1: string, name2: 
     return { compatibilityScore: 0.5 };
 }
 
-function reduceToSingleDigit(num: number): number {
-  return (num - 1) % 9 + 1;
+const calculateWeeklyForecast = async (startDate: Date, latestResult: any) => {
+    //Implementation for calculating weekly forecast. Placeholder for now.
+    return {
+        weekNumber: startDate.getWeekNumber(),
+        summary: "This is a placeholder weekly forecast.",
+        dailyForecasts: [],
+        guidance: "",
+        insights: []
+    }
+}
+
+
+const calculateMonthlyForecast = async (monthDate: Date, latestResult: any) => {
+    //Implementation for calculating monthly forecast. Placeholder for now.
+    return {
+        month: monthDate.toLocaleString('default', { month: 'long' }),
+        summary: "This is a placeholder monthly forecast.",
+        weeklyForecasts: [],
+        guidance: "",
+        insights: []
+    }
+}
+
+const getPersonalizedCoaching = async (numerologyResult: any, userQuery?: string) => {
+    //Implementation for getting personalized coaching. Placeholder for now.
+    return {
+        advice: "This is placeholder personalized coaching advice.",
+        followUpQuestions: ["Question 1", "Question 2"]
+    }
+}
+
+const interpretDream = async (description: string, emotions: string[], symbols: string[], birthdate: string, userName: string) => {
+    //Implementation for dream interpretation. Placeholder for now.
+    return {
+        interpretation: "This is a placeholder dream interpretation.",
+        numerologyFactors: {}
+    }
+}
+
+
+Date.prototype.getWeekNumber = function () {
+    const d = new Date(Date.UTC(this.getFullYear(), this.getMonth(), this.getDate()));
+    const dayNum = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
 }
