@@ -65,7 +65,7 @@ router.post("/auth/signup", async (req, res) => {
     res.status(201).json({
       message: emailSent 
         ? "Account created successfully. Please check your email for verification code."
-        : `Account created but could not send verification email (${emailError}). Please try requesting a new code.`,
+        : `Account created but could not send verification email. Please try requesting a new code. (${emailError})`,
       userId: user.id,
       emailSent,
       emailError: emailError

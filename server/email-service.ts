@@ -16,10 +16,11 @@ function verifySmtpConfig() {
   }
 
   // Log available configuration for debugging
-  console.log('SMTP Configuration available:', {
+  console.log('SMTP Configuration check:', {
     host: process.env.SMTP_HOST,
     port: process.env.SMTP_PORT,
     user: process.env.SMTP_USER?.substring(0, 3) + '***',
+    environment: process.env.NODE_ENV || 'development',
     configured: true
   });
 
@@ -33,7 +34,7 @@ const CONNECTION_RETRY_INTERVAL = 60000; // 1 minute
 
 async function getTransporter() {
   if (!verifySmtpConfig()) {
-    throw new Error("SMTP configuration is incomplete. Please check your environment variables.");
+    throw new Error("SMTP configuration is incomplete. Check environment variables and deployment settings.");
   }
 
   const now = Date.now();
@@ -50,8 +51,10 @@ async function getTransporter() {
 
   lastConnectionAttempt = now;
 
+  const isProduction = process.env.NODE_ENV === 'production';
+
   try {
-    transporter = nodemailer.createTransport({
+    const config = {
       host: process.env.SMTP_HOST,
       port: parseInt(process.env.SMTP_PORT || "587"),
       secure: process.env.SMTP_PORT === "465",
@@ -63,14 +66,22 @@ async function getTransporter() {
       maxConnections: 3,
       maxMessages: 100,
       tls: {
-        rejectUnauthorized: process.env.NODE_ENV === 'production'
+        rejectUnauthorized: isProduction,
+        ciphers: 'SSLv3'
       },
-      debug: process.env.NODE_ENV !== 'production',
-      logger: process.env.NODE_ENV !== 'production',
+      debug: !isProduction,
+      logger: !isProduction,
       connectionTimeout: 10000, // 10 seconds
       greetingTimeout: 10000,
       socketTimeout: 30000
+    };
+
+    console.log('Creating SMTP transport with config:', {
+      ...config,
+      auth: { ...config.auth, pass: '***' }
     });
+
+    transporter = nodemailer.createTransport(config);
 
     // Verify connection
     await transporter.verify();
@@ -79,7 +90,7 @@ async function getTransporter() {
   } catch (error) {
     console.error('SMTP Connection Error:', error);
     transporter = null;
-    throw new Error("Failed to connect to SMTP server. Please try again later.");
+    throw new Error(`Failed to connect to SMTP server (${error.message}). Please try again later.`);
   }
 }
 
@@ -136,7 +147,7 @@ export async function sendVerificationEmail(email: string, code: string): Promis
     console.log('Verification email sent successfully:', info.messageId);
   } catch (error) {
     console.error('Failed to send verification email:', error);
-    throw new Error(error instanceof Error ? error.message : "Failed to send verification email");
+    throw new Error(`Failed to send verification email: ${error.message}`);
   }
 }
 
