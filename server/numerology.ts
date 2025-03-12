@@ -1669,5 +1669,11 @@ export {
   reduceToSingleDigit,
   calculateWeeklyForecast,
   calculateMonthlyForecast,
-  calculateCompatibility
+  calculateCompatibility,
+  getBusinessStrengths,
+  getBusinessChallenges,
+  getFriendshipStrengths,
+  getFriendshipChallenges,
+  getFamilyStrengths,
+  getFamilyChallenges
 };

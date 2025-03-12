@@ -6,6 +6,8 @@ import { storage } from "./storage";
 import apiRouter from "./api-router";
 import { createServer } from 'http';
 
+console.log('Starting server initialization...');
+
 const app = express();
 
 // Basic middleware
@@ -48,6 +50,7 @@ app.use((req, res, next) => {
 });
 
 // Mount API Router with JSON handling
+console.log('Mounting API router...');
 app.use('/api', (req, res, next) => {
   res.type('json');
   log(`[API Gateway] Processing ${req.method} ${req.path}`);
