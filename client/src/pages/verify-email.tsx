@@ -32,6 +32,7 @@ export default function VerifyEmailPage() {
   const [userId, setUserId] = useState<number | null>(null);
   const [email, setEmail] = useState<string>("");
   const [emailSent, setEmailSent] = useState<boolean>(true);
+  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
     // Get userId and email from URL params
@@ -39,11 +40,21 @@ export default function VerifyEmailPage() {
     const id = params.get("userId");
     const emailParam = params.get("email");
     const emailSentParam = params.get("emailSent");
+    const emailError = params.get("emailError");
 
     if (id && emailParam) {
       setUserId(parseInt(id));
       setEmail(emailParam);
       setEmailSent(emailSentParam === "true");
+
+      // Show error message if email failed to send
+      if (emailSentParam === "false" && emailError) {
+        toast({
+          variant: "destructive",
+          title: "Failed to send verification email",
+          description: emailError,
+        });
+      }
 
       // Only request verification code automatically if email wasn't sent during signup
       if (emailSentParam === "false") {
@@ -64,12 +75,13 @@ export default function VerifyEmailPage() {
   const requestVerificationCode = async (userId: number) => {
     try {
       setIsLoading(true);
+      setRetryCount(prev => prev + 1);
       console.log("Requesting verification code for userId:", userId);
       const response = await apiRequest("POST", "/api/auth/resend-verification", { userId });
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to send verification code");
+        throw new Error(data.message || data.error || "Failed to send verification code");
       }
 
       if (data.emailSent) {
@@ -79,7 +91,7 @@ export default function VerifyEmailPage() {
         });
         setEmailSent(true);
       } else {
-        throw new Error("Failed to send email. Please try again in a few minutes.");
+        throw new Error(data.message || "Failed to send email. Please try again in a few minutes.");
       }
     } catch (error) {
       toast({
@@ -121,6 +133,8 @@ export default function VerifyEmailPage() {
         title: "Verification failed",
         description: error.message,
       });
+    },
+    onSettled: () => {
       setIsLoading(false);
     },
   });
@@ -140,6 +154,11 @@ export default function VerifyEmailPage() {
               : "Click below to send a verification code to your email"
             }
           </p>
+          {retryCount > 2 && (
+            <p className="text-xs text-muted-foreground mt-2">
+              Having trouble? Please check your spam folder or try using a different email address.
+            </p>
+          )}
         </div>
 
         <Form {...form}>
@@ -172,7 +191,7 @@ export default function VerifyEmailPage() {
             <Button
               className="w-full"
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || !emailSent}
             >
               {isLoading ? "Verifying..." : "Verify Email"}
             </Button>

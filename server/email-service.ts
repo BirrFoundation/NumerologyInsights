@@ -24,12 +24,19 @@ const CONNECTION_RETRY_INTERVAL = 60000; // 1 minute
 
 async function getTransporter() {
   if (!verifySmtpConfig()) {
-    throw new Error("SMTP configuration is incomplete");
+    throw new Error("SMTP configuration is incomplete. Please check your environment variables.");
   }
 
   const now = Date.now();
   if (transporter && (now - lastConnectionAttempt) < CONNECTION_RETRY_INTERVAL) {
-    return transporter;
+    try {
+      // Verify existing connection
+      await transporter.verify();
+      return transporter;
+    } catch (error) {
+      console.error('Existing SMTP connection failed, creating new one:', error);
+      transporter = null;
+    }
   }
 
   lastConnectionAttempt = now;
@@ -44,23 +51,23 @@ async function getTransporter() {
         pass: process.env.SMTP_PASS
       },
       pool: true,
-      maxConnections: 5,
+      maxConnections: 3,
       maxMessages: 100,
       tls: {
-        rejectUnauthorized: false
+        rejectUnauthorized: process.env.NODE_ENV === 'production'
       },
-      logger: true,
-      debug: true
+      debug: process.env.NODE_ENV !== 'production',
+      logger: process.env.NODE_ENV !== 'production'
     });
 
     // Verify connection
     await transporter.verify();
-    console.log('SMTP Server is ready to send emails');
+    console.log('SMTP Server connected successfully');
     return transporter;
   } catch (error) {
     console.error('SMTP Connection Error:', error);
     transporter = null;
-    throw new Error("Failed to connect to SMTP server");
+    throw new Error("Failed to connect to SMTP server. Please try again later.");
   }
 }
 
@@ -71,7 +78,7 @@ async function retryOperation<T>(operation: () => Promise<T>, maxRetries = 3): P
       return await operation();
     } catch (error) {
       lastError = error as Error;
-      console.error(`Attempt ${attempt}/${maxRetries} failed:`, error);
+      console.error(`SMTP Attempt ${attempt}/${maxRetries} failed:`, error);
       if (attempt < maxRetries) {
         await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
       }
@@ -83,37 +90,38 @@ async function retryOperation<T>(operation: () => Promise<T>, maxRetries = 3): P
 export async function sendVerificationEmail(email: string, code: string): Promise<void> {
   console.log('Attempting to send verification email to:', email);
 
-  const mailOptions = {
-    from: `"Numerology App" <${process.env.SMTP_USER}>`,
-    to: email,
-    subject: "Verify Your Numerology Account",
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #333;">Welcome to Your Numerology Journey</h2>
-        <p>Thank you for signing up! To complete your registration, please use the following verification code:</p>
-        <div style="background-color: #f4f4f4; padding: 15px; text-align: center; margin: 20px 0;">
-          <h1 style="color: #6366f1; letter-spacing: 5px; margin: 0;">${code}</h1>
-        </div>
-        <p>This code will expire in 15 minutes.</p>
-        <p>If you didn't request this verification, please ignore this email.</p>
-        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
-        <p style="color: #666; font-size: 12px;">This is an automated message, please do not reply.</p>
-      </div>
-    `
-  };
-
   try {
+    // Log current environment for debugging
+    console.log('Environment:', {
+      NODE_ENV: process.env.NODE_ENV,
+      SMTP_HOST: process.env.SMTP_HOST,
+      SMTP_PORT: process.env.SMTP_PORT,
+      SMTP_USER: process.env.SMTP_USER?.substring(0, 3) + '***'
+    });
+
     const transport = await retryOperation(getTransporter);
 
-    console.log('SMTP Configuration:', {
-      host: process.env.SMTP_HOST,
-      port: process.env.SMTP_PORT,
-      user: process.env.SMTP_USER?.substring(0, 3) + '***'
-    });
+    const mailOptions = {
+      from: `"Numerology App" <${process.env.SMTP_USER}>`,
+      to: email,
+      subject: "Verify Your Numerology Account",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #333;">Welcome to Your Numerology Journey</h2>
+          <p>Thank you for signing up! To complete your registration, please use the following verification code:</p>
+          <div style="background-color: #f4f4f4; padding: 15px; text-align: center; margin: 20px 0;">
+            <h1 style="color: #6366f1; letter-spacing: 5px; margin: 0;">${code}</h1>
+          </div>
+          <p>This code will expire in 15 minutes.</p>
+          <p>If you didn't request this verification, please ignore this email.</p>
+          <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+          <p style="color: #666; font-size: 12px;">This is an automated message, please do not reply.</p>
+        </div>
+      `
+    };
 
     const info = await retryOperation(() => transport.sendMail(mailOptions));
     console.log('Verification email sent successfully:', info.messageId);
-    console.log('Preview URL:', nodemailer.getTestMessageUrl(info));
   } catch (error) {
     console.error('Failed to send verification email:', error);
     throw new Error(error instanceof Error ? error.message : "Failed to send verification email");

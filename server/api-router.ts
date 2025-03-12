@@ -50,12 +50,14 @@ router.post("/auth/signup", async (req, res) => {
 
     // Try to send verification email, but don't fail if it doesn't work
     let emailSent = false;
+    let emailError = null;
     try {
       await sendVerificationEmail(user.email, code);
       console.log('Verification email sent successfully during signup');
       emailSent = true;
-    } catch (emailError) {
-      console.error('Failed to send verification email during signup:', emailError);
+    } catch (error) {
+      emailError = error instanceof Error ? error.message : "Unknown error";
+      console.error('Failed to send verification email during signup:', error);
       // Log the error but continue with account creation
     }
 
@@ -63,9 +65,10 @@ router.post("/auth/signup", async (req, res) => {
     res.status(201).json({
       message: emailSent 
         ? "Account created successfully. Please check your email for verification code."
-        : "Account created but could not send verification email. Please try requesting a new code.",
+        : `Account created but could not send verification email (${emailError}). Please try requesting a new code.`,
       userId: user.id,
-      emailSent
+      emailSent,
+      emailError: emailError
     });
 
   } catch (error) {
@@ -74,6 +77,59 @@ router.post("/auth/signup", async (req, res) => {
       return res.status(400).json({ error: "Invalid input data", details: error.errors });
     }
     res.status(500).json({ error: "Failed to create account" });
+  }
+});
+
+router.post("/auth/resend-verification", async (req, res) => {
+  try {
+    if (!req.body.userId) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
+
+    const userId = parseInt(req.body.userId);
+    console.log("Attempting to resend verification code for userId:", userId);
+
+    const user = await storage.getUserById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Generate new verification code
+    const code = generateVerificationCode();
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+
+    // Save new verification code first
+    await storage.createVerificationCode({
+      userId: user.id,
+      code,
+      expiresAt
+    });
+
+    // Try to send the verification email
+    try {
+      await sendVerificationEmail(user.email, code);
+      console.log('New verification code sent successfully');
+      res.json({ 
+        message: "New verification code sent successfully",
+        emailSent: true
+      });
+    } catch (emailError) {
+      console.error('Failed to send new verification code:', emailError);
+      // Include detailed error message for debugging
+      const errorMessage = emailError instanceof Error ? emailError.message : "Unknown error";
+      res.status(500).json({ 
+        error: "Failed to send verification code",
+        message: `Email service error: ${errorMessage}. Please try again in a few minutes.`,
+        emailSent: false,
+        details: process.env.NODE_ENV !== 'production' ? errorMessage : undefined
+      });
+    }
+  } catch (error) {
+    console.error("Resend verification error:", error);
+    res.status(500).json({ 
+      error: "Failed to resend verification code",
+      message: error instanceof Error ? error.message : "Unknown error occurred"
+    });
   }
 });
 
@@ -148,10 +204,13 @@ router.post("/auth/resend-verification", async (req, res) => {
       });
     } catch (emailError) {
       console.error('Failed to send new verification code:', emailError);
+      // Include detailed error message for debugging
+      const errorMessage = emailError instanceof Error ? emailError.message : "Unknown error";
       res.status(500).json({ 
         error: "Failed to send verification code",
-        message: "Please try again in a few minutes",
-        emailSent: false
+        message: `Email service error: ${errorMessage}. Please try again in a few minutes.`,
+        emailSent: false,
+        details: process.env.NODE_ENV !== 'production' ? errorMessage : undefined
       });
     }
   } catch (error) {
