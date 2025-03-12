@@ -27,15 +27,16 @@ export function PeriodicForecast({ result }: Props) {
     error: weeklyErrorData,
     refetch: refetchWeekly
   } = useQuery({
-    queryKey: ['/api/weekly-forecast', result.userId || result.id, weekStart.toISOString()],
+    queryKey: ['/api/weekly-forecast', result.id, weekStart.toISOString()],
     queryFn: async () => {
-      const response = await fetch(`/api/weekly-forecast?date=${weekStart.toISOString()}&userId=${result.userId || result.id}`);
+      const response = await fetch(`/api/weekly-forecast?date=${weekStart.toISOString()}&userId=${result.id}`);
       if (!response.ok) {
-        throw new Error('Failed to fetch weekly forecast');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to fetch weekly forecast');
       }
       return response.json();
     },
-    enabled: !!(result.userId || result.id)
+    enabled: !!result.id
   });
 
   // Monthly Forecast Query
@@ -46,15 +47,16 @@ export function PeriodicForecast({ result }: Props) {
     error: monthlyErrorData,
     refetch: refetchMonthly
   } = useQuery({
-    queryKey: ['/api/monthly-forecast', result.userId || result.id, monthStart.toISOString()],
+    queryKey: ['/api/monthly-forecast', result.id, monthStart.toISOString()],
     queryFn: async () => {
-      const response = await fetch(`/api/monthly-forecast?date=${monthStart.toISOString()}&userId=${result.userId || result.id}`);
+      const response = await fetch(`/api/monthly-forecast?date=${monthStart.toISOString()}&userId=${result.id}`);
       if (!response.ok) {
-        throw new Error('Failed to fetch monthly forecast');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to fetch monthly forecast');
       }
       return response.json();
     },
-    enabled: !!(result.userId || result.id)
+    enabled: !!result.id
   });
 
   return (

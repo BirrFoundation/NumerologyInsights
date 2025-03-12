@@ -13,6 +13,7 @@ export interface IStorage {
     userId?: number | null;
   }): Promise<NumerologyResult>;
 
+  getLatestNumerologyResult(userId: number): Promise<NumerologyResult | null>;
   createUser(user: InsertUser): Promise<User>;
   getUserByEmail(email: string): Promise<User | null>;
   verifyUser(userId: number): Promise<void>;
@@ -34,6 +35,7 @@ export interface IStorage {
 
 export class MemStorage implements IStorage {
   private results: Map<number, NumerologyResult>;
+  private userResults: Map<number, number[]>; // userId -> resultIds
   private users: Map<number, User>;
   private verificationCodes: Map<number, VerificationCode>;
   private dreamRecords: Map<number, DreamRecord>;
@@ -42,6 +44,7 @@ export class MemStorage implements IStorage {
 
   constructor() {
     this.results = new Map();
+    this.userResults = new Map();
     this.users = new Map();
     this.verificationCodes = new Map();
     this.dreamRecords = new Map();
@@ -61,7 +64,26 @@ export class MemStorage implements IStorage {
     const id = this.currentId++;
     const result = { id, ...data };
     this.results.set(id, result);
+
+    // Track user's results
+    if (data.userId) {
+      const userResults = this.userResults.get(data.userId) || [];
+      userResults.push(id);
+      this.userResults.set(data.userId, userResults);
+    }
+
     return result;
+  }
+
+  async getLatestNumerologyResult(userId: number): Promise<NumerologyResult | null> {
+    const userResults = this.userResults.get(userId);
+    if (!userResults || userResults.length === 0) {
+      return null;
+    }
+
+    // Get the latest result (last in the array)
+    const latestResultId = userResults[userResults.length - 1];
+    return this.results.get(latestResultId) || null;
   }
 
   async createUser(data: InsertUser): Promise<User> {
@@ -74,6 +96,8 @@ export class MemStorage implements IStorage {
       createdAt: new Date()
     };
     this.users.set(id, user);
+    // Initialize empty results array for new user
+    this.userResults.set(id, []);
     return user;
   }
 
