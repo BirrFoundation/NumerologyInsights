@@ -219,8 +219,9 @@ export default function ResultsDisplay({ result, onReset, onCompatibility }: Pro
     <div className="relative min-h-screen w-full">
       <ResultsBackground result={result} />
       <div className="relative z-10 min-h-screen w-full">
-        <div className="container mx-auto px-4 py-8">
-          <div className="space-y-8">
+        <div className="container mx-auto px-1 sm:px-4 py-6 sm:py-8">
+          <div className="space-y-6 sm:space-y-8">
+            {/* Title Section */}
             <div className="text-center">
               <h2 className="text-2xl font-semibold sm:text-3xl">
                 Numerology Reading for {result.name}
@@ -230,14 +231,16 @@ export default function ResultsDisplay({ result, onReset, onCompatibility }: Pro
               </p>
             </div>
 
-            <div>
+            {/* Overview Section */}
+            <div className="text-center px-2 sm:px-4">
               <h3 className="text-xl font-semibold mb-4">Overview</h3>
-              <p className="leading-relaxed">{getBasicInterpretation()}</p>
+              <p className="leading-relaxed max-w-3xl mx-auto">{getBasicInterpretation()}</p>
             </div>
 
-            <div>
+            {/* Core Numbers Section */}
+            <div className="text-center">
               <h3 className="text-xl font-semibold mb-6">Core Numbers</h3>
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 px-1 sm:px-0">
                 <NumberDisplay number={result.lifePath} title="Life Path Number" />
                 <NumberDisplay number={result.destiny} title="Destiny Number" />
                 <NumberDisplay number={result.heartDesire} title="Heart's Desire Number" />
