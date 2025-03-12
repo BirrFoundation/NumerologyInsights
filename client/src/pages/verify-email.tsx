@@ -101,8 +101,6 @@ export default function VerifyEmailPage() {
         title: "Verification failed",
         description: error.message,
       });
-    },
-    onSettled: () => {
       setIsLoading(false);
     },
   });

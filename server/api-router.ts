@@ -263,18 +263,71 @@ router.post("/auth/signup", async (req, res) => {
       password: hashedPassword,
     });
 
-    // Store user ID in session
-    if (req.session) {
-      req.session.userId = user.id;
+    // Generate verification code
+    const code = generateVerificationCode();
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes from now
+
+    // Save verification code
+    await storage.createVerificationCode({
+      userId: user.id,
+      code,
+      expiresAt
+    });
+
+    // Send verification email
+    try {
+      await sendVerificationEmail(user.email, code);
+      console.log('Verification email sent during signup');
+    } catch (emailError) {
+      console.error('Failed to send verification email during signup:', emailError);
+      // Don't fail the signup if email fails, but log it
     }
 
-    res.status(201).json({ message: "Account created successfully" });
+    // Return user ID for verification redirection
+    res.status(201).json({ 
+      message: "Account created successfully",
+      userId: user.id 
+    });
   } catch (error) {
     console.error("Signup error:", error);
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: "Invalid input data", details: error.errors });
     }
     res.status(500).json({ error: "Failed to create account" });
+  }
+});
+
+router.post("/auth/verify-email", async (req, res) => {
+  try {
+    if (!req.body.userId || !req.body.code) {
+      return res.status(400).json({ error: "UserId and verification code are required" });
+    }
+
+    const userId = parseInt(req.body.userId);
+    const code = req.body.code;
+
+    const user = await storage.getUserById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Get the latest verification code
+    const verificationCode = await storage.getLatestVerificationCode(userId);
+    if (!verificationCode || verificationCode.code !== code) {
+      return res.status(400).json({ error: "Invalid verification code" });
+    }
+
+    // Check if code is expired
+    if (new Date() > verificationCode.expiresAt) {
+      return res.status(400).json({ error: "Verification code expired" });
+    }
+
+    // Mark user as verified
+    await storage.verifyUser(userId);
+    res.json({ message: "Email verified successfully" });
+  } catch (error) {
+    console.error("Email verification error:", error);
+    res.status(500).json({ error: "Failed to verify email" });
   }
 });
 
@@ -342,145 +395,6 @@ router.get("/auth/me", async (req, res) => {
   }
 });
 
-
-// Add these routes after existing auth routes
-router.post("/auth/verify-email", async (req, res) => {
-  try {
-    const data = verificationSchema.parse(req.body);
-    const user = await storage.getUserById(data.userId);
-
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    // Get the latest verification code
-    const verificationCode = await storage.getLatestVerificationCode(data.userId);
-    if (!verificationCode || verificationCode.code !== data.code) {
-      return res.status(400).json({ error: "Invalid verification code" });
-    }
-
-    // Check if code is expired
-    if (new Date() > verificationCode.expiresAt) {
-      return res.status(400).json({ error: "Verification code expired" });
-    }
-
-    // Mark user as verified
-    await storage.verifyUser(data.userId);
-    res.json({ message: "Email verified successfully" });
-  } catch (error) {
-    console.error("Email verification error:", error);
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: "Invalid input data", details: error.errors });
-    }
-    res.status(500).json({ error: "Failed to verify email" });
-  }
-});
-
-router.post("/auth/send-verification", async (req, res) => {
-  try {
-    if (!req.body.email) {
-      return res.status(400).json({ error: "Email is required" });
-    }
-
-    const user = await storage.getUserByEmail(req.body.email);
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    // Generate verification code
-    const code = generateVerificationCode();
-    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes from now
-
-    // Save verification code
-    await storage.createVerificationCode({
-      userId: user.id,
-      code,
-      expiresAt
-    });
-
-    // Send verification email
-    await sendVerificationEmail(user.email, code);
-
-    res.json({ 
-      message: "Verification code sent successfully",
-      userId: user.id 
-    });
-  } catch (error) {
-    console.error("Send verification error:", error);
-    res.status(500).json({ error: "Failed to send verification code" });
-  }
-});
-
-router.post("/auth/forgot-password", async (req, res) => {
-  try {
-    if (!req.body.email) {
-      return res.status(400).json({ error: "Email is required" });
-    }
-
-    const user = await storage.getUserByEmail(req.body.email);
-    if (!user) {
-      // Don't reveal if user exists
-      return res.json({ message: "If an account exists, a reset code has been sent" });
-    }
-
-    // Generate reset code
-    const code = generateVerificationCode();
-    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
-
-    // Save reset code
-    await storage.createVerificationCode({
-      userId: user.id,
-      code,
-      expiresAt
-    });
-
-    // Send reset email
-    await sendResetEmail(user.email, code);
-
-    res.json({ 
-      message: "If an account exists, a reset code has been sent",
-      userId: user.id
-    });
-  } catch (error) {
-    console.error("Forgot password error:", error);
-    res.status(500).json({ error: "Failed to process request" });
-  }
-});
-
-router.post("/auth/reset-password", async (req, res) => {
-  try {
-    const { userId, code, newPassword } = req.body;
-    if (!userId || !code || !newPassword) {
-      return res.status(400).json({ error: "All fields are required" });
-    }
-
-    const user = await storage.getUserById(userId);
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    // Verify reset code
-    const resetCode = await storage.getLatestVerificationCode(userId);
-    if (!resetCode || resetCode.code !== code) {
-      return res.status(400).json({ error: "Invalid reset code" });
-    }
-
-    if (new Date() > resetCode.expiresAt) {
-      return res.status(400).json({ error: "Reset code expired" });
-    }
-
-    // Hash new password
-    const hashedPassword = await hashPassword(newPassword);
-
-    // Update password
-    await storage.updatePassword(userId, hashedPassword);
-
-    res.json({ message: "Password reset successfully" });
-  } catch (error) {
-    console.error("Reset password error:", error);
-    res.status(500).json({ error: "Failed to reset password" });
-  }
-});
 
 // Numerology Routes
 router.post("/calculate", async (req, res) => {

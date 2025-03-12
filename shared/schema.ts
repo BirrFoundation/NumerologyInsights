@@ -54,7 +54,7 @@ export const userAuthSchema = z.object({
 });
 
 export const verificationSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
+  userId: z.number(),
   code: z.string().length(6, "Verification code must be 6 characters")
 });
 
