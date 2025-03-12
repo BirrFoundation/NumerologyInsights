@@ -142,7 +142,7 @@ function getPersonalityNumber(name: string): number {
   return reduceToSingleDigit(consonants);
 }
 
-export function reduceToSingleDigit(num: number): number {
+function reduceToSingleDigit(num: number): number {
   let currentNum = num;
   console.log(`Reducing number: ${num}`);
 
@@ -741,7 +741,7 @@ function getPersonalizedRecommendations(result: {
   };
 }
 
-export function calculateNumerology(name: string, birthdate: string) {
+function calculateNumerology(name: string, birthdate: string) {
   const localDate = getLocalDate(birthdate);
   console.log(`\nCalculating numerology for ${name}, born ${localDate}`);
 
@@ -953,7 +953,7 @@ function getWorkStrengths(profile1: ReturnType<typeof calculateNumerology>, prof
   // Leadership dynamics
   if ([1, 8].includes(profile1.lifePath) && [2, 6].includes(profile2.lifePath)) {
     strengths.push("Excellent leadership-support dynamic with clear roles");
-    strengths.push("One naturally leads while the otherprovides essential support");
+    strengths.push("One naturally leadswhilethe otherprovides essential support");
   }
 
   //// Practical approach
@@ -1140,343 +1140,134 @@ function getFamilyChallenges(profile1: ReturnType<typeof calculateNumerology>, p
   return challenges.length > 0 ? challenges : ["Need to develop shared understanding of family dynamics"];
 }
 
-// Add these new functions after the existing reduceToSingleDigit function
+function calculateWeeklyForecast(date: Date, result: ReturnType<typeof calculateNumerology>) {
+  const weekNumber = Math.floor((date.getTime() - new Date(date.getFullYear(), 0, 1).getTime()) / (7 * 24 * 60 * 60 * 1000));
+  const personalDayNumber = reduceToSingleDigit(result.lifePath + weekNumber);
 
-function calculateWeeklyForecast(date: Date, profile: ReturnType<typeof calculateNumerology>) {
-  const weekStart = date;
-  const weeklyNumbers = [];
-  let weeklyEnergy = 0;
+  console.log(`Calculating weekly forecast for week ${weekNumber}, personal day number: ${personalDayNumber}`);
 
-  // Calculate numbers for each day of the week
-  for (let i = 0; i < 7; i++) {
-    const currentDate = new Date(weekStart);
-    currentDate.setDate(weekStart.getDate() + i);
-    const day = currentDate.getDate();
-    const month = currentDate.getMonth() + 1;
-    const year = currentDate.getFullYear();
+  // Calculate peak energy days based on personal day number and life path
+  const peakDays = [
+    { day: 'Monday', number: reduceToSingleDigit(personalDayNumber + 1) },
+    { day: 'Tuesday', number: reduceToSingleDigit(personalDayNumber + 2) },
+    { day: 'Wednesday', number: reduceToSingleDigit(personalDayNumber + 3) },
+    { day: 'Thursday', number: reduceToSingleDigit(personalDayNumber + 4) },
+    { day: 'Friday', number: reduceToSingleDigit(personalDayNumber + 5) },
+    { day: 'Saturday', number: reduceToSingleDigit(personalDayNumber + 6) },
+    { day: 'Sunday', number: reduceToSingleDigit(personalDayNumber + 7) }
+  ];
 
-    const dailyNumber = reduceToSingleDigit(day + month + year);
-    weeklyNumbers.push(dailyNumber);
-    weeklyEnergy += dailyNumber;
-  }
+  // Calculate weekly essence based on personal day number
+  const weeklyEssence = [
+    "Initiation and New Beginnings",
+    "Cooperation and Balance",
+    "Creative Expression",
+    "Foundation Building",
+    "Change and Adventure",
+    "Harmony and Responsibility",
+    "Introspection and Wisdom",
+    "Material Success",
+    "Completion and Universal Love"
+  ][personalDayNumber - 1];
 
-  // Calculate weekly essence number
-  const weeklyEssence = reduceToSingleDigit(weeklyEnergy);
+  // Generate weekly theme based on life path and personal day interaction
+  const weeklyTheme = `This week carries the energy of ${weeklyEssence}, particularly strong for those with Life Path ${result.lifePath}. Focus on personal growth and spiritual development.`;
 
-  // Get peak days (days with highest energy)
-  const peakDays = weeklyNumbers
-    .map((num, index) => ({ number: num, day: index }))
-    .sort((a, b) => b.number - a.number)
-    .slice(0, 2);
-
-  return {
+  const forecast = {
     weeklyEssence,
-    dailyNumbers: weeklyNumbers,
-    peakDays: peakDays.map(peak => ({
-      day: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][peak.day],
-      number: peak.number
-    })),
-    weeklyTheme: getWeeklyTheme(weeklyEssence, profile),
-    opportunities: getWeeklyOpportunities(weeklyEssence),
-    challenges: getWeeklyChallenges(weeklyEssence)
+    weeklyTheme,
+    peakDays,
+    opportunities: [
+      "Focus on starting new projects and initiatives",
+      "Connect with like-minded individuals",
+      "Express your creativity through various mediums"
+    ],
+    challenges: [
+      "Managing energy levels throughout the week",
+      "Balancing personal and professional responsibilities",
+      "Staying focused on long-term goals"
+    ],
+    guidance: "Use the peak energy days for important tasks and decisions. Take time for self-reflection during lower energy periods.",
+    insights: [
+      "How can you best utilize your peak energy days?",
+      "What patterns are emerging in your daily experiences?",
+      "What lessons are being presented through your challenges?"
+    ]
   };
+
+  console.log('Generated weekly forecast:', forecast);
+  return forecast;
 }
 
-function calculateMonthlyForecast(date: Date, profile: ReturnType<typeof calculateNumerology>) {
+function calculateMonthlyForecast(date: Date, result: ReturnType<typeof calculateNumerology>) {
   const month = date.getMonth() + 1;
   const year = date.getFullYear();
 
-  // Calculate Personal Month Number
-  const personalMonthNumber = reduceToSingleDigit(month + reduceToSingleDigit(year) + reduceToSingleDigit(profile.lifePath));
+  console.log(`Calculating monthly forecast for ${month}/${year}`);
 
-  // Calculate Universal Month Number
+  // Calculate personal month number
+  const personalMonthNumber = reduceToSingleDigit(result.lifePath + month + reduceToSingleDigit(year));
+
+  // Calculate universal month number
   const universalMonthNumber = reduceToSingleDigit(month + reduceToSingleDigit(year));
 
-  // Calculate Monthly Essence
-  const monthlyEssence = reduceToSingleDigit(personalMonthNumber + universalMonthNumber);
+  console.log(`Personal month: ${personalMonthNumber}, Universal month: ${universalMonthNumber}`);
 
-  return {
+  // Calculate monthly essence
+  const monthlyEssence = [
+    "New Beginnings",
+    "Partnership",
+    "Creative Expression",
+    "Foundation",
+    "Freedom",
+    "Harmony",
+    "Spiritual Growth",
+    "Power",
+    "Completion"
+  ][personalMonthNumber - 1];
+
+  // Generate theme based on personal and universal month numbers
+  const theme = `${monthlyEssence} - A month of ${
+    personalMonthNumber === universalMonthNumber
+      ? "aligned personal and universal energies"
+      : "balancing personal goals with universal timing"
+  }`;
+
+  const forecast = {
+    theme,
     personalMonthNumber,
     universalMonthNumber,
     monthlyEssence,
-    theme: getMonthlyTheme(monthlyEssence, profile),
-    opportunities: getMonthlyOpportunities(monthlyEssence),
-    challenges: getMonthlyChallenges(monthlyEssence),
-    focusAreas: getMonthlyFocusAreas(monthlyEssence, profile)
-  };
-}
-
-function getWeeklyTheme(essence: number, profile: ReturnType<typeof calculateNumerology>): string {
-  const themes = {
-    1: "Week of New Beginnings - Perfect for starting new projects and taking initiative",
-    2: "Week of Cooperation - Focus on partnerships and diplomatic solutions",
-    3: "Week of Creative Expression - Ideal for artistic pursuits and communication",
-    4: "Week of Foundation Building - Time to organize and establish structure",
-    5: "Week of Change - Embrace new opportunities and adventure",
-    6: "Week of Balance - Focus on harmony in relationships and responsibilities",
-    7: "Week of Reflection - Ideal for research and spiritual growth",
-    8: "Week of Manifestation - Focus on achievement and material goals",
-    9: "Week of Completion - Time to finish projects and release what no longer serves",
-    11: "Week of Inspiration - Heightened intuition and spiritual awareness",
-    22: "Week of Master Building - Manifest your highest visions"
-  };
-
-  return themes[essence as keyof typeof themes] || themes[reduceToSingleDigit(essence)];
-}
-
-function getWeeklyOpportunities(essence: number): string[] {
-  const baseOpportunities = {
-    1: ["Start new projects", "Take leadership roles", "Show initiative"],
-    2: ["Build partnerships", "Mediate conflicts", "Focus on details"],
-    3: ["Express creativity", "Communicate ideas", "Socialize"],
-    4: ["Organize systems", "Build foundations", "Create structure"],
-    5: ["Embrace change", "Travel or explore", "Try new experiences"],
-    6: ["Focus on relationships", "Create harmony", "Take responsibility"],
-    7: ["Research and study", "Meditate", "Plan strategically"],
-    8: ["Focus on business", "Manifest abundance", "Take charge"],
-    9: ["Complete projects", "Let go of old patterns", "Help others"],
-    11: ["Follow intuition", "Inspire others", "Spiritual growth"],
-    22: ["Build large-scale projects", "Manifest dreams", "Create lasting structures"]
-  };
-
-  return baseOpportunities[essence as keyof typeof baseOpportunities] || 
-         baseOpportunities[reduceToSingleDigit(essence)];
-}
-
-function getWeeklyChallenges(essence: number): string[] {
-  const baseChallenges = {
-    1: ["Avoid being too aggressive", "Watch ego", "Don't rush decisions"],
-    2: ["Don't be oversensitive", "Avoid indecision", "Stand up for yourself"],
-    3: ["Stay focused", "Avoid scattered energy", "Don't be superficial"],
-    4: ["Be flexible", "Avoid rigidity", "Don't overwork"],
-    5: ["Maintain focus", "Avoid impulsiveness", "Don't take unnecessary risks"],
-    6: ["Don't overcommit", "Avoid perfectionism", "Balance responsibilities"],
-    7: ["Don't isolate", "Avoid overthinking", "Stay grounded"],
-    8: ["Watch material focus", "Avoid power struggles", "Stay ethical"],
-    9: ["Let go of control", "Complete unfinished tasks", "Don't be dramatic"],
-    11: ["Ground spiritual energy", "Avoid nervous tension", "Balance material/spiritual"],
-    22: ["Don't overwhelm yourself", "Stay practical", "Avoid unrealistic expectations"]
-  };
-
-  return baseChallenges[essence as keyof typeof baseChallenges] || 
-         baseChallenges[reduceToSingleDigit(essence)];
-}
-
-function getMonthlyTheme(essence: number, profile: ReturnType<typeof calculateNumerology>): string {
-  const themes = {
-    1: "Month of Leadership and New Beginnings",
-    2: "Month of Cooperation and Diplomacy",
-    3: "Month of Creative Expression and Joy",
-    4: "Month of Building and Organization",
-    5: "Month of Change and Freedom",
-    6: "Month of Responsibility and Harmony",
-    7: "Month of Wisdom and Inner Growth",
-    8: "Month of Power and Achievement",
-    9: "Month of Completion and Universal Love",
-    11: "Month of Spiritual Mastery",
-    22: "Month of Master Building"
-  };
-
-  return themes[essence as keyof typeof themes] || themes[reduceToSingleDigit(essence)];
-}
-
-function getMonthlyOpportunities(essence: number): string[] {
-  const baseOpportunities = {
-    1: [
-      "Take initiative in major projects",
-      "Establish leadership positions",
-      "Start new ventures with confidence"
+    opportunities: [
+      "Align your actions with your long-term vision",
+      "Build meaningful connections and partnerships",
+      "Express your authentic self through your work"
     ],
-    2: [
-      "Build important partnerships",
-      "Focus on diplomatic solutions",
-      "Develop patience and cooperation"
+    challenges: [
+      "Maintaining focus on priority goals",
+      "Managing energy and resources effectively",
+      "Navigating relationship dynamics"
     ],
-    3: [
-      "Launch creative projects",
-      "Expand social networks",
-      "Express yourself authentically"
+    focusAreas: [
+      "Personal development and growth",
+      "Professional advancement",
+      "Spiritual connection",
+      "Relationship building"
     ],
-    4: [
-      "Build solid foundations",
-      "Organize long-term plans",
-      "Establish reliable systems"
-    ],
-    5: [
-      "Embrace progressive changes",
-      "Explore new territories",
-      "Break free from limitations"
-    ],
-    6: [
-      "Focus on family harmony",
-      "Take on responsibilities",
-      "Create beauty and balance"
-    ],
-    7: [
-      "Deepen spiritual understanding",
-      "Research and analyze",
-      "Develop expertise"
-    ],
-    8: [
-      "Focus on material success",
-      "Build power and influence",
-      "Achieve financial goals"
-    ],
-    9: [
-      "Complete major cycles",
-      "Share wisdom with others",
-      "Embrace universal love"
-    ],
-    11: [
-      "Follow spiritual guidance",
-      "Inspire and teach others",
-      "Channel higher wisdom"
-    ],
-    22: [
-      "Build lasting structures",
-      "Manifest grand visions",
-      "Create practical solutions"
+    guidance: `This month emphasizes ${monthlyEssence.toLowerCase()}. Pay attention to synchronicities and follow your intuition.`,
+    insights: [
+      "What new opportunities are presenting themselves?",
+      "How can you better align with your life purpose?",
+      "What patterns need to be released or transformed?"
     ]
   };
 
-  return baseOpportunities[essence as keyof typeof baseOpportunities] || 
-         baseOpportunities[reduceToSingleDigit(essence)];
+  console.log('Generated monthly forecast:', forecast);
+  return forecast;
 }
 
-function getMonthlyChallenges(essence: number): string[] {
-  const baseChallenges = {
-    1: [
-      "Balance independence with cooperation",
-      "Manage ego and pride",
-      "Avoid dominating others"
-    ],
-    2: [
-      "Overcome sensitivity and doubt",
-      "Make decisions confidently",
-      "Stand up for yourself"
-    ],
-    3: [
-      "Maintain focus and discipline",
-      "Avoid superficiality",
-      "Channel creativity productively"
-    ],
-    4: [
-      "Stay flexible when needed",
-      "Avoid becoming too rigid",
-      "Balance work and rest"
-    ],
-    5: [
-      "Manage restless energy",
-      "Make wise choices",
-      "Stay committed to goals"
-    ],
-    6: [
-      "Balance giving and receiving",
-      "Avoid perfectionism",
-      "Set healthy boundaries"
-    ],
-    7: [
-      "Connect with others",
-      "Stay practical",
-      "Share your wisdom"
-    ],
-    8: [
-      "Use power wisely",
-      "Stay ethical in business",
-      "Balance material and spiritual"
-    ],
-    9: [
-      "Complete unfinished business",
-      "Let go of attachments",
-      "Avoid emotional drama"
-    ],
-    11: [
-      "Ground spiritual energy",
-      "Manage sensitivity",
-      "Balance idealism with practicality"
-    ],
-    22: [
-      "Stay focused on goals",
-      "Manage stress levels",
-      "Delegate when necessary"
-    ]
-  };
-
-  return baseChallenges[essence as keyof typeof baseChallenges] || 
-         baseChallenges[reduceToSingleDigit(essence)];
-}
-
-function getMonthlyFocusAreas(essence: number, profile: ReturnType<typeof calculateNumerology>): string[] {
-  const baseFocusAreas = {
-    1: [
-      "Personal development and independence",
-      "Leadership skills",
-      "Self-confidence"
-    ],
-    2: [
-      "Relationships and partnerships",
-      "Emotional intelligence",
-      "Attention to detail"
-    ],
-    3: [
-      "Creative expression",
-      "Communication",
-      "Social connections"
-    ],
-    4: [
-      "Organization and structure",
-      "Practical matters",
-      "Foundation building"
-    ],
-    5: [
-      "Personal freedom",
-      "Adventure and change",
-      "Adaptability"
-    ],
-    6: [
-      "Family and home",
-      "Responsibility",
-      "Harmony and balance"
-    ],
-    7: [
-      "Spiritual growth",
-      "Inner wisdom",
-      "Technical skills"
-    ],
-    8: [
-      "Business and finance",
-      "Personal power",
-      "Material goals"
-    ],
-    9: [
-      "Completion and release",
-      "Humanitarian efforts",
-      "Universal understanding"
-    ],
-    11: [
-      "Spiritual awareness",
-      "Intuitive development",
-      "Teaching and inspiration"
-    ],
-    22: [
-      "Large-scale projects",
-      "Practical spirituality",
-      "Leadership and service"
-    ]
-  };
-
-  return baseFocusAreas[essence as keyof typeof baseFocusAreas] || 
-         baseFocusAreas[reduceToSingleDigit(essence)];
-}
-
-export { 
-  calculateWeeklyForecast,
-  calculateMonthlyForecast
-};
-
-// Add missing calculation functions that were referenced but not implemented
 function calculateBusinessCompatibility(profile1: ReturnType<typeof calculateNumerology>, profile2: ReturnType<typeof calculateNumerology>): number {
-  let score = 70;
+  let score = 70; // Base score
 
   // Strong business combinations
   if ([8, 4].includes(profile1.lifePath) && [8, 4].includes(profile2.lifePath)) score += 20;
@@ -1489,7 +1280,7 @@ function calculateBusinessCompatibility(profile1: ReturnType<typeof calculateNum
 }
 
 function calculateFriendshipCompatibility(profile1: ReturnType<typeof calculateNumerology>, profile2: ReturnType<typeof calculateNumerology>): number {
-  let score = 70;
+  let score = 70; // Base score
 
   // Natural friendship combinations
   if ([2, 3, 6].includes(profile1.lifePath) && [2, 3, 6].includes(profile2.lifePath)) score += 20;
@@ -1502,7 +1293,7 @@ function calculateFriendshipCompatibility(profile1: ReturnType<typeof calculateN
 }
 
 function calculateFamilyCompatibility(profile1: ReturnType<typeof calculateNumerology>, profile2: ReturnType<typeof calculateNumerology>): number {
-  let score = 70;
+  let score = 70; // Base score
 
   // Strong family bonds
   if ([6, 2].includes(profile1.lifePath) && [6, 2].includes(profile2.lifePath)) score += 20;
@@ -1514,13 +1305,7 @@ function calculateFamilyCompatibility(profile1: ReturnType<typeof calculateNumer
   return Math.min(100, Math.max(40, score));
 }
 
-// Fix the calculateCompatibility function return type
-export function calculateCompatibility(
-  name1: string,
-  birthdate1: string,
-  name2: string,
-  birthdate2: string
-): {
+function calculateCompatibility(name1: string, birthdate1: string, name2: string, birthdate2: string): {
   score: number;
   aspects: string[];
   lifePathScore: number;
@@ -1615,3 +1400,274 @@ interface CompatibilityResult extends ReturnType<typeof calculateNumerology> {
     };
   };
 }
+
+function getWeeklyTheme(essence: number, profile: ReturnType<typeof calculateNumerology>): string {
+  const themes = {
+    1: "Week of New Beginnings - Perfect for starting new projects and taking initiative",
+    2: "Week of Cooperation - Focus on partnerships and diplomatic solutions",
+    3: "Week of Creative Expression - Ideal for artistic pursuits and communication",
+    4: "Week of Foundation Building - Time to organize and establish structure",
+    5: "Week of Change - Embrace new opportunities and adventure",
+    6: "Week of Balance - Focus on harmony in relationships and responsibilities",
+    7: "Week of Reflection - Ideal for research and spiritual growth",
+    8: "Week of Manifestation - Focus on achievement and material goals",
+    9: "Week of Completion - Time to finish projects and release what no longer serves",
+    11: "Week of Inspiration - Heightened intuition and spiritual awareness",
+    22: "Week of Master Building - Manifest your highest visions"
+  };
+
+  return themes[essence as keyof typeof themes] || themes[reduceToSingleDigit(essence)];
+}
+
+function getWeeklyOpportunities(essence: number): string[] {
+  const baseOpportunities = {
+    1: ["Start new projects", "Take leadership roles", "Show initiative"],
+    2: ["Build partnerships", "Mediate conflicts", "Focus on details"],
+    3: ["Express creativity", "Communicate ideas", "Socialize"],
+    4: ["Organize systems", "Build foundations", "Create structure"],
+    5: ["Embrace change", "Travel or explore", "Try new experiences"],
+    6: ["Focus on relationships", "Create harmony", "Take responsibility"],
+    7: ["Research and study", "Meditate", "Plan strategically"],
+    8: ["Focus on business", "Manifest abundance", "Take charge"],
+    9: ["Complete projects", "Let go of old patterns", "Help others"],
+    11: ["Follow intuition", "Inspire others", "Spiritual growth"],
+    22: ["Build large-scale projects", "Manifest dreams", "Create lasting structures"]
+  };
+
+  return baseOpportunities[essence as keyof typeof baseOpportunities] ||
+         baseOpportunities[reduceToSingleDigit(essence)];
+}
+
+function getWeeklyChallenges(essence: number): string[] {
+  const baseChallenges = {
+    1: ["Avoid being too aggressive", "Watch ego", "Don't rush decisions"],
+    2: ["Don't be oversensitive", "Avoid indecision", "Stand up for yourself"],
+    3: ["Stay focused", "Avoid scattered energy", "Don't be superficial"],
+    4: ["Be flexible", "Avoid rigidity", "Don't overwork"],
+    5: ["Maintain focus", "Avoid impulsiveness", "Don't take unnecessary risks"],
+    6: ["Don't overcommit", "Avoid perfectionism", "Balance responsibilities"],
+    7: ["Don't isolate", "Avoid overthinking", "Stay grounded"],
+    8: ["Watch material focus", "Avoid power struggles", "Stay ethical"],
+    9: ["Let go of control", "Complete unfinished tasks", "Don't be dramatic"],
+    11: ["Ground spiritual energy", "Avoid nervous tension", "Balance material/spiritual"],
+    22: ["Don't overwhelm yourself", "Stay practical", "Avoid unrealistic expectations"]
+  };
+
+  return baseChallenges[essence as keyof typeof baseChallenges] ||
+         baseChallenges[reduceToSingleDigit(essence)];
+}
+
+function getMonthlyTheme(essence: number, profile: ReturnType<typeof calculateNumerology>): string {
+  const themes = {
+    1: "Month of Leadership and New Beginnings",
+    2: "Month of Cooperation and Diplomacy",
+    3: "Month of Creative Expression and Joy",
+    4: "Month of Building and Organization",
+    5: "Month of Change and Freedom",
+    6: "Month of Responsibility and Harmony",
+    7: "Month of Wisdom and Inner Growth",
+    8: "Month of Power and Achievement",
+    9: "Month of Completion and Universal Love",
+    11: "Month of Spiritual Mastery",
+    22: "Month of Master Building"
+  };
+
+  return themes[essence as keyof typeof themes] || themes[reduceToSingleDigit(essence)];
+}
+
+function getMonthlyOpportunities(essence: number): string[] {
+  const baseOpportunities = {
+    1: [
+      "Take initiative in major projects",
+      "Establish leadership positions",
+      "Start new ventures with confidence"
+    ],
+    2: [
+      "Build important partnerships",
+      "Focus on diplomatic solutions",
+      "Develop patience and cooperation"
+    ],
+    3: [
+      "Launch creative projects",
+      "Expand social networks",
+      "Express yourself authentically"
+    ],
+    4: [
+      "Build solid foundations",
+      "Organize long-term plans",
+      "Establish reliable systems"
+    ],
+    5: [
+      "Embrace progressive changes",
+      "Explore new territories",
+      "Break free from limitations"
+    ],
+    6: [
+      "Focus on family harmony",
+      "Take on responsibilities",
+      "Create beauty and balance"
+    ],
+    7: [
+      "Deepen spiritual understanding",
+      "Research and analyze",
+      "Develop expertise"
+    ],
+    8: [
+      "Focus on material success",
+      "Build power and influence",
+      "Achieve financial goals"
+    ],
+    9: [
+      "Complete major cycles",
+      "Share wisdom with others",
+      "Embrace universal love"
+    ],
+    11: [
+      "Follow spiritual guidance",
+      "Inspire and teach others",
+      "Channel higher wisdom"
+    ],
+    22: [
+      "Build lasting structures",
+      "Manifest grand visions",
+      "Create practical solutions"
+    ]
+  };
+
+  return baseOpportunities[essence as keyof typeof baseOpportunities] ||
+         baseOpportunities[reduceToSingleDigit(essence)];
+}
+
+function getMonthlyChallenges(essence: number): string[] {
+  const baseChallenges = {
+    1: [
+      "Balance independence with cooperation",
+      "Manage ego and pride",
+      "Avoid dominating others"
+    ],
+    2: [
+      "Overcome sensitivity and doubt",
+      "Make decisions confidently",
+      "Stand up for yourself"
+    ],
+    3: [
+      "Maintain focus and discipline",
+      "Avoid superficiality",
+      "Channel creativity productively"
+    ],
+    4: [
+      "Stay flexible when needed",
+      "Avoid becoming too rigid",
+      "Balance work and rest"
+    ],
+    5: [
+      "Manage restless energy",
+      "Make wise choices",
+      "Stay committed to goals"
+    ],
+    6: [
+      "Balance giving and receiving",
+      "Avoid perfectionism",
+      "Set healthy boundaries"
+    ],
+    7: [
+      "Connect with others",
+      "Stay practical",
+      "Share your wisdom"
+    ],
+    8: [
+      "Use power wisely",
+      "Stay ethical in business",
+      "Balance material and spiritual"
+    ],
+    9: [
+      "Complete unfinished business",
+      "Let go of attachments",
+      "Avoid emotional drama"
+    ],
+    11: [
+      "Ground spiritual energy",
+      "Manage sensitivity",
+      "Balance idealism with practicality"
+    ],
+    22: [
+      "Stay focused on goals",
+      "Manage stress levels",
+      "Delegate when necessary"
+    ]
+  };
+
+  return baseChallenges[essence as keyof typeof baseChallenges] ||
+         baseChallenges[reduceToSingleDigit(essence)];
+}
+
+function getMonthlyFocusAreas(essence: number, profile: ReturnType<typeof calculateNumerology>): string[] {
+  const baseFocusAreas = {
+    1: [
+      "Personal development and independence",
+      "Leadership skills",
+      "Self-confidence"
+    ],
+    2: [
+      "Relationships and partnerships",
+      "Emotional intelligence",
+      "Attention to detail"
+    ],
+    3: [
+      "Creative expression",
+      "Communication",
+      "Social connections"
+    ],
+    4: [
+      "Organization and structure",
+      "Practical matters",
+      "Foundation building"
+    ],
+    5: [
+      "Personal freedom",
+      "Adventure and change",
+      "Adaptability"
+    ],
+    6: [
+      "Family and home",
+      "Responsibility",
+      "Harmony and balance"
+    ],
+    7: [
+      "Spiritual growth",
+      "Inner wisdom",
+      "Technical skills"
+    ],
+    8: [
+      "Business and finance",
+      "Personal power",
+      "Material goals"
+    ],
+    9: [
+      "Completion and release",
+      "Humanitarian efforts",
+      "Universal understanding"
+    ],
+    11: [
+      "Spiritual awareness",
+      "Intuitive development",
+      "Teaching and inspiration"
+    ],
+    22: [
+      "Large-scale projects",
+      "Practical spirituality",
+      "Leadership and service"
+    ]
+  };
+
+  return baseFocusAreas[essence as keyof typeof baseFocusAreas] ||
+         baseFocusAreas[reduceToSingleDigit(essence)];
+}
+
+export {
+  calculateNumerology,
+  reduceToSingleDigit,
+  calculateWeeklyForecast,
+  calculateMonthlyForecast,
+  calculateCompatibility
+};

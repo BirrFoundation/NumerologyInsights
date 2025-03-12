@@ -18,7 +18,7 @@ router.use((req, res, next) => {
   next();
 });
 
-// Daily forecast endpoint moved from routes.ts
+// Daily forecast endpoint
 router.get("/daily-forecast", async (req, res) => {
   try {
     const { date, userId } = req.query;

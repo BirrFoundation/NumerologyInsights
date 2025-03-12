@@ -14,6 +14,35 @@ interface Props {
   result: NumerologyResult;
 }
 
+// Define weekly forecast types
+interface WeeklyPeakDay {
+  day: string;
+  number: number;
+}
+
+interface WeeklyForecast {
+  weeklyEssence: string;
+  weeklyTheme: string;
+  peakDays: WeeklyPeakDay[];
+  opportunities: string[];
+  challenges: string[];
+  guidance: string;
+  insights: string[];
+}
+
+// Define monthly forecast types
+interface MonthlyForecast {
+  theme: string;
+  personalMonthNumber: number;
+  universalMonthNumber: number;
+  monthlyEssence: string;
+  opportunities: string[];
+  challenges: string[];
+  focusAreas: string[];
+  guidance: string;
+  insights: string[];
+}
+
 export function PeriodicForecast({ result }: Props) {
   const [currentDate] = useState(new Date());
   const weekStart = startOfWeek(currentDate);
@@ -26,7 +55,7 @@ export function PeriodicForecast({ result }: Props) {
     isError: weeklyError,
     error: weeklyErrorData,
     refetch: refetchWeekly
-  } = useQuery({
+  } = useQuery<WeeklyForecast>({
     queryKey: ['/api/weekly-forecast', result.id],
     queryFn: async () => {
       console.log('Fetching weekly forecast for user:', result.id);
@@ -49,7 +78,7 @@ export function PeriodicForecast({ result }: Props) {
     isError: monthlyError,
     error: monthlyErrorData,
     refetch: refetchMonthly
-  } = useQuery({
+  } = useQuery<MonthlyForecast>({
     queryKey: ['/api/monthly-forecast', result.id],
     queryFn: async () => {
       console.log('Fetching monthly forecast for user:', result.id);
@@ -123,7 +152,7 @@ export function PeriodicForecast({ result }: Props) {
 
                   <h4 className="font-medium mb-2">Peak Energy Days:</h4>
                   <ul className="space-y-2">
-                    {weeklyForecast.peakDays.map((peak, index) => (
+                    {weeklyForecast.peakDays.map((peak: WeeklyPeakDay, index: number) => (
                       <li key={index} className="text-sm">
                         {peak.day}: Energy Level {peak.number}
                       </li>
@@ -135,7 +164,7 @@ export function PeriodicForecast({ result }: Props) {
                   <div className="p-4 rounded-lg bg-primary/5">
                     <h4 className="font-medium mb-2">Weekly Opportunities</h4>
                     <ul className="space-y-1">
-                      {weeklyForecast.opportunities.map((opportunity, index) => (
+                      {weeklyForecast.opportunities.map((opportunity: string, index: number) => (
                         <li key={index} className="text-sm">{opportunity}</li>
                       ))}
                     </ul>
@@ -144,7 +173,7 @@ export function PeriodicForecast({ result }: Props) {
                   <div className="p-4 rounded-lg bg-primary/5">
                     <h4 className="font-medium mb-2">Weekly Challenges</h4>
                     <ul className="space-y-1">
-                      {weeklyForecast.challenges.map((challenge, index) => (
+                      {weeklyForecast.challenges.map((challenge: string, index: number) => (
                         <li key={index} className="text-sm">{challenge}</li>
                       ))}
                     </ul>
@@ -157,7 +186,7 @@ export function PeriodicForecast({ result }: Props) {
 
                   <h4 className="font-medium mt-4 mb-2">Reflection Questions</h4>
                   <ul className="space-y-1">
-                    {weeklyForecast.insights.map((insight, index) => (
+                    {weeklyForecast.insights.map((insight: string, index: number) => (
                       <li key={index} className="text-sm">{insight}</li>
                     ))}
                   </ul>
@@ -222,7 +251,7 @@ export function PeriodicForecast({ result }: Props) {
                   <div className="p-4 rounded-lg bg-primary/5">
                     <h4 className="font-medium mb-2">Monthly Opportunities</h4>
                     <ul className="space-y-1">
-                      {monthlyForecast.opportunities.map((opportunity, index) => (
+                      {monthlyForecast.opportunities.map((opportunity: string, index: number) => (
                         <li key={index} className="text-sm">{opportunity}</li>
                       ))}
                     </ul>
@@ -231,7 +260,7 @@ export function PeriodicForecast({ result }: Props) {
                   <div className="p-4 rounded-lg bg-primary/5">
                     <h4 className="font-medium mb-2">Monthly Challenges</h4>
                     <ul className="space-y-1">
-                      {monthlyForecast.challenges.map((challenge, index) => (
+                      {monthlyForecast.challenges.map((challenge: string, index: number) => (
                         <li key={index} className="text-sm">{challenge}</li>
                       ))}
                     </ul>
@@ -241,7 +270,7 @@ export function PeriodicForecast({ result }: Props) {
                 <div className="p-4 rounded-lg bg-primary/5">
                   <h4 className="font-medium mb-2">Focus Areas for the Month</h4>
                   <ul className="space-y-1">
-                    {monthlyForecast.focusAreas.map((area, index) => (
+                    {monthlyForecast.focusAreas.map((area: string, index: number) => (
                       <li key={index} className="text-sm">{area}</li>
                     ))}
                   </ul>
@@ -251,7 +280,7 @@ export function PeriodicForecast({ result }: Props) {
 
                   <h4 className="font-medium mt-4 mb-2">Reflection Points</h4>
                   <ul className="space-y-1">
-                    {monthlyForecast.insights.map((insight, index) => (
+                    {monthlyForecast.insights.map((insight: string, index: number) => (
                       <li key={index} className="text-sm">{insight}</li>
                     ))}
                   </ul>
