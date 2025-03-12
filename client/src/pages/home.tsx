@@ -63,7 +63,7 @@ export default function Home() {
       </div>
 
       {/* Header with Sign Out */}
-      <div className="relative z-10 w-full px-2 py-2 sm:px-4 sm:py-4">
+      <div className="relative z-10 w-full px-1 py-2 sm:px-4 sm:py-4">
         <div className="flex justify-end max-w-[1400px] mx-auto">
           <Button
             variant="ghost"
@@ -78,8 +78,8 @@ export default function Home() {
       </div>
 
       {/* Content Layer */}
-      <div className="relative z-10 w-full max-w-[1400px] mx-auto px-1 sm:px-4 py-8 sm:py-16">
-        <div className="text-center mb-8 sm:mb-12">
+      <div className="relative z-10 w-full max-w-[1400px] mx-auto px-0.5 sm:px-4 py-6 sm:py-16">
+        <div className="text-center mb-6 sm:mb-12">
           <h1 className="text-4xl md:text-7xl font-extralight bg-gradient-to-r from-primary/90 via-primary/70 to-primary/50 bg-clip-text text-transparent animate-gradient tracking-widest">
             <span className="font-light">DEB</span>
             <span className="font-extralight">TERA</span>
@@ -108,8 +108,8 @@ export default function Home() {
           )}
         </div>
 
-        <Card className="backdrop-blur-sm bg-background/95 border-primary/10 shadow-lg w-[99.5%] mx-auto">
-          <CardContent className="p-2 sm:p-6">
+        <Card className="backdrop-blur-sm bg-background/95 border-primary/10 shadow-lg w-[99.8%] mx-auto">
+          <CardContent className="p-1 sm:p-6">
             {!result ? (
               mode === "numerology" ? (
                 <NumerologyForm 
