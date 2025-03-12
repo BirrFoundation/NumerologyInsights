@@ -22,10 +22,10 @@ export function ResultsBackground({ result }: Props) {
 
   useEffect(() => {
     // Generate more dynamic and beautiful bubbles
-    const newBubbles = Array.from({ length: 100 }, (_, i) => ({
+    const newBubbles = Array.from({ length: 1 }, (_, i) => ({
       id: i,
-      x: Math.random() * 100,
-      y: Math.random() * 100,
+      x: Math.random() * 1,
+      y: Math.random() * 1,
       size: Math.random() * 3 + 0.5, // Larger size range for more variety
       delay: i * 0.02, // Faster initial appearance
       color: Math.random() * 60 - 30, // Wider color range for more variation

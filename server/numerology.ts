@@ -801,77 +801,153 @@ export function calculateNumerology(name: string, birthdate: string) {
   return result;
 }
 
+interface CompatibilityResult extends ReturnType<typeof calculateNumerology> {
+  lifePathScore: number;
+  expressionScore: number;
+  heartDesireScore: number;
+  dynamics: string[];
+  growthAreas: string[];
+}
+
+
+function calculateNumberCompatibility(num1: number, num2: number): number {
+  // If numbers are the same, highest compatibility
+  if (num1 === num2) return 100;
+
+  // Check for master number compatibility
+  if ([11, 22, 33].includes(num1) && [11, 22, 33].includes(num2)) return 90;
+
+  // Check for harmonic number groups
+  const harmonicGroups = [
+    [1, 5, 7], // Independent numbers
+    [2, 4, 6], // Practical numbers
+    [3, 6, 9], // Creative numbers
+    [8, 4, 1]  // Material success numbers
+  ];
+
+  for (const group of harmonicGroups) {
+    if (group.includes(reduceToSingleDigit(num1)) && group.includes(reduceToSingleDigit(num2))) {
+      return 80;
+    }
+  }
+
+  // Calculate base compatibility
+  const diff = Math.abs(reduceToSingleDigit(num1) - reduceToSingleDigit(num2));
+  return Math.max(60 - (diff * 10), 40);
+}
+
+function generateCompatibilityAspects(profile1: ReturnType<typeof calculateNumerology>, profile2: ReturnType<typeof calculateNumerology>): string[] {
+  const aspects: string[] = [];
+
+  // Life Path Compatibility
+  if (profile1.lifePath === profile2.lifePath) {
+    aspects.push("Strong life path connection - shared life purpose and direction");
+  } else if ([1, 5, 7].includes(profile1.lifePath) && [1, 5, 7].includes(profile2.lifePath)) {
+    aspects.push("Compatible independent life paths - mutual respect for freedom");
+  }
+
+  // Expression Compatibility
+  if (profile1.expression === profile2.expression) {
+    aspects.push("Similar ways of expressing yourselves to the world");
+  } else if (Math.abs(profile1.expression - profile2.expression) <= 2) {
+    aspects.push("Complementary expression styles enhance communication");
+  }
+
+  // Heart's Desire Compatibility
+  if (profile1.heartDesire === profile2.heartDesire) {
+    aspects.push("Deep emotional connection through shared inner desires");
+  } else if ([2, 6, 9].includes(profile1.heartDesire) && [2, 6, 9].includes(profile2.heartDesire)) {
+    aspects.push("Harmonious emotional understanding and support");
+  }
+
+  return aspects;
+}
+
+function analyzeRelationshipDynamics(profile1: ReturnType<typeof calculateNumerology>, profile2: ReturnType<typeof calculateNumerology>): string[] {
+  const dynamics: string[] = [];
+
+  // Analyze Life Path interaction
+  if ([1, 8].includes(profile1.lifePath) && [2, 6].includes(profile2.lifePath)) {
+    dynamics.push("Leadership and support dynamic - one leads while the other nurtures");
+  }
+
+  // Check for creative partnership
+  if ([3, 6, 9].includes(profile1.expression) || [3, 6, 9].includes(profile2.expression)) {
+    dynamics.push("Creative energy flows naturally in this partnership");
+  }
+
+  // Emotional depth analysis
+  if (profile1.heartDesire === profile2.heartDesire) {
+    dynamics.push("Strong emotional resonance and mutual understanding");
+  }
+
+  // Balance of practical and spiritual
+  if ([4, 8].includes(profile1.lifePath) && [7, 9].includes(profile2.lifePath)) {
+    dynamics.push("Balance between practical matters and spiritual growth");
+  }
+
+  return dynamics;
+}
+
+function identifyGrowthAreas(profile1: ReturnType<typeof calculateNumerology>, profile2: ReturnType<typeof calculateNumerology>): string[] {
+  const growthAreas: string[] = [];
+
+  // Communication dynamics
+  if (Math.abs(profile1.expression - profile2.expression) > 2) {
+    growthAreas.push("Develop clearer communication channels and understanding");
+  }
+
+  // Emotional balance
+  if (Math.abs(profile1.heartDesire - profile2.heartDesire) > 2) {
+    growthAreas.push("Work on understanding each other's emotional needs");
+  }
+
+  // Life direction alignment
+  if (profile1.lifePath !== profile2.lifePath) {
+    growthAreas.push("Find common ground in life goals while respecting individual paths");
+  }
+
+  // Spiritual growth
+  if ([7, 9].includes(profile1.lifePath) || [7, 9].includes(profile2.lifePath)) {
+    growthAreas.push("Explore spiritual growth and deeper meaning together");
+  }
+
+  return growthAreas;
+}
+
 export function calculateCompatibility(
   name1: string,
   birthdate1: string,
   name2: string,
   birthdate2: string
-): { score: number; aspects: string[] } {
+): CompatibilityResult {
   const profile1 = calculateNumerology(name1, birthdate1);
   const profile2 = calculateNumerology(name2, birthdate2);
 
-  let compatibilityScore = 0;
-  const aspects: string[] = [];
+  // Calculate individual scores
+  const lifePathScore = calculateNumberCompatibility(profile1.lifePath, profile2.lifePath);
+  const expressionScore = calculateNumberCompatibility(profile1.expression, profile2.expression);
+  const heartDesireScore = calculateNumberCompatibility(profile1.heartDesire, profile2.heartDesire);
 
-  // Life Path Compatibility
-  if (profile1.lifePath === profile2.lifePath) {
-    compatibilityScore += 20;
-    aspects.push("Strong Life Path connection - shared life purpose and direction");
-  } else if ([1, 5, 7].includes(profile1.lifePath) && [1, 5, 7].includes(profile2.lifePath)) {
-    compatibilityScore += 15;
-    aspects.push("Compatible Life Paths - shared independence and intellectual interests");
-  } else if ([2, 4, 6].includes(profile1.lifePath) && [2, 4, 6].includes(profile2.lifePath)) {
-    compatibilityScore += 15;
-    aspects.push("Compatible Life Paths - shared practicality and stability");
-  } else if ([3, 6, 9].includes(profile1.lifePath) && [3, 6, 9].includes(profile2.lifePath)) {
-    compatibilityScore += 15;
-    aspects.push("Compatible Life Paths - shared creativity and emotional depth");
-  }
+  // Calculate overall compatibility score
+  const score = Math.round((lifePathScore + expressionScore + heartDesireScore) / 3);
 
-  // Expression Number Compatibility
-  if (profile1.expression === profile2.expression) {
-    compatibilityScore += 15;
-    aspects.push("Matching Expression numbers - similar ways of expressing yourselves");
-  } else if (Math.abs(profile1.expression - profile2.expression) <= 2) {
-    compatibilityScore += 10;
-    aspects.push("Complementary Expression numbers - enriching communication styles");
-  }
+  // Generate compatibility aspects
+  const aspects = generateCompatibilityAspects(profile1, profile2);
 
-  // Heart's Desire Compatibility
-  if (profile1.heartDesire === profile2.heartDesire) {
-    compatibilityScore += 20;
-    aspects.push("Strong emotional connection through matching Heart's Desire numbers");
-  } else if (Math.abs(profile1.heartDesire - profile2.heartDesire) <= 2) {
-    compatibilityScore += 15;
-    aspects.push("Compatible emotional needs and desires");
-  }
+  // Analyze relationship dynamics
+  const dynamics = analyzeRelationshipDynamics(profile1, profile2);
 
-  // Personality Number Compatibility
-  if (profile1.personality === profile2.personality) {
-    compatibilityScore += 15;
-    aspects.push("Similar outer personalities - natural social harmony");
-  } else if ([2, 6, 9].includes(profile1.personality) && [2, 6, 9].includes(profile2.personality)) {
-    compatibilityScore += 10;
-    aspects.push("Harmonious personality interaction");
-  }
-
-  // Destiny Number Compatibility
-  if (profile1.destiny === profile2.destiny) {
-    compatibilityScore += 15;
-    aspects.push("Shared destiny numbers indicate aligned life goals");
-  } else if (Math.abs(profile1.destiny - profile2.destiny) <= 2) {
-    compatibilityScore += 10;
-    aspects.push("Complementary life paths and goals");
-  }
-
-  // Attribute Number Compatibility
-  if (profile1.attribute === profile2.attribute) {
-    compatibilityScore += 15;
-    aspects.push("Matching core attributes suggest natural understanding");
-  }
+  // Identify growth areas
+  const growthAreas = identifyGrowthAreas(profile1, profile2);
 
   return {
-    score: Math.min(100, compatibilityScore),
-    aspects
+    score,
+    aspects,
+    lifePathScore,
+    expressionScore,
+    heartDesireScore,
+    dynamics,
+    growthAreas
   };
 }

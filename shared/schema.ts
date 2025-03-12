@@ -85,20 +85,20 @@ export const dreamInputSchema = z.object({
 
 
 // Create insert schemas
-export const insertUserSchema = createInsertSchema(users).omit({ 
-  id: true, 
+export const insertUserSchema = createInsertSchema(users).omit({
+  id: true,
   verified: true,
-  createdAt: true 
+  createdAt: true
 });
 
-export const insertVerificationSchema = createInsertSchema(verificationCodes).omit({ 
+export const insertVerificationSchema = createInsertSchema(verificationCodes).omit({
   id: true,
-  createdAt: true 
+  createdAt: true
 });
 
-export const insertNumerologySchema = createInsertSchema(numerologyResults).omit({ 
+export const insertNumerologySchema = createInsertSchema(numerologyResults).omit({
   id: true,
-  userId: true 
+  userId: true
 });
 
 export const insertDreamSchema = createInsertSchema(dreamRecords).omit({
@@ -117,6 +117,11 @@ export type NumerologyResult = typeof numerologyResults.$inferSelect;
 export interface CompatibilityResult {
   score: number;
   aspects: string[];
+  lifePathScore: number;
+  expressionScore: number;
+  heartDesireScore: number;
+  dynamics: string[];
+  growthAreas: string[];
 }
 
 export type NumerologyInterpretation = {
