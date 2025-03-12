@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import type { CompatibilityResult } from "@shared/schema";
-import { Heart, Star, ArrowRight, Zap, Users, Sparkles } from "lucide-react";
+import { Heart, Star, ArrowRight, Zap, Users, Sparkles, Briefcase, Building2, UserPlus, Home } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface Props {
@@ -45,7 +45,7 @@ export default function CompatibilityDisplay({ result, onReset }: Props) {
         </p>
       </motion.div>
 
-      {/* Main Content */}
+      {/* Main Grid */}
       <div className="grid gap-6 md:grid-cols-2">
         {/* Compatibility Aspects */}
         <Card>
@@ -102,6 +102,111 @@ export default function CompatibilityDisplay({ result, onReset }: Props) {
                 <span className="text-sm text-muted-foreground">{result.heartDesireScore}%</span>
               </div>
               <Progress value={result.heartDesireScore} className="h-2" />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Relationship Types Grid */}
+        <Card className="md:col-span-2">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg font-medium flex items-center gap-2">
+              <Users className="h-5 w-5 text-primary" />
+              Relationship Type Analysis
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-6 md:grid-cols-2">
+              {/* Work Compatibility */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <Briefcase className="h-5 w-5 text-primary" />
+                  <h4 className="font-medium">Work Compatibility</h4>
+                </div>
+                <Progress value={result.relationshipTypes.work.score} className="h-2" />
+                <div className="space-y-2">
+                  <p className="text-sm font-medium">Strengths:</p>
+                  <ul className="list-disc pl-5 space-y-1">
+                    {result.relationshipTypes.work.strengths.map((strength, i) => (
+                      <li key={i} className="text-sm">{strength}</li>
+                    ))}
+                  </ul>
+                  <p className="text-sm font-medium mt-2">Challenges:</p>
+                  <ul className="list-disc pl-5 space-y-1">
+                    {result.relationshipTypes.work.challenges.map((challenge, i) => (
+                      <li key={i} className="text-sm">{challenge}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              {/* Business Compatibility */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <Building2 className="h-5 w-5 text-primary" />
+                  <h4 className="font-medium">Business Compatibility</h4>
+                </div>
+                <Progress value={result.relationshipTypes.business.score} className="h-2" />
+                <div className="space-y-2">
+                  <p className="text-sm font-medium">Strengths:</p>
+                  <ul className="list-disc pl-5 space-y-1">
+                    {result.relationshipTypes.business.strengths.map((strength, i) => (
+                      <li key={i} className="text-sm">{strength}</li>
+                    ))}
+                  </ul>
+                  <p className="text-sm font-medium mt-2">Challenges:</p>
+                  <ul className="list-disc pl-5 space-y-1">
+                    {result.relationshipTypes.business.challenges.map((challenge, i) => (
+                      <li key={i} className="text-sm">{challenge}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              {/* Friendship Compatibility */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <UserPlus className="h-5 w-5 text-primary" />
+                  <h4 className="font-medium">Friendship Compatibility</h4>
+                </div>
+                <Progress value={result.relationshipTypes.friendship.score} className="h-2" />
+                <div className="space-y-2">
+                  <p className="text-sm font-medium">Strengths:</p>
+                  <ul className="list-disc pl-5 space-y-1">
+                    {result.relationshipTypes.friendship.strengths.map((strength, i) => (
+                      <li key={i} className="text-sm">{strength}</li>
+                    ))}
+                  </ul>
+                  <p className="text-sm font-medium mt-2">Challenges:</p>
+                  <ul className="list-disc pl-5 space-y-1">
+                    {result.relationshipTypes.friendship.challenges.map((challenge, i) => (
+                      <li key={i} className="text-sm">{challenge}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              {/* Family Compatibility */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <Home className="h-5 w-5 text-primary" />
+                  <h4 className="font-medium">Family Compatibility</h4>
+                </div>
+                <Progress value={result.relationshipTypes.family.score} className="h-2" />
+                <div className="space-y-2">
+                  <p className="text-sm font-medium">Strengths:</p>
+                  <ul className="list-disc pl-5 space-y-1">
+                    {result.relationshipTypes.family.strengths.map((strength, i) => (
+                      <li key={i} className="text-sm">{strength}</li>
+                    ))}
+                  </ul>
+                  <p className="text-sm font-medium mt-2">Challenges:</p>
+                  <ul className="list-disc pl-5 space-y-1">
+                    {result.relationshipTypes.family.challenges.map((challenge, i) => (
+                      <li key={i} className="text-sm">{challenge}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>

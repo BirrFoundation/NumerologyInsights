@@ -801,15 +801,6 @@ export function calculateNumerology(name: string, birthdate: string) {
   return result;
 }
 
-interface CompatibilityResult extends ReturnType<typeof calculateNumerology> {
-  lifePathScore: number;
-  expressionScore: number;
-  heartDesireScore: number;
-  dynamics: string[];
-  growthAreas: string[];
-}
-
-
 function calculateNumberCompatibility(num1: number, num2: number): number {
   // If numbers are the same, highest compatibility
   if (num1 === num2) return 100;
@@ -915,6 +906,193 @@ function identifyGrowthAreas(profile1: ReturnType<typeof calculateNumerology>, p
   return growthAreas;
 }
 
+function calculateRelationshipTypeScores(profile1: ReturnType<typeof calculateNumerology>, profile2: ReturnType<typeof calculateNumerology>) {
+  return {
+    work: {
+      score: calculateWorkCompatibility(profile1, profile2),
+      strengths: getWorkStrengths(profile1, profile2),
+      challenges: getWorkChallenges(profile1, profile2)
+    },
+    business: {
+      score: calculateBusinessCompatibility(profile1, profile2),
+      strengths: getBusinessStrengths(profile1, profile2),
+      challenges: getBusinessChallenges(profile1, profile2)
+    },
+    friendship: {
+      score: calculateFriendshipCompatibility(profile1, profile2),
+      strengths: getFriendshipStrengths(profile1, profile2),
+      challenges: getFriendshipChallenges(profile1, profile2)
+    },
+    family: {
+      score: calculateFamilyCompatibility(profile1, profile2),
+      strengths: getFamilyStrengths(profile1, profile2),
+      challenges: getFamilyChallenges(profile1, profile2)
+    }
+  };
+}
+
+function calculateWorkCompatibility(profile1: ReturnType<typeof calculateNumerology>, profile2: ReturnType<typeof calculateNumerology>): number {
+  let score = 70; // Base score
+
+  // Leadership and practical number combinations work well
+  if ([1, 8].includes(profile1.lifePath) && [4, 6].includes(profile2.lifePath)) score += 15;
+  if ([4, 8].includes(profile1.expression) && [4, 8].includes(profile2.expression)) score += 15;
+
+  // Strong work ethic combinations
+  if ([4, 8, 22].includes(profile1.lifePath) && [4, 8, 22].includes(profile2.lifePath)) score += 20;
+
+  // Potential conflicts
+  if ([5, 7].includes(profile1.lifePath) && [1, 8].includes(profile2.lifePath)) score -= 10;
+
+  return Math.min(100, Math.max(40, score));
+}
+
+function getWorkStrengths(profile1: ReturnType<typeof calculateNumerology>, profile2: ReturnType<typeof calculateNumerology>): string[] {
+  const strengths = [];
+
+  if ([1, 8].includes(profile1.lifePath) && [4, 6].includes(profile2.lifePath)) {
+    strengths.push("Strong leadership-support dynamic");
+  }
+  if ([4, 8].includes(profile1.expression) && [4, 8].includes(profile2.expression)) {
+    strengths.push("Shared practical approach to tasks");
+  }
+  if (profile1.lifePath === profile2.lifePath) {
+    strengths.push("Natural understanding of work methods");
+  }
+
+  return strengths;
+}
+
+function getWorkChallenges(profile1: ReturnType<typeof calculateNumerology>, profile2: ReturnType<typeof calculateNumerology>): string[] {
+  const challenges = [];
+
+  if ([5, 7].includes(profile1.lifePath) && [1, 8].includes(profile2.lifePath)) {
+    challenges.push("May have different approaches to structure");
+  }
+  if (Math.abs(profile1.expression - profile2.expression) > 3) {
+    challenges.push("Communication styles may need alignment");
+  }
+
+  return challenges;
+}
+
+function calculateBusinessCompatibility(profile1: ReturnType<typeof calculateNumerology>, profile2: ReturnType<typeof calculateNumerology>): number {
+  let score = 70;
+
+  // Strong business combinations
+  if ([8, 4].includes(profile1.lifePath) && [8, 4].includes(profile2.lifePath)) score += 20;
+  if ([1, 8].includes(profile1.expression) && [2, 6].includes(profile2.expression)) score += 15;
+
+  // Innovation and stability
+  if ([1, 5].includes(profile1.lifePath) && [4, 8].includes(profile2.lifePath)) score += 15;
+
+  return Math.min(100, Math.max(40, score));
+}
+
+function getBusinessStrengths(profile1: ReturnType<typeof calculateNumerology>, profile2: ReturnType<typeof calculateNumerology>): string[] {
+  const strengths = [];
+
+  if ([8, 4].includes(profile1.lifePath) && [8, 4].includes(profile2.lifePath)) {
+    strengths.push("Strong business acumen and shared goals");
+  }
+  if ([1, 5].includes(profile1.lifePath) && [4, 8].includes(profile2.lifePath)) {
+    strengths.push("Balance of innovation and stability");
+  }
+
+  return strengths;
+}
+
+function getBusinessChallenges(profile1: ReturnType<typeof calculateNumerology>, profile2: ReturnType<typeof calculateNumerology>): string[] {
+  const challenges = [];
+
+  if ([3, 7].includes(profile1.lifePath) && [8, 4].includes(profile2.lifePath)) {
+    challenges.push("May need to balance creativity with practicality");
+  }
+  if (Math.abs(profile1.destiny - profile2.destiny) > 3) {
+    challenges.push("Different long-term business visions");
+  }
+
+  return challenges;
+}
+
+function calculateFriendshipCompatibility(profile1: ReturnType<typeof calculateNumerology>, profile2: ReturnType<typeof calculateNumerology>): number {
+  let score = 70;
+
+  // Natural friendship combinations
+  if ([2, 3, 6].includes(profile1.lifePath) && [2, 3, 6].includes(profile2.lifePath)) score += 20;
+  if (profile1.heartDesire === profile2.heartDesire) score += 15;
+
+  // Complementary energies
+  if ([1, 5, 7].includes(profile1.lifePath) && [2, 3, 6].includes(profile2.lifePath)) score += 15;
+
+  return Math.min(100, Math.max(40, score));
+}
+
+function getFriendshipStrengths(profile1: ReturnType<typeof calculateNumerology>, profile2: ReturnType<typeof calculateNumerology>): string[] {
+  const strengths = [];
+
+  if ([2, 3, 6].includes(profile1.lifePath) && [2, 3, 6].includes(profile2.lifePath)) {
+    strengths.push("Natural emotional connection and understanding");
+  }
+  if (profile1.heartDesire === profile2.heartDesire) {
+    strengths.push("Shared interests and values");
+  }
+
+  return strengths;
+}
+
+function getFriendshipChallenges(profile1: ReturnType<typeof calculateNumerology>, profile2: ReturnType<typeof calculateNumerology>): string[] {
+  const challenges = [];
+
+  if (Math.abs(profile1.heartDesire - profile2.heartDesire) > 3) {
+    challenges.push("May have different emotional needs");
+  }
+  if ([8, 4].includes(profile1.lifePath) && [3, 5].includes(profile2.lifePath)) {
+    challenges.push("Different approaches to social interaction");
+  }
+
+  return challenges;
+}
+
+function calculateFamilyCompatibility(profile1: ReturnType<typeof calculateNumerology>, profile2: ReturnType<typeof calculateNumerology>): number {
+  let score = 70;
+
+  // Strong family bonds
+  if ([6, 2].includes(profile1.lifePath) && [6, 2].includes(profile2.lifePath)) score += 20;
+  if ([4, 8].includes(profile1.lifePath) && [2, 6].includes(profile2.lifePath)) score += 15;
+
+  // Emotional understanding
+  if (profile1.heartDesire === profile2.heartDesire) score += 15;
+
+  return Math.min(100, Math.max(40, score));
+}
+
+function getFamilyStrengths(profile1: ReturnType<typeof calculateNumerology>, profile2: ReturnType<typeof calculateNumerology>): string[] {
+  const strengths = [];
+
+  if ([6, 2].includes(profile1.lifePath) && [6, 2].includes(profile2.lifePath)) {
+    strengths.push("Strong nurturing and emotional bonds");
+  }
+  if (profile1.heartDesire === profile2.heartDesire) {
+    strengths.push("Deep emotional understanding");
+  }
+
+  return strengths;
+}
+
+function getFamilyChallenges(profile1: ReturnType<typeof calculateNumerology>, profile2: ReturnType<typeof calculateNumerology>): string[] {
+  const challenges = [];
+
+  if (Math.abs(profile1.expression - profile2.expression) > 3) {
+    challenges.push("Different communication styles need attention");
+  }
+  if ([1, 5].includes(profile1.lifePath) && [2, 6].includes(profile2.lifePath)) {
+    challenges.push("Balance needed between independence and togetherness");
+  }
+
+  return challenges;
+}
+
 export function calculateCompatibility(
   name1: string,
   birthdate1: string,
@@ -941,6 +1119,9 @@ export function calculateCompatibility(
   // Identify growth areas
   const growthAreas = identifyGrowthAreas(profile1, profile2);
 
+  // Calculate relationship type scores
+  const relationshipTypes = calculateRelationshipTypeScores(profile1, profile2);
+
   return {
     score,
     aspects,
@@ -948,6 +1129,37 @@ export function calculateCompatibility(
     expressionScore,
     heartDesireScore,
     dynamics,
-    growthAreas
+    growthAreas,
+    relationshipTypes
+  };
+}
+
+interface CompatibilityResult extends ReturnType<typeof calculateNumerology> {
+  lifePathScore: number;
+  expressionScore: number;
+  heartDesireScore: number;
+  dynamics: string[];
+  growthAreas: string[];
+  relationshipTypes: {
+    work: {
+      score: number;
+      strengths: string[];
+      challenges: string[];
+    };
+    business: {
+      score: number;
+      strengths: string[];
+      challenges: string[];
+    };
+    friendship: {
+      score: number;
+      strengths: string[];
+      challenges: string[];
+    };
+    family: {
+      score: number;
+      strengths: string[];
+      challenges: string[];
+    };
   };
 }

@@ -122,6 +122,28 @@ export interface CompatibilityResult {
   heartDesireScore: number;
   dynamics: string[];
   growthAreas: string[];
+  relationshipTypes: {
+    work: {
+      score: number;
+      strengths: string[];
+      challenges: string[];
+    };
+    business: {
+      score: number;
+      strengths: string[];
+      challenges: string[];
+    };
+    friendship: {
+      score: number;
+      strengths: string[];
+      challenges: string[];
+    };
+    family: {
+      score: number;
+      strengths: string[];
+      challenges: string[];
+    };
+  };
 }
 
 export type NumerologyInterpretation = {
