@@ -15,6 +15,7 @@ import { NumerologySoundtrack } from "./numerology-soundtrack";
 import { KarmaLeaderboard } from "./karma-leaderboard";
 import { DailyForecast } from "./daily-forecast";
 import { ResultsBackground } from "./results-background";
+import { basicInterpretations } from "../../server/numerology-interpretations";
 
 interface Props {
   result: NumerologyResult;
@@ -22,7 +23,6 @@ interface Props {
   onCompatibility: () => void;
 }
 
-// Define NUMBER_MEANINGS type
 type NumberMeaning = {
   title: string;
   strengths: readonly string[];
@@ -108,12 +108,12 @@ function NumberDisplay({ number, title }: { number: number; title: string }) {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <div
-          className={`text-center p-4 rounded-lg cursor-pointer transition-colors
+          className={`cursor-pointer rounded-lg p-4 transition-colors
             ${isMasterNumber ? 'bg-primary/20 hover:bg-primary/30' :
-              isWealthNumber ? 'bg-amber-500/20 hover:bg-amber-500/30' :
-              'bg-primary/5 hover:bg-primary/10'}`}
+            isWealthNumber ? 'bg-amber-500/20 hover:bg-amber-500/30' :
+            'bg-primary/10 hover:bg-primary/20'}`}
         >
-          <h3 className="font-medium text-sm">{title}</h3>
+          <h3 className="text-sm font-medium">{title}</h3>
           <p className="text-2xl font-bold">{number}</p>
         </div>
       </DialogTrigger>
@@ -121,22 +121,25 @@ function NumberDisplay({ number, title }: { number: number; title: string }) {
         <DialogHeader>
           <DialogTitle>{title}: {number}</DialogTitle>
           <DialogDescription>
-            {NUMBER_MEANINGS[number as keyof typeof NUMBER_MEANINGS] && (
-              <div className="space-y-4">
-                <p className="text-sm">As {NUMBER_MEANINGS[number as keyof typeof NUMBER_MEANINGS].title}, you have these qualities:</p>
-                <div>
-                  <h4 className="font-medium mb-2">Strengths</h4>
-                  <ul className="list-disc pl-4">
-                    {NUMBER_MEANINGS[number as keyof typeof NUMBER_MEANINGS].strengths.map((s, i) => (
-                      <li key={i}>{s}</li>
-                    ))}
-                  </ul>
-                </div>
-                {NUMBER_MEANINGS[number as keyof typeof NUMBER_MEANINGS].warning && (
-                  <p className="text-amber-600">{NUMBER_MEANINGS[number as keyof typeof NUMBER_MEANINGS].warning}</p>
-                )}
+            <div className="space-y-4">
+              <p>{basicInterpretations[title.toLowerCase().replace(" ", "_")](number)}</p>
+              <div>
+                <h4 className="mb-2 font-medium">Strengths</h4>
+                <ul className="list-disc space-y-1 pl-4 text-left">
+                  {NUMBER_MEANINGS[number as keyof typeof NUMBER_MEANINGS].strengths.map((s, i) => (
+                    <li key={i} className="text-sm">{s}</li>
+                  ))}
+                </ul>
               </div>
-            )}
+              <div>
+                <h4 className="mb-2 font-medium">Challenges</h4>
+                <ul className="list-disc space-y-1 pl-4 text-left">
+                  {NUMBER_MEANINGS[number as keyof typeof NUMBER_MEANINGS].weaknesses.map((w, i) => (
+                    <li key={i} className="text-sm">{w}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </DialogDescription>
         </DialogHeader>
       </DialogContent>
@@ -152,7 +155,6 @@ export default function ResultsDisplay({ result, onReset, onCompatibility }: Pro
     return new Date(year, month - 1, day).toLocaleDateString();
   };
 
-  // Create recommendations object based on result numbers
   const recommendations = {
     strengths: [
       ...NUMBER_MEANINGS[result.lifePath as keyof typeof NUMBER_MEANINGS].strengths,
@@ -177,151 +179,197 @@ export default function ResultsDisplay({ result, onReset, onCompatibility }: Pro
   };
 
   return (
-    <div className="min-h-screen w-full relative">
+    <div className="relative min-h-screen w-full">
       {/* Background Layer */}
       <ResultsBackground result={result} />
 
-      {/* Content Layer */}
-      <div className="relative z-10 w-full min-h-screen px-2 sm:px-4 py-8">
-        <div className="max-w-[1200px] mx-auto">
-          <div className="bg-background/95 backdrop-blur-sm border border-primary/20 rounded-xl p-4 sm:p-6 space-y-6">
+      {/* Single Content Layer */}
+      <div className="relative z-10 min-h-screen w-full px-4 py-8">
+        <div className="mx-auto max-w-7xl">
+          <div className="bg-background/95 backdrop-blur-sm rounded-xl border border-primary/20 p-6 space-y-8">
             {/* Header */}
             <div className="text-center">
-              <h2 className="text-2xl sm:text-3xl font-semibold">
+              <h2 className="text-2xl font-semibold sm:text-3xl">
                 Numerology Reading for {result.name}
               </h2>
-              <p className="text-muted-foreground mt-2">
+              <p className="mt-2 text-muted-foreground">
                 Based on your birth date: {formatDate(result.birthdate)}
               </p>
             </div>
 
-            {/* Overview and Complete Profile Summary */}
+            {/* Overview Section */}
             <div className="space-y-6">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-              >
-                <h3 className="text-xl font-semibold mb-4">Overview</h3>
-                <div className="space-y-4">
-                  <p className="leading-relaxed">
-                    Your numerological profile reveals a complex interplay of energies, with your Life Path number {result.lifePath} forming the foundation of your journey. This combines with your Destiny number {result.destiny} to create a powerful alignment towards {result.lifePath === result.destiny ? "a singular focused purpose" : "a dynamic balance of different aspects"}.
-                  </p>
-                  <p className="leading-relaxed">
-                    Your Expression number {result.expression} and Heart's Desire number {result.heartDesire} {result.expression === result.heartDesire ? "are in harmony, suggesting natural alignment between your outer and inner selves" : "create an interesting dynamic between your outer expression and inner desires"}.
-                  </p>
-                </div>
-              </motion.div>
+              <h3 className="text-xl font-semibold">Overview</h3>
+              <div>
+                <p className="leading-relaxed">
+                  {basicInterpretations.getBasicInterpretation({
+                    lifePath: result.lifePath,
+                    destiny: result.destiny,
+                    heartDesire: result.heartDesire,
+                    expression: result.expression,
+                    personality: result.personality,
+                    attribute: result.attribute,
+                    birthDateNum: result.birthDateNum
+                  })}
+                </p>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                <h3 className="text-xl font-semibold mb-4">Complete Profile Summary</h3>
-                <div className="space-y-4">
-                  <p className="leading-relaxed">
-                    Your numerological profile combines the nurturing energy of {result.lifePath} with the humanitarian wisdom of {result.destiny}, creating a unique blend of caring and universal understanding. This combination makes you an exceptionally compassionate individual with a deep sense of responsibility towards both family and humanity at large.
-                  </p>
-                  <p className="leading-relaxed">
-                    You possess a natural ability to create harmony and beauty while understanding the broader perspective of human experiences. Your nurturing tendencies are amplified by your ability to mirror and connect with others, making you an excellent counselor and guide who can truly understand and relate to others' needs.
-                  </p>
-                  <p className="leading-relaxed">
-                    However, this combination also presents a specific challenge: balancing your deep commitment to helping others with maintaining healthy boundaries. Learning to balance your nurturing nature with self-care and establishing clear boundaries will be crucial for your personal growth.
-                  </p>
+                <div className="mt-8">
+                  <h4 className="text-lg font-medium mb-4">Complete Profile Summary</h4>
+                  <div className="space-y-4">
+                    <p className="leading-relaxed">
+                      Your Life Path number {result.lifePath} combines with your Destiny number {result.destiny} to create a unique path: {basicInterpretations.lifePath(result.lifePath)}
+                    </p>
+                    <p className="leading-relaxed">
+                      Your Heart's Desire number {result.heartDesire} reveals your inner motivation: {basicInterpretations.heartDesire(result.heartDesire)}
+                    </p>
+                    <p className="leading-relaxed">
+                      This interacts with your Expression number {result.expression}: {basicInterpretations.expression(result.expression)}
+                    </p>
+                    <p className="leading-relaxed">
+                      Your Personality number {result.personality} influences how others see you: {basicInterpretations.personality(result.personality)}
+                    </p>
+                    <p className="leading-relaxed">
+                      Your Birth Date number {result.birthDateNum} shows your innate talents: {basicInterpretations.birthDate(result.birthDateNum)}
+                    </p>
+                  </div>
                 </div>
-              </motion.div>
+              </div>
             </div>
 
-            {/* Number Grid */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-6"
-            >
-              <NumberDisplay number={result.lifePath} title="Life Path Number" />
-              <NumberDisplay number={result.destiny} title="Destiny Number" />
-              <NumberDisplay number={result.birthDateNum} title="Birth Date Number" />
-              <NumberDisplay number={result.expression} title="Expression Number" />
-              <NumberDisplay number={result.personality} title="Personality Number" />
-              <NumberDisplay number={result.attribute} title="Attribute Number" />
-            </motion.div>
+            {/* Core Numbers Grid */}
+            <div>
+              <h3 className="text-xl font-semibold mb-6">Core Numbers</h3>
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                <NumberDisplay number={result.lifePath} title="Life Path Number" />
+                <NumberDisplay number={result.destiny} title="Destiny Number" />
+                <NumberDisplay number={result.heartDesire} title="Heart's Desire Number" />
+                <NumberDisplay number={result.expression} title="Expression Number" />
+                <NumberDisplay number={result.personality} title="Personality Number" />
+                <NumberDisplay number={result.attribute} title="Attribute Number" />
+              </div>
+            </div>
 
             <Separator />
 
-            {/* DNA Pattern */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-            >
-              <h3 className="text-xl font-semibold mb-6">Numerological DNA Pattern</h3>
-              <div className="aspect-[4/3] sm:aspect-[2/1] relative">
-                <DNAVisualization result={result} />
+            {/* Main Content */}
+            <div className="space-y-8">
+              {/* DNA Pattern */}
+              <div>
+                <h3 className="text-xl font-semibold mb-6">Numerological DNA Pattern</h3>
+                <div className="relative aspect-[4/3] sm:aspect-[2/1]">
+                  <DNAVisualization result={result} />
+                </div>
               </div>
-            </motion.div>
 
-            {/* Additional Components */}
-            <div className="space-y-6">
-              <StrengthsWeaknessesChart items={[
-                {
-                  label: "Leadership & Independence",
-                  value: Math.min(100, (result.lifePath === 1 || result.expression === 1) ? 90 :
-                    (result.lifePath === 8 || result.expression === 8) ? 85 : 70),
-                  type: "strength"
-                },
-                {
-                  label: "Creativity & Expression",
-                  value: Math.min(100, (result.lifePath === 3 || result.expression === 3) ? 90 :
-                    (result.heartDesire === 3) ? 85 : 65),
-                  type: "strength"
-                },
-                {
-                  label: "Analytical Thinking",
-                  value: Math.min(100, (result.lifePath === 7 || result.expression === 7) ? 90 :
-                    (result.personality === 7) ? 85 : 75),
-                  type: "strength"
-                },
-                {
-                  label: "Emotional Sensitivity",
-                  value: Math.min(100, (result.lifePath === 2 || result.heartDesire === 2) ? 85 :
-                    (result.personality === 2) ? 80 : 70),
-                  type: result.lifePath === 2 ? "strength" : "weakness"
-                },
-                {
-                  label: "Adaptability",
-                  value: Math.min(100, (result.lifePath === 9 || result.expression === 9) ? 90 :
-                    (result.lifePath === 5 || result.expression === 5) ? 85 : 70),
-                  type: "strength"
-                },
-                {
-                  label: "Focus & Discipline",
-                  value: Math.min(100, (result.lifePath === 4 || result.expression === 4) ? 85 :
-                    (result.personality === 4) ? 80 : 65),
-                  type: result.lifePath === 4 ? "strength" : "weakness"
-                }
-              ]} />
+              {/* Detailed Analysis */}
+              <div>
+                <h3 className="text-xl font-semibold mb-6">Detailed Analysis</h3>
+                <Accordion type="single" collapsible className="w-full space-y-2">
+                  {[
+                    { key: 'lifePath', title: 'Life Path', number: result.lifePath },
+                    { key: 'destiny', title: 'Destiny', number: result.destiny },
+                    { key: 'heartDesire', title: "Heart's Desire", number: result.heartDesire },
+                    { key: 'expression', title: 'Expression', number: result.expression },
+                    { key: 'personality', title: 'Personality', number: result.personality },
+                    { key: 'attribute', title: 'Attribute', number: result.attribute },
+                    { key: 'birthDate', title: 'Birth Date', number: result.birthDateNum }
+                  ].map(({ key, title, number }) => (
+                    <AccordionItem key={key} value={key}>
+                      <AccordionTrigger>{title} Number {number}</AccordionTrigger>
+                      <AccordionContent>
+                        <div className="space-y-4">
+                          <p className="text-sm leading-relaxed">
+                            {basicInterpretations[key.toLowerCase() as keyof typeof basicInterpretations]?.(number)}
+                          </p>
+                          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                            <div>
+                              <h4 className="mb-2 font-medium">Strengths</h4>
+                              <ul className="list-disc space-y-1 pl-4 text-left">
+                                {NUMBER_MEANINGS[number as keyof typeof NUMBER_MEANINGS].strengths.map((strength, index) => (
+                                  <li key={index} className="text-sm">{strength}</li>
+                                ))}
+                              </ul>
+                            </div>
+                            <div>
+                              <h4 className="mb-2 font-medium">Challenges</h4>
+                              <ul className="list-disc space-y-1 pl-4 text-left">
+                                {NUMBER_MEANINGS[number as keyof typeof NUMBER_MEANINGS].weaknesses.map((weakness, index) => (
+                                  <li key={index} className="text-sm">{weakness}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              </div>
+
+              {/* Personal Traits */}
+              <div>
+                <h3 className="text-xl font-semibold mb-6">Personal Traits Analysis</h3>
+                <StrengthsWeaknessesChart items={[
+                  {
+                    label: "Leadership & Independence",
+                    value: Math.min(100, (result.lifePath === 1 || result.expression === 1) ? 90 :
+                      (result.lifePath === 8 || result.expression === 8) ? 85 : 70),
+                    type: "strength"
+                  },
+                  {
+                    label: "Creativity & Expression",
+                    value: Math.min(100, (result.lifePath === 3 || result.expression === 3) ? 90 :
+                      (result.heartDesire === 3) ? 85 : 65),
+                    type: "strength"
+                  },
+                  {
+                    label: "Analytical Thinking",
+                    value: Math.min(100, (result.lifePath === 7 || result.expression === 7) ? 90 :
+                      (result.personality === 7) ? 85 : 75),
+                    type: "strength"
+                  },
+                  {
+                    label: "Emotional Sensitivity",
+                    value: Math.min(100, (result.lifePath === 2 || result.heartDesire === 2) ? 85 :
+                      (result.personality === 2) ? 80 : 70),
+                    type: result.lifePath === 2 ? "strength" : "weakness"
+                  },
+                  {
+                    label: "Adaptability",
+                    value: Math.min(100, (result.lifePath === 9 || result.expression === 9) ? 90 :
+                      (result.lifePath === 5 || result.expression === 5) ? 85 : 70),
+                    type: "strength"
+                  },
+                  {
+                    label: "Focus & Discipline",
+                    value: Math.min(100, (result.lifePath === 4 || result.expression === 4) ? 85 :
+                      (result.personality === 4) ? 80 : 65),
+                    type: result.lifePath === 4 ? "strength" : "weakness"
+                  }
+                ]} />
+              </div>
+
+              {/* Additional Components */}
               <DailyForecast result={result} />
               <AICoach result={result} />
               <NumerologyJournal result={result} />
               <CosmicEnergyMeter result={result} />
               <NumerologySoundtrack result={result} />
               <KarmaLeaderboard result={result} />
-              <DevelopmentRecommendations 
+              <DevelopmentRecommendations
                 recommendations={recommendations}
-                summary={result.interpretations.developmentSummary}
+                summary={result.interpretations?.developmentSummary}
               />
-            </div>
 
-            {/* Navigation Buttons - Only at bottom */}
-            <div className="flex justify-center gap-4 pt-8">
-              <Button onClick={onReset} variant="outline">
-                Start New Reading
-              </Button>
-              <Button onClick={onCompatibility} variant="outline">
-                Compatibility Reading
-              </Button>
+              {/* Navigation Buttons */}
+              <div className="flex justify-center gap-4">
+                <Button onClick={onReset} variant="outline">
+                  Start New Reading
+                </Button>
+                <Button onClick={onCompatibility} variant="outline">
+                  Compatibility Reading
+                </Button>
+              </div>
             </div>
           </div>
         </div>
