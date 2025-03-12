@@ -7,18 +7,26 @@ const scryptAsync = promisify(scrypt);
 
 // Create a transporter using environment variables
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || "smtp.gmail.com",
+  host: process.env.SMTP_HOST,
   port: parseInt(process.env.SMTP_PORT || "587"),
-  secure: false, // true for 465, false for other ports
+  secure: process.env.SMTP_PORT === "465", // true for 465, false for other ports
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS
-  }
+  },
+  tls: {
+    // Do not fail on invalid certs
+    rejectUnauthorized: false
+  },
+  logger: true,
+  debug: true // Include debug information
 });
 
 export async function sendVerificationEmail(email: string, code: string): Promise<void> {
+  console.log('Attempting to send verification email to:', email);
+
   const mailOptions = {
-    from: process.env.SMTP_USER,
+    from: `"Numerology App" <${process.env.SMTP_USER}>`,
     to: email,
     subject: "Verify Your Numerology Account",
     html: `
@@ -37,17 +45,26 @@ export async function sendVerificationEmail(email: string, code: string): Promis
   };
 
   try {
-    await transporter.sendMail(mailOptions);
-    console.log(`Verification email sent successfully to ${email}`);
+    console.log('SMTP Configuration:', {
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT,
+      user: process.env.SMTP_USER?.substring(0, 3) + '***', // Log partial email for debugging
+    });
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Verification email sent successfully:', info.messageId);
+    console.log('Preview URL:', nodemailer.getTestMessageUrl(info));
   } catch (error) {
-    console.error("Failed to send verification email:", error);
-    throw new Error("Failed to send verification email. Please try again later.");
+    console.error('Failed to send verification email:', error);
+    throw new Error(error instanceof Error ? error.message : "Failed to send verification email");
   }
 }
 
 export async function sendResetEmail(email: string, code: string): Promise<void> {
+  console.log('Attempting to send reset email to:', email);
+
   const mailOptions = {
-    from: process.env.SMTP_USER,
+    from: `"Numerology App" <${process.env.SMTP_USER}>`,
     to: email,
     subject: "Reset Your Numerology Password",
     html: `
@@ -66,11 +83,12 @@ export async function sendResetEmail(email: string, code: string): Promise<void>
   };
 
   try {
-    await transporter.sendMail(mailOptions);
-    console.log(`Reset email sent successfully to ${email}`);
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Reset email sent successfully:', info.messageId);
+    console.log('Preview URL:', nodemailer.getTestMessageUrl(info));
   } catch (error) {
-    console.error("Failed to send reset email:", error);
-    throw new Error("Failed to send reset email. Please try again later.");
+    console.error('Failed to send reset email:', error);
+    throw new Error(error instanceof Error ? error.message : "Failed to send reset email");
   }
 }
 
