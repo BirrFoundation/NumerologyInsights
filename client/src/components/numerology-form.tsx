@@ -79,18 +79,17 @@ export default function NumerologyForm({ onResult }: Props) {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-center block">Full Name</FormLabel>
+                <FormLabel className="block">Full Name</FormLabel>
                 <FormControl>
                   <Input 
                     placeholder="Enter your full name" 
                     {...field} 
-                    className="text-center"
                   />
                 </FormControl>
-                <FormDescription className="text-center">
+                <FormDescription>
                   Enter your full name as it appears on your birth certificate
                 </FormDescription>
-                <FormMessage className="text-center" />
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -100,18 +99,17 @@ export default function NumerologyForm({ onResult }: Props) {
             name="birthdate"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-center block">Birth Date</FormLabel>
+                <FormLabel className="block">Birth Date</FormLabel>
                 <FormControl>
                   <Input 
                     type="date" 
                     {...field}
-                    className="text-center"
                   />
                 </FormControl>
-                <FormDescription className="text-center">
+                <FormDescription>
                   Select your date of birth
                 </FormDescription>
-                <FormMessage className="text-center" />
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -137,7 +135,7 @@ export default function NumerologyForm({ onResult }: Props) {
           </Button>
 
           {Object.keys(form.formState.errors).length > 0 && (
-            <div className="text-sm text-red-500 mt-2 text-center">
+            <div className="text-sm text-red-500 mt-2">
               <p>Please fix the following errors:</p>
               <ul className="list-none mt-1">
                 {Object.entries(form.formState.errors).map(([field, error]) => (
