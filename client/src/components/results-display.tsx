@@ -15,7 +15,7 @@ import { NumerologySoundtrack } from "./numerology-soundtrack";
 import { KarmaLeaderboard } from "./karma-leaderboard";
 import { DailyForecast } from "./daily-forecast";
 import { ResultsBackground } from "./results-background";
-import { basicInterpretations } from "../../server/numerology-interpretations";
+import { basicInterpretations } from "@shared/numerology-interpretations";
 
 interface Props {
   result: NumerologyResult;
