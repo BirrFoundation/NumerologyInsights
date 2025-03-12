@@ -90,10 +90,10 @@
 
 @keyframes float {
   from {
-    transform: rotate(0deg) translateX(4px) rotate(0deg);
+    transform: rotate(0deg) translateX(3px) rotate(0deg);
   }
   to {
-    transform: rotate(360deg) translateX(4px) rotate(-360deg);
+    transform: rotate(360deg) translateX(3px) rotate(-360deg);
   }
 }
 
@@ -103,7 +103,7 @@
     opacity: 0.8;
   }
   50% {
-    transform: translateX(15px) scale(1.2);
+    transform: translateX(max(5px, 2%)) scale(1.1);
     opacity: 1;
   }
 }
@@ -114,7 +114,7 @@
     opacity: 0.8;
   }
   50% {
-    transform: scale(2.5);
+    transform: scale(1.5);
     opacity: 1;
   }
 }
@@ -125,7 +125,7 @@
     opacity: 0.5;
   }
   50% {
-    transform: scale(2.5);
+    transform: scale(1.5);
     opacity: 1;
   }
 }
@@ -135,7 +135,7 @@
     transform: rotate(0deg) scale(1);
   }
   50% {
-    transform: rotate(180deg) scale(1.3);
+    transform: rotate(180deg) scale(1.2);
   }
   to {
     transform: rotate(360deg) scale(1);
