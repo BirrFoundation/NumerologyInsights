@@ -33,6 +33,10 @@ export default function LoginPage() {
   const loginMutation = useMutation({
     mutationFn: async (data: { email: string; password: string }) => {
       const response = await apiRequest("POST", "/api/auth/login", data);
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to log in');
+      }
       return response.json();
     },
     onSuccess: () => {
@@ -40,9 +44,12 @@ export default function LoginPage() {
         title: "Login successful",
         description: "Welcome back!",
       });
+      // Only redirect after successful login
+      localStorage.setItem('isAuthenticated', 'true');
       setLocation("/");
     },
     onError: (error: Error) => {
+      setIsLoading(false);
       toast({
         variant: "destructive",
         title: "Login failed",
