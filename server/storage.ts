@@ -14,6 +14,7 @@ export interface IStorage {
   }): Promise<NumerologyResult>;
 
   getLatestNumerologyResult(userId: number): Promise<NumerologyResult | null>;
+  getUserById(userId: number): Promise<User | null>;
   createUser(user: InsertUser): Promise<User>;
   getUserByEmail(email: string): Promise<User | null>;
   verifyUser(userId: number): Promise<void>;
@@ -84,6 +85,10 @@ export class MemStorage implements IStorage {
     // Get the latest result (last in the array)
     const latestResultId = userResults[userResults.length - 1];
     return this.results.get(latestResultId) || null;
+  }
+
+  async getUserById(userId: number): Promise<User | null> {
+    return this.users.get(userId) || null;
   }
 
   async createUser(data: InsertUser): Promise<User> {

@@ -7,6 +7,7 @@ import { log } from "./vite";
 import { userAuthSchema, verificationSchema, numerologyInputSchema, compatibilityInputSchema, dreamInputSchema } from "@shared/schema";
 import { z } from "zod";
 import { interpretDream } from "./dream-interpreter";
+import bcrypt from "bcryptjs";
 
 const router = Router();
 
@@ -242,109 +243,105 @@ router.get("/healthz", (_req, res) => {
 });
 
 // Authentication Routes
-router.post("/register", async (req, res) => {
+router.post("/auth/signup", async (req, res) => {
   try {
-    console.log('Processing registration request:', req.body);
     const data = userAuthSchema.parse(req.body);
 
     // Check if user already exists
     const existingUser = await storage.getUserByEmail(data.email);
     if (existingUser) {
-      return res.status(400).json({ message: "Email already registered" });
+      return res.status(400).json({ error: "Email already registered" });
     }
 
-    // Create user with hashed password
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(data.password, salt);
+
+    // Create user
     const user = await storage.createUser({
       email: data.email,
-      password: await hashPassword(data.password)
+      password: hashedPassword,
     });
 
-    // Generate and store verification code
-    const code = generateVerificationCode();
-    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes from now
-
-    await storage.createVerificationCode({
-      userId: user.id,
-      code,
-      expiresAt
-    });
-
-    // Send verification email
-    await sendVerificationEmail(data.email, code);
-
-    res.status(201).json({ message: "Registration successful. Please check your email for verification code." });
-  } catch (error) {
-    console.error("Registration error:", error);
-    if (error instanceof z.ZodError) {
-      res.status(400).json({ message: "Invalid input data", errors: error.errors });
-      return;
+    // Store user ID in session
+    if (req.session) {
+      req.session.userId = user.id;
     }
-    res.status(500).json({ message: "Failed to register user" });
+
+    res.status(201).json({ message: "Account created successfully" });
+  } catch (error) {
+    console.error("Signup error:", error);
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ error: "Invalid input data", details: error.errors });
+    }
+    res.status(500).json({ error: "Failed to create account" });
   }
 });
 
-router.post("/verify", async (req, res) => {
+router.post("/auth/login", async (req, res) => {
   try {
-    console.log('Processing verification request:', req.body);
-    const data = verificationSchema.parse(req.body);
+    const data = userAuthSchema.parse(req.body);
 
+    // Find user
     const user = await storage.getUserByEmail(data.email);
     if (!user) {
-      return res.status(400).json({ message: "Invalid email" });
+      return res.status(400).json({ error: "Invalid email or password" });
     }
 
-    const verificationCode = await storage.getLatestVerificationCode(user.id);
-    if (!verificationCode || verificationCode.code !== data.code) {
-      return res.status(400).json({ message: "Invalid verification code" });
+    // Check password
+    const validPassword = await bcrypt.compare(data.password, user.password);
+    if (!validPassword) {
+      return res.status(400).json({ error: "Invalid email or password" });
     }
 
-    if (new Date() > verificationCode.expiresAt) {
-      return res.status(400).json({ message: "Verification code expired" });
+    // Store user ID in session
+    if (req.session) {
+      req.session.userId = user.id;
     }
 
-    await storage.verifyUser(user.id);
-    res.json({ message: "Email verified successfully" });
-  } catch (error) {
-    console.error("Verification error:", error);
-    if (error instanceof z.ZodError) {
-      res.status(400).json({ message: "Invalid input data", errors: error.errors });
-      return;
-    }
-    res.status(500).json({ message: "Failed to verify email" });
-  }
-});
-
-router.post("/login", async (req, res) => {
-  try {
-    console.log('Processing login request:', req.body);
-    const { email, code } = verificationSchema.parse(req.body);
-
-    const user = await storage.getUserByEmail(email);
-    if (!user) {
-      return res.status(400).json({ message: "Invalid email" });
-    }
-
-    const verificationCode = await storage.getLatestVerificationCode(user.id);
-    if (!verificationCode || verificationCode.code !== code) {
-      return res.status(400).json({ message: "Invalid verification code" });
-    }
-
-    if (new Date() > verificationCode.expiresAt) {
-      return res.status(400).json({ message: "Verification code expired" });
-    }
-
-    // Create a new session
-    req.session.userId = user.id;
     res.json({ message: "Logged in successfully" });
   } catch (error) {
     console.error("Login error:", error);
     if (error instanceof z.ZodError) {
-      res.status(400).json({ message: "Invalid input data", errors: error.errors });
-      return;
+      return res.status(400).json({ error: "Invalid input data", details: error.errors });
     }
-    res.status(500).json({ message: "Failed to log in" });
+    res.status(500).json({ error: "Failed to log in" });
   }
 });
+
+router.post("/auth/logout", (req, res) => {
+  if (req.session) {
+    req.session.destroy((err) => {
+      if (err) {
+        return res.status(500).json({ error: "Failed to log out" });
+      }
+      res.json({ message: "Logged out successfully" });
+    });
+  } else {
+    res.json({ message: "Logged out successfully" });
+  }
+});
+
+router.get("/auth/me", async (req, res) => {
+  try {
+    if (!req.session?.userId) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    const user = await storage.getUserById(req.session.userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Don't send password in response
+    const { password, ...userData } = user;
+    res.json(userData);
+  } catch (error) {
+    console.error("Auth check error:", error);
+    res.status(500).json({ error: "Failed to get user data" });
+  }
+});
+
 
 // Numerology Routes
 router.post("/calculate", async (req, res) => {
