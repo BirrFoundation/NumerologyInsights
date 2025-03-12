@@ -6,7 +6,9 @@ import ResultsDisplay from "@/components/results-display";
 import CompatibilityDisplay from "@/components/compatibility-display";
 import { useState } from "react";
 import { useLocation } from "wouter";
+import { LogOut } from "lucide-react";
 import type { NumerologyResult, CompatibilityResult } from "@shared/schema";
+import { apiRequest } from "@/lib/queryClient";
 
 type Mode = "numerology" | "compatibility";
 type Result = { type: "numerology"; data: NumerologyResult } | { type: "compatibility"; data: CompatibilityResult };
@@ -23,6 +25,16 @@ export default function Home() {
   const handleCompatibility = () => {
     setMode("compatibility");
     setResult(null);
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await apiRequest("POST", "/api/auth/logout");
+      localStorage.removeItem('isAuthenticated');
+      setLocation('/login');
+    } catch (error) {
+      console.error('Failed to sign out:', error);
+    }
   };
 
   return (
@@ -50,8 +62,23 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Header with Sign Out */}
+      <div className="relative z-10 w-full px-4 py-4">
+        <div className="flex justify-end max-w-6xl mx-auto">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleSignOut}
+            className="text-muted-foreground hover:text-primary"
+          >
+            <LogOut className="h-4 w-4 mr-2" />
+            Sign Out
+          </Button>
+        </div>
+      </div>
+
       {/* Content Layer */}
-      <div className="relative z-10 w-full max-w-6xl mx-auto px-2 sm:px-4 py-8 sm:py-16">
+      <div className="relative z-10 w-full max-w-6xl mx-auto px-2 sm:px-4 py-16 sm:py-24">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-7xl font-extralight bg-gradient-to-r from-primary/90 via-primary/70 to-primary/50 bg-clip-text text-transparent animate-gradient tracking-widest">
             <span className="font-light">DEB</span>
