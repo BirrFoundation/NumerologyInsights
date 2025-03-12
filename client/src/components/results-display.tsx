@@ -16,6 +16,7 @@ import { KarmaLeaderboard } from "./karma-leaderboard";
 import { DailyForecast } from "./daily-forecast";
 import { ResultsBackground } from "./results-background";
 import { basicInterpretations } from "@shared/numerology-interpretations";
+import { DownloadReportButton } from "./download-report-button";
 
 interface Props {
   result: NumerologyResult;
@@ -377,13 +378,16 @@ export default function ResultsDisplay({ result, onReset, onCompatibility }: Pro
                 summary={result.interpretations?.developmentSummary}
               />
 
-              <div className="flex justify-center gap-4">
-                <Button onClick={onReset} variant="outline">
-                  Start New Reading
-                </Button>
-                <Button onClick={onCompatibility} variant="outline">
-                  Compatibility Reading
-                </Button>
+              <div className="flex flex-col items-center gap-4">
+                <DownloadReportButton result={result} />
+                <div className="flex justify-center gap-4 w-full">
+                  <Button onClick={onReset} variant="outline">
+                    Start New Reading
+                  </Button>
+                  <Button onClick={onCompatibility} variant="outline">
+                    Compatibility Reading
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
