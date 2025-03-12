@@ -108,8 +108,8 @@ export default function Home() {
           )}
         </div>
 
-        <Card className="backdrop-blur-sm bg-background/95 border-primary/10 shadow-lg">
-          <CardContent className="p-6">
+        <Card className="backdrop-blur-sm bg-background/95 border-primary/10 shadow-lg w-[99%] sm:w-auto mx-auto">
+          <CardContent className="p-3 sm:p-6">
             {!result ? (
               mode === "numerology" ? (
                 <NumerologyForm 

@@ -150,8 +150,8 @@ export default function ResultsDisplay({ result, onReset, onCompatibility }: Pro
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-background to-primary/5">
-      <div className="w-full py-4 sm:py-8 px-0 sm:px-4">
-        <div className="w-[98%] sm:max-w-[1400px] mx-auto bg-background/95 backdrop-blur-sm border border-primary/20 rounded-xl p-3 sm:p-6 space-y-4 sm:space-y-6">
+      <div className="w-full py-4 sm:py-8">
+        <div className="w-[99%] sm:w-[98%] sm:max-w-[1400px] mx-auto bg-background/95 backdrop-blur-sm border border-primary/20 rounded-lg sm:rounded-xl px-1 sm:px-6 py-3 sm:py-6 space-y-4 sm:space-y-6">
           {/* Header */}
           <div className="text-center space-y-4">
             <h2 className="text-2xl sm:text-3xl font-semibold">
@@ -160,7 +160,7 @@ export default function ResultsDisplay({ result, onReset, onCompatibility }: Pro
             <p className="text-muted-foreground">
               Based on your birth date: {formatDate(result.birthdate)}
             </p>
-            <div className="flex justify-center gap-4">
+            <div className="flex justify-center gap-2 sm:gap-4">
               <Button onClick={onReset} variant="outline">
                 Start New Reading
               </Button>
@@ -273,7 +273,7 @@ export default function ResultsDisplay({ result, onReset, onCompatibility }: Pro
           </div>
 
           {/* Bottom Navigation */}
-          <div className="flex justify-center gap-4 pt-4 sm:pt-8">
+          <div className="flex justify-center gap-2 sm:gap-4 pt-4 sm:pt-8">
             <Button onClick={onReset} variant="outline">
               Start New Reading
             </Button>
