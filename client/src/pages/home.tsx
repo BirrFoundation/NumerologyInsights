@@ -5,6 +5,7 @@ import CompatibilityForm from "@/components/compatibility-form";
 import ResultsDisplay from "@/components/results-display";
 import CompatibilityDisplay from "@/components/compatibility-display";
 import { useState } from "react";
+import { useLocation } from "wouter";
 import type { NumerologyResult, CompatibilityResult } from "@shared/schema";
 
 type Mode = "numerology" | "compatibility";
@@ -13,46 +14,55 @@ type Result = { type: "numerology"; data: NumerologyResult } | { type: "compatib
 export default function Home() {
   const [mode, setMode] = useState<Mode>("numerology");
   const [result, setResult] = useState<Result | null>(null);
+  const [, setLocation] = useLocation();
 
   const handleReset = () => {
     setResult(null);
   };
 
+  const handleCompatibility = () => {
+    setMode("compatibility");
+    setResult(null);
+  };
+
   return (
-    <div className="flex min-h-screen flex-col items-center justify-start bg-gradient-to-b from-background to-primary/5 relative overflow-hidden">
-      {/* Animated Number Pattern Background */}
-      <div className="absolute inset-0 overflow-hidden opacity-5">
-        <div className="absolute inset-0 animate-float-slow">
-          {Array.from({ length: 50 }).map((_, i) => (
-            <div
-              key={i}
-              className="absolute text-primary/20 font-mono"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                fontSize: `${Math.random() * 3 + 1}rem`,
-                transform: `rotate(${Math.random() * 360}deg)`,
-                animation: `float ${Math.random() * 10 + 5}s infinite linear`
-              }}
-            >
-              {Math.floor(Math.random() * 9) + 1}
-            </div>
-          ))}
+    <div className="min-h-screen w-full relative">
+      {/* Background Layer */}
+      <div className="fixed inset-0 bg-gradient-to-b from-background to-primary/5">
+        <div className="absolute inset-0 overflow-hidden opacity-5">
+          <div className="absolute inset-0 animate-float-slow">
+            {Array.from({ length: 50 }).map((_, i) => (
+              <div
+                key={i}
+                className="absolute text-primary/20 font-mono"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                  fontSize: `${Math.random() * 3 + 1}rem`,
+                  transform: `rotate(${Math.random() * 360}deg)`,
+                  animation: `float ${Math.random() * 10 + 5}s infinite linear`
+                }}
+              >
+                {Math.floor(Math.random() * 9) + 1}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      <div className="w-full max-w-4xl mx-auto px-4 md:px-8 pt-16 md:pt-24 space-y-12">
-        <div className="text-center space-y-10">
+      {/* Content Layer */}
+      <div className="relative z-10 w-full max-w-6xl mx-auto px-2 sm:px-4 py-8 sm:py-16">
+        <div className="text-center mb-12">
           <h1 className="text-4xl md:text-7xl font-extralight bg-gradient-to-r from-primary/90 via-primary/70 to-primary/50 bg-clip-text text-transparent animate-gradient tracking-widest">
             <span className="font-light">DEB</span>
             <span className="font-extralight">TERA</span>
             <span className="font-thin"> READING</span>
           </h1>
-          <p className="text-xl md:text-2xl text-muted-foreground font-extralight max-w-2xl mx-auto tracking-wide">
+          <p className="text-xl md:text-2xl text-muted-foreground font-extralight max-w-2xl mx-auto mt-6 tracking-wide">
             Unlock the hidden patterns in your numerological DNA through the ancient wisdom of numbers
           </p>
           {!result && (
-            <div className="flex justify-center gap-4 pt-4">
+            <div className="flex justify-center gap-4 pt-8">
               <Button
                 variant={mode === "numerology" ? "default" : "outline"}
                 onClick={() => setMode("numerology")}
@@ -86,7 +96,8 @@ export default function Home() {
             ) : result.type === "numerology" ? (
               <ResultsDisplay 
                 result={result.data} 
-                onReset={handleReset} 
+                onReset={handleReset}
+                onCompatibility={handleCompatibility}
               />
             ) : (
               <CompatibilityDisplay 
