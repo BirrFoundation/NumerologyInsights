@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import type { CompatibilityResult } from "@shared/schema";
+import { useToast } from "@/hooks/use-toast";
 
 interface Props {
   onResult: (result: CompatibilityResult) => void;
@@ -13,6 +14,8 @@ interface Props {
 
 export default function CompatibilityForm({ onResult }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+
   const form = useForm({
     resolver: zodResolver(compatibilityInputSchema),
     defaultValues: {
@@ -33,13 +36,18 @@ export default function CompatibilityForm({ onResult }: Props) {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to calculate compatibility");
+        throw new Error(`Error: ${response.status}`);
       }
 
       const result = await response.json();
       onResult(result);
     } catch (error) {
       console.error("Compatibility calculation error:", error);
+      toast({
+        title: "Error",
+        description: "Failed to calculate compatibility. Please try again.",
+        variant: "destructive"
+      });
     } finally {
       setIsSubmitting(false);
     }
