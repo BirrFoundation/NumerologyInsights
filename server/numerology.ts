@@ -956,7 +956,7 @@ function getWorkStrengths(profile1: ReturnType<typeof calculateNumerology>, prof
     strengths.push("One naturally leads while the otherprovides essential support");
   }
 
-  // Practical approach
+  //// Practical approach
   if ([4, 8].includes(profile1.expression) && [4, 8].includes(profile2.expression)) {
     strengths.push("Shared practical and methodical approach to tasks");
     strengths.push("Strong focus on efficiency and results");
@@ -978,24 +978,25 @@ function getWorkStrengths(profile1: ReturnType<typeof calculateNumerology>, prof
 function getWorkChallenges(profile1: ReturnType<typeof calculateNumerology>, profile2: ReturnType<typeof calculateNumerology>): string[] {
   const challenges = [];
 
+  // Leadership and authority challenges
+  if ([1, 8].includes(profile1.lifePath) && [1, 8].includes(profile2.lifePath)) {
+    challenges.push("Potential power struggles over leadership positions");
+    challenges.push("May compete for authority and control");
+  }
+
   // Structure vs. Freedom
   if ([5, 7].includes(profile1.lifePath) && [1, 8].includes(profile2.lifePath)) {
-    challenges.push("May need to balance structure with flexibility");
-    challenges.push("Different approaches to work organization and planning");
+    challenges.push("Different approaches to organization and structure");
+    challenges.push("Need to balance flexibility with discipline");
   }
 
-  // Communication styles
+  // Communication differences
   if (Math.abs(profile1.expression - profile2.expression) > 3) {
-    challenges.push("Different communication styles require extra attention");
-    challenges.push("Need to establish clear channels of communication");
+    challenges.push("Differing communication styles need alignment");
+    challenges.push("May struggle with misunderstandings in work context");
   }
 
-  // Authority issues
-  if ([1, 8].includes(profile1.lifePath) && [1, 8].includes(profile2.lifePath)) {
-    challenges.push("Potential power struggles over leadership roles");
-  }
-
-  return challenges;
+  return challenges.length > 0 ? challenges : ["Need to establish clear work boundaries and expectations"];
 }
 
 function getBusinessStrengths(profile1: ReturnType<typeof calculateNumerology>, profile2: ReturnType<typeof calculateNumerology>): string[] {
@@ -1024,24 +1025,25 @@ function getBusinessStrengths(profile1: ReturnType<typeof calculateNumerology>, 
 function getBusinessChallenges(profile1: ReturnType<typeof calculateNumerology>, profile2: ReturnType<typeof calculateNumerology>): string[] {
   const challenges = [];
 
-  // Risk vs. Caution
+  // Risk management
   if ([3, 7].includes(profile1.lifePath) && [8, 4].includes(profile2.lifePath)) {
-    challenges.push("Different approaches to risk-taking and decision-making");
-    challenges.push("Need to find balance between innovation and security");
+    challenges.push("Different approaches to risk and opportunity");
+    challenges.push("Need to balance innovation with stability");
   }
 
-  // Vision alignment
+  // Decision-making styles
   if (Math.abs(profile1.destiny - profile2.destiny) > 3) {
-    challenges.push("May have differing long-term business visions");
-    challenges.push("Need to align on business goals and direction");
+    challenges.push("Conflicting approaches to business decisions");
+    challenges.push("May have different long-term business visions");
   }
 
   // Resource management
   if ([5, 7].includes(profile1.lifePath) && [8, 4].includes(profile2.lifePath)) {
-    challenges.push("Different perspectives on resource allocation");
+    challenges.push("Different views on resource allocation");
+    challenges.push("May disagree on investment priorities");
   }
 
-  return challenges;
+  return challenges.length > 0 ? challenges : ["Need to develop shared business strategies and goals"];
 }
 
 function getFriendshipStrengths(profile1: ReturnType<typeof calculateNumerology>, profile2: ReturnType<typeof calculateNumerology>): string[] {
@@ -1070,24 +1072,25 @@ function getFriendshipStrengths(profile1: ReturnType<typeof calculateNumerology>
 function getFriendshipChallenges(profile1: ReturnType<typeof calculateNumerology>, profile2: ReturnType<typeof calculateNumerology>): string[] {
   const challenges = [];
 
-  // Emotional needs
+  // Emotional dynamics
   if (Math.abs(profile1.heartDesire - profile2.heartDesire) > 3) {
-    challenges.push("Different emotional needs and expectations");
-    challenges.push("May need to work on understanding each other's perspectives");
+    challenges.push("Different emotional needs in friendship");
+    challenges.push("May have varying expectations from the relationship");
   }
 
   // Social preferences
   if ([8, 4].includes(profile1.lifePath) && [3, 5].includes(profile2.lifePath)) {
-    challenges.push("Different social styles and activity preferences");
-    challenges.push("Need to find common ground in social situations");
+    challenges.push("Different social interaction preferences");
+    challenges.push("May struggle with activity planning");
   }
 
-  // Personal boundaries
+  // Personal space
   if ([1, 7].includes(profile1.lifePath) && [2, 6].includes(profile2.lifePath)) {
-    challenges.push("Different needs for personal space and interaction");
+    challenges.push("Different needs for personal space");
+    challenges.push("May need to balance togetherness with independence");
   }
 
-  return challenges;
+  return challenges.length > 0 ? challenges : ["Need to maintain open communication about friendship expectations"];
 }
 
 function getFamilyStrengths(profile1: ReturnType<typeof calculateNumerology>, profile2: ReturnType<typeof calculateNumerology>): string[] {
@@ -1116,24 +1119,25 @@ function getFamilyStrengths(profile1: ReturnType<typeof calculateNumerology>, pr
 function getFamilyChallenges(profile1: ReturnType<typeof calculateNumerology>, profile2: ReturnType<typeof calculateNumerology>): string[] {
   const challenges = [];
 
-  // Communication patterns
+  // Communication styles
   if (Math.abs(profile1.expression - profile2.expression) > 3) {
-    challenges.push("Different communication styles in family matters");
-    challenges.push("Need to develop better understanding in conversations");
+    challenges.push("Different family communication styles");
+    challenges.push("May struggle with expressing needs effectively");
   }
 
-  // Independence vs. Togetherness
+  // Balance of independence
   if ([1, 5].includes(profile1.lifePath) && [2, 6].includes(profile2.lifePath)) {
-    challenges.push("Balancing personal independence with family unity");
-    challenges.push("Different needs for personal space within family");
+    challenges.push("Different needs for family time vs. personal space");
+    challenges.push("May need to balance independence with togetherness");
   }
 
   // Decision-making
   if ([8, 1].includes(profile1.lifePath) && [2, 6].includes(profile2.lifePath)) {
-    challenges.push("Different approaches to family decision-making");
+    challenges.push("Different approaches to family decisions");
+    challenges.push("May need to work on compromise strategies");
   }
 
-  return challenges;
+  return challenges.length > 0 ? challenges : ["Need to develop shared understanding of family dynamics"];
 }
 
 // Add missing calculation functions that were referenced but not implemented
