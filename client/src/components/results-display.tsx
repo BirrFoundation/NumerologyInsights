@@ -217,10 +217,8 @@ export default function ResultsDisplay({ result, onReset, onCompatibility }: Pro
   return (
     <div className="relative min-h-screen w-full">
       <ResultsBackground result={result} />
-
-      <div className="relative z-10 min-h-screen w-full px-4 py-8">
-        <div className="mx-auto max-w-7xl space-y-8 rounded-xl border border-primary/20 bg-background/95 backdrop-blur-sm p-6">
-          {/* Header */}
+      <div className="relative z-10 w-full bg-background/95 backdrop-blur-sm min-h-screen py-8">
+        <div className="mx-auto max-w-7xl px-4 space-y-8">
           <div className="text-center">
             <h2 className="text-2xl font-semibold sm:text-3xl">
               Numerology Reading for {result.name}
@@ -230,13 +228,11 @@ export default function ResultsDisplay({ result, onReset, onCompatibility }: Pro
             </p>
           </div>
 
-          {/* Overview */}
           <div>
             <h3 className="text-xl font-semibold mb-4">Overview</h3>
             <p className="leading-relaxed">{getBasicInterpretation()}</p>
           </div>
 
-          {/* Core Numbers Grid */}
           <div>
             <h3 className="text-xl font-semibold mb-6">Core Numbers</h3>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
@@ -251,11 +247,9 @@ export default function ResultsDisplay({ result, onReset, onCompatibility }: Pro
 
           <Separator />
 
-          {/* Detailed Analysis */}
           <div>
             <h3 className="text-xl font-semibold mb-6">Detailed Analysis</h3>
             <Accordion type="single" collapsible className="w-full space-y-2">
-              {/* Complete Profile Summary */}
               <AccordionItem value="profile-summary">
                 <AccordionTrigger>Complete Profile Summary</AccordionTrigger>
                 <AccordionContent>
@@ -323,68 +317,64 @@ export default function ResultsDisplay({ result, onReset, onCompatibility }: Pro
             </Accordion>
           </div>
 
-          {/* Additional Components */}
-          <div className="space-y-8">
-            <div>
-              <h3 className="text-xl font-semibold mb-6">Numerological DNA Pattern</h3>
-              <DNAVisualization result={result} />
-            </div>
-
-            <div>
-              <h3 className="text-xl font-semibold mb-6">Personal Traits Analysis</h3>
-              <StrengthsWeaknessesChart items={[
-                {
-                  label: "Leadership & Independence",
-                  value: Math.min(100, (result.lifePath === 1 || result.expression === 1) ? 90 :
-                    (result.lifePath === 8 || result.expression === 8) ? 85 : 70),
-                  type: "strength"
-                },
-                {
-                  label: "Creativity & Expression",
-                  value: Math.min(100, (result.lifePath === 3 || result.expression === 3) ? 90 :
-                    (result.heartDesire === 3) ? 85 : 65),
-                  type: "strength"
-                },
-                {
-                  label: "Analytical Thinking",
-                  value: Math.min(100, (result.lifePath === 7 || result.expression === 7) ? 90 :
-                    (result.personality === 7) ? 85 : 75),
-                  type: "strength"
-                },
-                {
-                  label: "Emotional Sensitivity",
-                  value: Math.min(100, (result.lifePath === 2 || result.heartDesire === 2) ? 85 :
-                    (result.personality === 2) ? 80 : 70),
-                  type: result.lifePath === 2 ? "strength" : "weakness"
-                },
-                {
-                  label: "Adaptability",
-                  value: Math.min(100, (result.lifePath === 9 || result.expression === 9) ? 90 :
-                    (result.lifePath === 5 || result.expression === 5) ? 85 : 70),
-                  type: "strength"
-                },
-                {
-                  label: "Focus & Discipline",
-                  value: Math.min(100, (result.lifePath === 4 || result.expression === 4) ? 85 :
-                    (result.personality === 4) ? 80 : 65),
-                  type: result.lifePath === 4 ? "strength" : "weakness"
-                }
-              ]} />
-            </div>
-
-            <DailyForecast result={result} />
-            <AICoach result={result} />
-            <NumerologyJournal result={result} />
-            <CosmicEnergyMeter result={result} />
-            <NumerologySoundtrack result={result} />
-            <KarmaLeaderboard result={result} />
-            <DevelopmentRecommendations
-              recommendations={recommendations}
-              summary={result.interpretations?.developmentSummary}
-            />
+          <div>
+            <h3 className="text-xl font-semibold mb-6">Numerological DNA Pattern</h3>
+            <DNAVisualization result={result} />
           </div>
 
-          {/* Navigation Buttons */}
+          <div>
+            <h3 className="text-xl font-semibold mb-6">Personal Traits Analysis</h3>
+            <StrengthsWeaknessesChart items={[
+              {
+                label: "Leadership & Independence",
+                value: Math.min(100, (result.lifePath === 1 || result.expression === 1) ? 90 :
+                  (result.lifePath === 8 || result.expression === 8) ? 85 : 70),
+                type: "strength"
+              },
+              {
+                label: "Creativity & Expression",
+                value: Math.min(100, (result.lifePath === 3 || result.expression === 3) ? 90 :
+                  (result.heartDesire === 3) ? 85 : 65),
+                type: "strength"
+              },
+              {
+                label: "Analytical Thinking",
+                value: Math.min(100, (result.lifePath === 7 || result.expression === 7) ? 90 :
+                  (result.personality === 7) ? 85 : 75),
+                type: "strength"
+              },
+              {
+                label: "Emotional Sensitivity",
+                value: Math.min(100, (result.lifePath === 2 || result.heartDesire === 2) ? 85 :
+                  (result.personality === 2) ? 80 : 70),
+                type: result.lifePath === 2 ? "strength" : "weakness"
+              },
+              {
+                label: "Adaptability",
+                value: Math.min(100, (result.lifePath === 9 || result.expression === 9) ? 90 :
+                  (result.lifePath === 5 || result.expression === 5) ? 85 : 70),
+                type: "strength"
+              },
+              {
+                label: "Focus & Discipline",
+                value: Math.min(100, (result.lifePath === 4 || result.expression === 4) ? 85 :
+                  (result.personality === 4) ? 80 : 65),
+                type: result.lifePath === 4 ? "strength" : "weakness"
+              }
+            ]} />
+          </div>
+
+          <DailyForecast result={result} />
+          <AICoach result={result} />
+          <NumerologyJournal result={result} />
+          <CosmicEnergyMeter result={result} />
+          <NumerologySoundtrack result={result} />
+          <KarmaLeaderboard result={result} />
+          <DevelopmentRecommendations
+            recommendations={recommendations}
+            summary={result.interpretations?.developmentSummary}
+          />
+
           <div className="flex justify-center gap-4">
             <Button onClick={onReset} variant="outline">
               Start New Reading
