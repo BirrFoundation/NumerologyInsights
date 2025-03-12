@@ -152,6 +152,30 @@ export default function ResultsDisplay({ result, onReset, onCompatibility }: Pro
     return new Date(year, month - 1, day).toLocaleDateString();
   };
 
+  // Create recommendations object based on result numbers
+  const recommendations = {
+    strengths: [
+      ...NUMBER_MEANINGS[result.lifePath as keyof typeof NUMBER_MEANINGS].strengths,
+      ...NUMBER_MEANINGS[result.destiny as keyof typeof NUMBER_MEANINGS].strengths,
+    ],
+    challenges: [
+      ...NUMBER_MEANINGS[result.lifePath as keyof typeof NUMBER_MEANINGS].weaknesses,
+      ...NUMBER_MEANINGS[result.destiny as keyof typeof NUMBER_MEANINGS].weaknesses,
+    ],
+    growthAreas: [
+      "Developing balance between different aspects of your numerology",
+      "Understanding the interplay between your numbers",
+      "Maximizing the potential of your master numbers",
+      "Working with your karmic influences",
+    ],
+    practices: [
+      "Daily reflection on your life path number",
+      "Regular meditation focusing on your destiny number",
+      "Journal writing about your experiences",
+      "Mindfulness practices aligned with your numbers",
+    ]
+  };
+
   return (
     <div className="min-h-screen w-full relative">
       {/* Background Layer */}
@@ -284,7 +308,10 @@ export default function ResultsDisplay({ result, onReset, onCompatibility }: Pro
               <CosmicEnergyMeter result={result} />
               <NumerologySoundtrack result={result} />
               <KarmaLeaderboard result={result} />
-              <DevelopmentRecommendations result={result} />
+              <DevelopmentRecommendations 
+                recommendations={recommendations}
+                summary={result.interpretations.developmentSummary}
+              />
             </div>
 
             {/* Navigation Buttons - Only at bottom */}
