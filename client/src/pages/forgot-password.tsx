@@ -183,7 +183,7 @@ export default function ForgotPasswordPage() {
                         render={({ slots }) => (
                           <InputOTPGroup>
                             {slots.map((slot, index) => (
-                              <InputOTPSlot key={index} {...slot} />
+                              <InputOTPSlot key={index} slot={slot} />
                             ))}
                           </InputOTPGroup>
                         )}
