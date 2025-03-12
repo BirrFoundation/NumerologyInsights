@@ -13,7 +13,7 @@ import NumerologyJournal from "./numerology-journal";
 import { CosmicEnergyMeter } from "./cosmic-energy-meter";
 import { NumerologySoundtrack } from "./numerology-soundtrack";
 import { KarmaLeaderboard } from "./karma-leaderboard";
-import { DailyForecast } from "./daily-forecast";
+import { PeriodicForecast } from "./periodic-forecast";
 import { ResultsBackground } from "./results-background";
 import { basicInterpretations } from "@shared/numerology-interpretations";
 import { DownloadReportButton } from "./download-report-button";
@@ -367,7 +367,11 @@ export default function ResultsDisplay({ result, onReset, onCompatibility }: Pro
                 ]} />
               </div>
 
-              <DailyForecast result={result} />
+              <div>
+                <h3 className="text-xl font-semibold mb-6">Periodic Forecasts</h3>
+                <PeriodicForecast result={result} />
+              </div>
+
               <AICoach result={result} />
               <NumerologyJournal result={result} />
               <CosmicEnergyMeter result={result} />

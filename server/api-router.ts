@@ -127,6 +127,98 @@ router.get("/daily-forecast", async (req, res) => {
   }
 });
 
+// Weekly forecast endpoint
+router.get("/weekly-forecast", async (req, res) => {
+  try {
+    const { date, userId } = req.query;
+    console.log('Weekly forecast request received:', { date, userId });
+
+    if (!date || !userId) {
+      return res.status(400).json({ error: 'Date and userId are required' });
+    }
+
+    const startDate = new Date(date as string);
+
+    // Get the user's numerology profile
+    const latestResult = await storage.getLatestNumerologyResult(parseInt(userId as string));
+    if (!latestResult) {
+      return res.status(404).json({ error: 'Numerology profile not found' });
+    }
+
+    // Calculate weekly forecast
+    const weeklyForecast = calculateWeeklyForecast(startDate, latestResult);
+
+    // Get AI coaching insights if available
+    try {
+      const aiGuidance = await getPersonalizedCoaching(latestResult);
+      weeklyForecast.guidance = aiGuidance.advice;
+      weeklyForecast.insights = aiGuidance.followUpQuestions;
+    } catch (error) {
+      console.log('AI coaching unavailable, using fallback guidance', error);
+      weeklyForecast.guidance = "Focus on your weekly themes and trust your intuition.";
+      weeklyForecast.insights = [
+        "How can you best utilize this week's energies?",
+        "What opportunities are presenting themselves?",
+        "How can you prepare for the peak energy days?"
+      ];
+    }
+
+    res.json(weeklyForecast);
+  } catch (error) {
+    console.error('Error generating weekly forecast:', error);
+    res.status(500).json({ 
+      error: 'Failed to generate weekly forecast',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
+// Monthly forecast endpoint
+router.get("/monthly-forecast", async (req, res) => {
+  try {
+    const { date, userId } = req.query;
+    console.log('Monthly forecast request received:', { date, userId });
+
+    if (!date || !userId) {
+      return res.status(400).json({ error: 'Date and userId are required' });
+    }
+
+    const monthDate = new Date(date as string);
+
+    // Get the user's numerology profile
+    const latestResult = await storage.getLatestNumerologyResult(parseInt(userId as string));
+    if (!latestResult) {
+      return res.status(404).json({ error: 'Numerology profile not found' });
+    }
+
+    // Calculate monthly forecast
+    const monthlyForecast = calculateMonthlyForecast(monthDate, latestResult);
+
+    // Get AI coaching insights if available
+    try {
+      const aiGuidance = await getPersonalizedCoaching(latestResult);
+      monthlyForecast.guidance = aiGuidance.advice;
+      monthlyForecast.insights = aiGuidance.followUpQuestions;
+    } catch (error) {
+      console.log('AI coaching unavailable, using fallback guidance', error);
+      monthlyForecast.guidance = "Focus on your monthly themes and align with the universal energies.";
+      monthlyForecast.insights = [
+        "How can you best utilize this month's energies?",
+        "What long-term opportunities are emerging?",
+        "How can you prepare for the month's challenges?"
+      ];
+    }
+
+    res.json(monthlyForecast);
+  } catch (error) {
+    console.error('Error generating monthly forecast:', error);
+    res.status(500).json({ 
+      error: 'Failed to generate monthly forecast',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
 // Healthz check endpoint - using z instead of k to avoid conflicts
 router.get("/healthz", (_req, res) => {
   log('[API Router] Processing health check request');
