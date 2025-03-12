@@ -31,17 +31,24 @@ export default function VerifyEmailPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState<number | null>(null);
   const [email, setEmail] = useState<string>("");
+  const [emailSent, setEmailSent] = useState<boolean>(true);
 
   useEffect(() => {
     // Get userId and email from URL params
     const params = new URLSearchParams(window.location.search);
     const id = params.get("userId");
     const emailParam = params.get("email");
+    const emailSentParam = params.get("emailSent");
+
     if (id && emailParam) {
       setUserId(parseInt(id));
       setEmail(emailParam);
-      // Automatically request verification code
-      requestVerificationCode(parseInt(id));
+      setEmailSent(emailSentParam === "true");
+
+      // Only request verification code automatically if email wasn't sent during signup
+      if (emailSentParam === "false") {
+        requestVerificationCode(parseInt(id));
+      }
     } else {
       setLocation("/login");
     }
@@ -56,6 +63,7 @@ export default function VerifyEmailPage() {
 
   const requestVerificationCode = async (userId: number) => {
     try {
+      setIsLoading(true);
       console.log("Requesting verification code for userId:", userId);
       const response = await apiRequest("POST", "/api/auth/resend-verification", { userId });
       if (!response.ok) {
@@ -66,12 +74,15 @@ export default function VerifyEmailPage() {
         title: "Verification code sent",
         description: "Please check your email for the verification code.",
       });
+      setEmailSent(true);
     } catch (error) {
       toast({
         variant: "destructive",
         title: "Failed to send code",
         description: error instanceof Error ? error.message : "Unknown error occurred",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -117,7 +128,10 @@ export default function VerifyEmailPage() {
         <div className="text-center">
           <h2 className="text-3xl font-semibold tracking-tight">Verify Your Email</h2>
           <p className="text-sm text-muted-foreground mt-2">
-            Enter the verification code sent to {email}
+            {emailSent 
+              ? `Enter the verification code sent to ${email}`
+              : "Click below to send a verification code to your email"
+            }
           </p>
         </div>
 
@@ -160,13 +174,14 @@ export default function VerifyEmailPage() {
 
         <div className="text-center text-sm">
           <p className="text-muted-foreground">
-            Didn't receive the code?{" "}
+            {emailSent ? "Didn't receive the code? " : ""}
             <Button
               variant="link"
               className="p-0 h-auto font-normal"
               onClick={() => userId && requestVerificationCode(userId)}
+              disabled={isLoading}
             >
-              Resend code
+              {emailSent ? "Resend code" : "Send verification code"}
             </Button>
           </p>
         </div>

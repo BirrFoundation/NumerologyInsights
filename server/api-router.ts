@@ -31,7 +31,7 @@ router.post("/auth/signup", async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(data.password, salt);
 
-    // Create user
+    // Create user first
     const user = await storage.createUser({
       email: data.email,
       password: hashedPassword,
@@ -48,21 +48,26 @@ router.post("/auth/signup", async (req, res) => {
       expiresAt
     });
 
-    // Send verification email
+    // Try to send verification email, but don't fail if it doesn't work
+    let emailSent = false;
     try {
       await sendVerificationEmail(user.email, code);
-      console.log('Verification email sent during signup');
+      console.log('Verification email sent successfully during signup');
+      emailSent = true;
     } catch (emailError) {
       console.error('Failed to send verification email during signup:', emailError);
-      // Don't fail the signup if email fails, but log it
-      return res.status(500).json({ error: "Failed to send verification email. Please try signing up again." });
+      // Log the error but continue with account creation
     }
 
-    // Return user ID for verification redirection
+    // Return user ID and email status
     res.status(201).json({
-      message: "Account created successfully",
-      userId: user.id
+      message: emailSent 
+        ? "Account created successfully. Please check your email for verification code."
+        : "Account created but could not send verification email. Please try requesting a new code.",
+      userId: user.id,
+      emailSent
     });
+
   } catch (error) {
     console.error("Signup error:", error);
     if (error instanceof z.ZodError) {
@@ -124,7 +129,7 @@ router.post("/auth/resend-verification", async (req, res) => {
     // Generate new verification code
     const code = generateVerificationCode();
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
-
+    
     // Save new verification code
     await storage.createVerificationCode({
       userId: user.id,
@@ -720,4 +725,4 @@ Date.prototype.getWeekNumber = function () {
     d.setUTCDate(d.getUTCDate() + 4 - dayNum);
     const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
     return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
-}
+};
