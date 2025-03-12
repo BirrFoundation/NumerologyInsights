@@ -112,6 +112,16 @@ export default function LoginPage() {
                     />
                   </FormControl>
                   <FormMessage />
+                  <Button
+                    variant="link"
+                    className="px-0 font-normal text-xs"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setLocation("/forgot-password");
+                    }}
+                  >
+                    Forgot password?
+                  </Button>
                 </FormItem>
               )}
             />

@@ -34,14 +34,19 @@ export default function SignupPage() {
   const signupMutation = useMutation({
     mutationFn: async (data: { email: string; password: string }) => {
       const response = await apiRequest("POST", "/api/auth/signup", data);
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to create account');
+      }
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast({
         title: "Account created successfully",
-        description: "Please check your email for verification instructions.",
+        description: "Please check your email to verify your account.",
       });
-      setLocation("/login");
+      // Redirect to email verification page with userId and email
+      setLocation(`/verify-email?userId=${data.userId}&email=${encodeURIComponent(form.getValues().email)}`);
     },
     onError: (error: Error) => {
       toast({
@@ -49,6 +54,7 @@ export default function SignupPage() {
         title: "Failed to create account",
         description: error.message,
       });
+      setIsLoading(false);
     },
   });
 
