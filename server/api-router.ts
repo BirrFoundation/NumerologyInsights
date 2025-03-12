@@ -120,8 +120,9 @@ router.post("/auth/resend-verification", async (req, res) => {
     }
 
     const userId = parseInt(req.body.userId);
-    const user = await storage.getUserById(userId);
+    console.log("Attempting to resend verification code for userId:", userId);
 
+    const user = await storage.getUserById(userId);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -129,21 +130,36 @@ router.post("/auth/resend-verification", async (req, res) => {
     // Generate new verification code
     const code = generateVerificationCode();
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
-    
-    // Save new verification code
+
+    // Save new verification code first
     await storage.createVerificationCode({
       userId: user.id,
       code,
       expiresAt
     });
 
-    // Send new verification email
-    await sendVerificationEmail(user.email, code);
-
-    res.json({ message: "New verification code sent successfully" });
+    // Try to send the verification email
+    try {
+      await sendVerificationEmail(user.email, code);
+      console.log('New verification code sent successfully');
+      res.json({ 
+        message: "New verification code sent successfully",
+        emailSent: true
+      });
+    } catch (emailError) {
+      console.error('Failed to send new verification code:', emailError);
+      res.status(500).json({ 
+        error: "Failed to send verification code",
+        message: "Please try again in a few minutes",
+        emailSent: false
+      });
+    }
   } catch (error) {
     console.error("Resend verification error:", error);
-    res.status(500).json({ error: "Failed to resend verification code" });
+    res.status(500).json({ 
+      error: "Failed to resend verification code",
+      message: error instanceof Error ? error.message : "Unknown error occurred"
+    });
   }
 });
 

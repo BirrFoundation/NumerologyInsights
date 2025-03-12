@@ -66,21 +66,28 @@ export default function VerifyEmailPage() {
       setIsLoading(true);
       console.log("Requesting verification code for userId:", userId);
       const response = await apiRequest("POST", "/api/auth/resend-verification", { userId });
+      const data = await response.json();
+
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to send verification code");
+        throw new Error(data.error || "Failed to send verification code");
       }
-      toast({
-        title: "Verification code sent",
-        description: "Please check your email for the verification code.",
-      });
-      setEmailSent(true);
+
+      if (data.emailSent) {
+        toast({
+          title: "Verification code sent",
+          description: "Please check your email for the verification code.",
+        });
+        setEmailSent(true);
+      } else {
+        throw new Error("Failed to send email. Please try again in a few minutes.");
+      }
     } catch (error) {
       toast({
         variant: "destructive",
         title: "Failed to send code",
         description: error instanceof Error ? error.message : "Unknown error occurred",
       });
+      setEmailSent(false);
     } finally {
       setIsLoading(false);
     }
@@ -128,7 +135,7 @@ export default function VerifyEmailPage() {
         <div className="text-center">
           <h2 className="text-3xl font-semibold tracking-tight">Verify Your Email</h2>
           <p className="text-sm text-muted-foreground mt-2">
-            {emailSent 
+            {emailSent
               ? `Enter the verification code sent to ${email}`
               : "Click below to send a verification code to your email"
             }
@@ -165,7 +172,7 @@ export default function VerifyEmailPage() {
             <Button
               className="w-full"
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || !emailSent}
             >
               {isLoading ? "Verifying..." : "Verify Email"}
             </Button>
