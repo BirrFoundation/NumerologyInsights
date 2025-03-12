@@ -38,6 +38,7 @@ export async function sendVerificationEmail(email: string, code: string): Promis
 
   try {
     await transporter.sendMail(mailOptions);
+    console.log(`Verification email sent successfully to ${email}`);
   } catch (error) {
     console.error("Failed to send verification email:", error);
     throw new Error("Failed to send verification email. Please try again later.");
@@ -66,6 +67,7 @@ export async function sendResetEmail(email: string, code: string): Promise<void>
 
   try {
     await transporter.sendMail(mailOptions);
+    console.log(`Reset email sent successfully to ${email}`);
   } catch (error) {
     console.error("Failed to send reset email:", error);
     throw new Error("Failed to send reset email. Please try again later.");
