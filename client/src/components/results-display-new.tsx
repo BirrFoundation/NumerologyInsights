@@ -150,8 +150,8 @@ export default function ResultsDisplay({ result, onReset, onCompatibility }: Pro
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-background to-primary/5">
-      <div className="w-full py-8 px-2 sm:px-4">
-        <div className="max-w-[1200px] mx-auto bg-background/95 backdrop-blur-sm border border-primary/20 rounded-xl p-4 sm:p-6 space-y-6">
+      <div className="w-full py-4 sm:py-8 px-2">
+        <div className="max-w-[1400px] mx-auto bg-background/95 backdrop-blur-sm border border-primary/20 rounded-xl p-3 sm:p-6 space-y-4 sm:space-y-6">
           {/* Header */}
           <div className="text-center space-y-4">
             <h2 className="text-2xl sm:text-3xl font-semibold">
@@ -195,7 +195,7 @@ export default function ResultsDisplay({ result, onReset, onCompatibility }: Pro
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-6"
+            className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-6"
           >
             <NumberDisplay number={result.lifePath} title="Life Path Number" />
             <NumberDisplay number={result.destiny} title="Destiny Number" />
@@ -222,7 +222,7 @@ export default function ResultsDisplay({ result, onReset, onCompatibility }: Pro
           </motion.div>
 
           {/* Additional Components */}
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -273,7 +273,7 @@ export default function ResultsDisplay({ result, onReset, onCompatibility }: Pro
           </div>
 
           {/* Bottom Navigation */}
-          <div className="flex justify-center gap-4 pt-8">
+          <div className="flex justify-center gap-4 pt-4 sm:pt-8">
             <Button onClick={onReset} variant="outline">
               Start New Reading
             </Button>
