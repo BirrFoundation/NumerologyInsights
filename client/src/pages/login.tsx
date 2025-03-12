@@ -32,6 +32,7 @@ export default function LoginPage() {
 
   const loginMutation = useMutation({
     mutationFn: async (data: { email: string; password: string }) => {
+      setIsLoading(true);
       const response = await apiRequest("POST", "/api/auth/login", data);
       if (!response.ok) {
         const error = await response.json();
@@ -39,16 +40,18 @@ export default function LoginPage() {
       }
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      // Only set authenticated and redirect after confirming success
+      localStorage.setItem('isAuthenticated', 'true');
       toast({
         title: "Login successful",
         description: "Welcome back!",
       });
-      // Only redirect after successful login
-      localStorage.setItem('isAuthenticated', 'true');
       setLocation("/");
     },
     onError: (error: Error) => {
+      // Clear any previous auth state and keep user on login page
+      localStorage.removeItem('isAuthenticated');
       setIsLoading(false);
       toast({
         variant: "destructive",
@@ -56,10 +59,12 @@ export default function LoginPage() {
         description: error.message,
       });
     },
+    onSettled: () => {
+      setIsLoading(false);
+    }
   });
 
   const onSubmit = (data: { email: string; password: string }) => {
-    setIsLoading(true);
     loginMutation.mutate(data);
   };
 

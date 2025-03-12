@@ -1,0 +1,57 @@
+[vite] connecting...
+[vite] connected.
+Form state: 
+Object {values: {…}, errors: {…}, isValid: false, isDirty: false}
+Form state: 
+Object {values: {…}, errors: {…}, isValid: false, isDirty: false}
+Form state: 
+Object {values: {…}, errors: {…}, isValid: false, isDirty: false}
+Name changed: Ermiyas
+Form state: 
+Object {values: {…}, errors: {…}, isValid: false, isDirty: true}
+Form state: 
+Object {values: {…}, errors: {…}, isValid: true, isDirty: true}
+Form state: 
+Object {values: {…}, errors: {…}, isValid: true, isDirty: true}
+Date changed: 1980-01-12
+Form state: 
+Object {values: {…}, errors: {…}, isValid: true, isDirty: true}
+Date changed: 1980-01-23
+Form state: 
+Object {values: {…}, errors: {…}, isValid: true, isDirty: true}
+Form submitted with: 
+Object {name: "Ermiyas", birthdate: "1980-01-23"}
+Form state: 
+Object {values: {…}, errors: {…}, isValid: true, isDirty: true}
+Attempting to submit: 
+Object {name: "Ermiyas", birthdate: "1980-01-23"}
+Form state: 
+Object {values: {…}, errors: {…}, isValid: true, isDirty: true}
+Calculation result: 
+Object {id: 2, name: "Ermiyas", birthdate: "1980-01-23", lifePath: 6, destiny: 9, …}
+Calculation succeeded: 
+Object {id: 2, name: "Ermiyas", birthdate: "1980-01-23", lifePath: 6, destiny: 9, …}
+Fetching weekly forecast for user: 2
+Fetching monthly forecast for user: 2
+Weekly forecast error: 
+Object {error: "Numerology profile not found"}
+error: "Numerology profile not found"
+[[Prototype]]: Object
+
+at t.value (https://235d6073-409a-4ed8-a0e2-019ae8bff921-00-edd6wam8afj3.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:17465)
+at new t (https://235d6073-409a-4ed8-a0e2-019ae8bff921-00-edd6wam8afj3.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:12630)
+at t.value (https://235d6073-409a-4ed8-a0e2-019ae8bff921-00-edd6wam8afj3.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:32766)
+at https://235d6073-409a-4ed8-a0e2-019ae8bff921-00-edd6wam8afj3.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:34400
+Monthly forecast error: 
+Object {error: "Numerology profile not found"}
+
+Fetching weekly forecast for user: 2
+Fetching monthly forecast for user: 2
+Weekly forecast error: 
+Object {error: "Numerology profile not found"}
+
+Monthly forecast error: 
+Object {error: "Numerology profile not found"}
+
+Forecast data received: 
+Object {personalDayNumber: 6, personalDayMeaning: "Day of Harmony and Balance", universalDayNumber: 6, universalDayMeaning: "Universal energy favors responsibility and nurturing", cosmicNumber: 3, …}
