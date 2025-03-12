@@ -1,12 +1,11 @@
 import { Router } from "express";
 import { storage } from "./storage";
-import { generateVerificationCode, sendVerificationEmail, hashPassword } from "./email-service";
-import { userAuthSchema, verificationSchema, numerologyInputSchema, compatibilityInputSchema, dreamInputSchema } from "@shared/schema";
-import { z } from "zod";
-import { calculateNumerology, calculateCompatibility, reduceToSingleDigit } from "./numerology";
+import { calculateNumerology, calculateWeeklyForecast, calculateMonthlyForecast, reduceToSingleDigit } from "./numerology";
 import { getInterpretation } from "./ai";
 import { getPersonalizedCoaching } from "./ai-coach";
 import { log } from "./vite";
+import { userAuthSchema, verificationSchema, numerologyInputSchema, compatibilityInputSchema, dreamInputSchema } from "@shared/schema";
+import { z } from "zod";
 import { interpretDream } from "./dream-interpreter";
 
 const router = Router();
@@ -120,7 +119,7 @@ router.get("/daily-forecast", async (req, res) => {
     res.json(forecast);
   } catch (error) {
     console.error('Error generating daily forecast:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Failed to generate forecast',
       message: error instanceof Error ? error.message : 'Unknown error'
     });
@@ -138,9 +137,10 @@ router.get("/weekly-forecast", async (req, res) => {
     }
 
     const startDate = new Date(date as string);
+    const userIdNum = parseInt(userId as string);
 
     // Get the user's numerology profile
-    const latestResult = await storage.getLatestNumerologyResult(parseInt(userId as string));
+    const latestResult = await storage.getLatestNumerologyResult(userIdNum);
     if (!latestResult) {
       return res.status(404).json({ error: 'Numerology profile not found' });
     }
@@ -166,7 +166,7 @@ router.get("/weekly-forecast", async (req, res) => {
     res.json(weeklyForecast);
   } catch (error) {
     console.error('Error generating weekly forecast:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Failed to generate weekly forecast',
       message: error instanceof Error ? error.message : 'Unknown error'
     });
@@ -184,9 +184,10 @@ router.get("/monthly-forecast", async (req, res) => {
     }
 
     const monthDate = new Date(date as string);
+    const userIdNum = parseInt(userId as string);
 
     // Get the user's numerology profile
-    const latestResult = await storage.getLatestNumerologyResult(parseInt(userId as string));
+    const latestResult = await storage.getLatestNumerologyResult(userIdNum);
     if (!latestResult) {
       return res.status(404).json({ error: 'Numerology profile not found' });
     }
@@ -212,7 +213,7 @@ router.get("/monthly-forecast", async (req, res) => {
     res.json(monthlyForecast);
   } catch (error) {
     console.error('Error generating monthly forecast:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Failed to generate monthly forecast',
       message: error instanceof Error ? error.message : 'Unknown error'
     });

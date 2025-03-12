@@ -35,47 +35,47 @@ const styles = StyleSheet.create({
     marginBottom: 2,
     marginLeft: 15,
   },
-  table: {
+  numberGrid: {
     display: 'flex',
-    width: 'auto',
-    borderStyle: 'solid',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    marginBottom: 15,
+  },
+  numberBlock: {
+    width: '45%',
+    padding: 8,
+    marginBottom: 10,
     borderWidth: 0.5,
     borderColor: '#666666',
-    marginVertical: 8,
+    borderRadius: 4,
   },
-  tableRow: {
-    flexDirection: 'row',
-    borderBottomColor: '#666666',
-    borderBottomWidth: 0.5,
-    minHeight: 25,
-    alignItems: 'center',
-  },
-  tableCell: {
-    flex: 1,
-    padding: 4,
+  numberTitle: {
     fontSize: 9,
-  },
-  tableCellHeader: {
-    fontSize: 9,
-    fontWeight: 'bold',
-    color: '#333333',
-  },
-  numberCell: {
-    flex: 0.3,
-    padding: 4,
-    fontSize: 9,
-    textAlign: 'center',
-  },
-  meaningCell: {
-    flex: 2,
-    padding: 4,
-    fontSize: 9,
-  },
-  sectionTitle: {
-    fontSize: 14,
-    marginTop: 12,
-    marginBottom: 8,
     color: '#444444',
+    marginBottom: 4,
+  },
+  numberValue: {
+    fontSize: 16,
+    color: '#333333',
+    marginBottom: 8,
+  },
+  interpretationSection: {
+    marginTop: 15,
+    padding: 10,
+    backgroundColor: '#f8f8f8',
+  },
+  interpretationTitle: {
+    fontSize: 12,
+    color: '#333333',
+    marginBottom: 8,
+    fontWeight: 'bold',
+  },
+  interpretationText: {
+    fontSize: 9,
+    color: '#666666',
+    lineHeight: 1.4,
+    marginBottom: 8,
   },
   pageNumber: {
     position: 'absolute',
@@ -92,6 +92,15 @@ interface Props {
 }
 
 export function NumerologyPDFReport({ result, compatibility }: Props) {
+  const coreNumbers = [
+    { title: 'Life Path Number', value: result.lifePath, interpretation: result.interpretations.lifePath },
+    { title: 'Destiny Number', value: result.destiny, interpretation: result.interpretations.destiny },
+    { title: "Heart's Desire", value: result.heartDesire, interpretation: result.interpretations.heartDesire },
+    { title: 'Expression', value: result.expression, interpretation: result.interpretations.expression },
+    { title: 'Personality', value: result.personality, interpretation: result.interpretations.personality },
+    { title: 'Birth Date', value: result.birthDateNum, interpretation: result.interpretations.birthDateNum }
+  ];
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -109,41 +118,28 @@ export function NumerologyPDFReport({ result, compatibility }: Props) {
           <Text style={styles.text}>{result.interpretations.overview}</Text>
         </View>
 
-        {/* Core Numbers with Detailed Analysis */}
+        {/* Core Numbers Grid */}
         <View style={styles.section}>
-          <Text style={styles.subHeader}>Core Numbers Analysis</Text>
-          <View style={styles.table}>
-            <View style={styles.tableRow}>
-              <Text style={[styles.tableCell, styles.tableCellHeader]}>Number Type</Text>
-              <Text style={[styles.tableCell, styles.tableCellHeader]}>Value</Text>
-              <Text style={[styles.tableCell, styles.tableCellHeader]}>Meaning</Text>
-            </View>
-            <View style={styles.tableRow}>
-              <Text style={styles.tableCell}>Life Path Number</Text>
-              <Text style={styles.tableCell}>{result.lifePath}</Text>
-              <Text style={styles.tableCell}>{result.interpretations.lifePath}</Text>
-            </View>
-            <View style={styles.tableRow}>
-              <Text style={styles.tableCell}>Destiny Number</Text>
-              <Text style={styles.tableCell}>{result.destiny}</Text>
-              <Text style={styles.tableCell}>{result.interpretations.destiny}</Text>
-            </View>
-            <View style={styles.tableRow}>
-              <Text style={styles.tableCell}>Heart's Desire</Text>
-              <Text style={styles.tableCell}>{result.heartDesire}</Text>
-              <Text style={styles.tableCell}>{result.interpretations.heartDesire}</Text>
-            </View>
-            <View style={styles.tableRow}>
-              <Text style={styles.tableCell}>Expression</Text>
-              <Text style={styles.tableCell}>{result.expression}</Text>
-              <Text style={styles.tableCell}>{result.interpretations.expression}</Text>
-            </View>
-            <View style={styles.tableRow}>
-              <Text style={styles.tableCell}>Personality</Text>
-              <Text style={styles.tableCell}>{result.personality}</Text>
-              <Text style={styles.tableCell}>{result.interpretations.personality}</Text>
-            </View>
+          <Text style={styles.subHeader}>Core Numbers</Text>
+          <View style={styles.numberGrid}>
+            {coreNumbers.map((number, index) => (
+              <View key={index} style={styles.numberBlock}>
+                <Text style={styles.numberTitle}>{number.title}</Text>
+                <Text style={styles.numberValue}>{number.value}</Text>
+              </View>
+            ))}
           </View>
+        </View>
+
+        {/* Detailed Interpretations */}
+        <View style={styles.section}>
+          <Text style={styles.subHeader}>Number Interpretations</Text>
+          {coreNumbers.map((number, index) => (
+            <View key={index} style={styles.interpretationSection}>
+              <Text style={styles.interpretationTitle}>{number.title} ({number.value})</Text>
+              <Text style={styles.interpretationText}>{number.interpretation}</Text>
+            </View>
+          ))}
         </View>
 
         {/* Detailed Recommendations */}
