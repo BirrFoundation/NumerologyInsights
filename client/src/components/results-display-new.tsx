@@ -150,10 +150,10 @@ export default function ResultsDisplay({ result, onReset, onCompatibility }: Pro
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-background to-primary/5">
-      <div className="w-full py-4 sm:py-8">
-        <div className="w-[99%] sm:w-[98%] sm:max-w-[1400px] mx-auto bg-background/95 backdrop-blur-sm border border-primary/20 rounded-lg sm:rounded-xl px-1 sm:px-6 py-3 sm:py-6 space-y-4 sm:space-y-6">
+      <div className="w-full py-2 sm:py-8">
+        <div className="w-[99.5%] sm:w-[98%] sm:max-w-[1400px] mx-auto bg-background/95 backdrop-blur-sm border border-primary/20 rounded-lg sm:rounded-xl px-1 sm:px-6 py-2 sm:py-6 space-y-3 sm:space-y-6">
           {/* Header */}
-          <div className="text-center space-y-4">
+          <div className="text-center space-y-3 sm:space-y-4">
             <h2 className="text-2xl sm:text-3xl font-semibold">
               Numerology Reading for {result.name}
             </h2>
@@ -161,10 +161,10 @@ export default function ResultsDisplay({ result, onReset, onCompatibility }: Pro
               Based on your birth date: {formatDate(result.birthdate)}
             </p>
             <div className="flex justify-center gap-2 sm:gap-4">
-              <Button onClick={onReset} variant="outline">
+              <Button onClick={onReset} variant="outline" className="text-sm sm:text-base">
                 Start New Reading
               </Button>
-              <Button onClick={onCompatibility} variant="outline">
+              <Button onClick={onCompatibility} variant="outline" className="text-sm sm:text-base">
                 Compatibility Reading
               </Button>
             </div>
@@ -175,9 +175,10 @@ export default function ResultsDisplay({ result, onReset, onCompatibility }: Pro
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
+            className="px-2 sm:px-0"
           >
-            <h3 className="text-xl font-semibold mb-4">Complete Profile Summary</h3>
-            <div className="space-y-4">
+            <h3 className="text-xl font-semibold mb-3 sm:mb-4">Complete Profile Summary</h3>
+            <div className="space-y-3 sm:space-y-4">
               <p className="leading-relaxed">
                 Your numerological profile combines the nurturing energy of 6 with the humanitarian wisdom of 9, creating a unique blend of caring and universal understanding. This combination makes you an exceptionally compassionate individual with a deep sense of responsibility towards both family and humanity at large.
               </p>
