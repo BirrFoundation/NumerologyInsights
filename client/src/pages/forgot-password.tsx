@@ -55,6 +55,7 @@ export default function ForgotPasswordPage() {
 
   const requestResetMutation = useMutation({
     mutationFn: async (data: { email: string }) => {
+      console.log('Sending password reset request:', data); // Added logging
       setIsLoading(true);
       const response = await apiRequest("POST", "/api/auth/forgot-password", data);
       if (!response.ok) {
@@ -64,6 +65,7 @@ export default function ForgotPasswordPage() {
       return response.json();
     },
     onSuccess: (data) => {
+      console.log('Reset request successful:', data); // Added logging
       setUserId(data.userId);
       setStep("reset");
       toast({
@@ -72,6 +74,7 @@ export default function ForgotPasswordPage() {
       });
     },
     onError: (error: Error) => {
+      console.error('Reset request failed:', error); // Added logging
       toast({
         variant: "destructive",
         title: "Failed to send reset code",
@@ -87,6 +90,7 @@ export default function ForgotPasswordPage() {
     mutationFn: async (data: { code: string; newPassword: string }) => {
       if (!userId) throw new Error("User ID not found");
       setIsLoading(true);
+      console.log('Sending password reset:', { userId, ...data }); // Added logging
       const response = await apiRequest("POST", "/api/auth/reset-password", {
         userId,
         ...data,
@@ -98,6 +102,7 @@ export default function ForgotPasswordPage() {
       return response.json();
     },
     onSuccess: () => {
+      console.log('Password reset successful'); // Added logging
       toast({
         title: "Password reset successful",
         description: "You can now log in with your new password.",
@@ -105,6 +110,7 @@ export default function ForgotPasswordPage() {
       setLocation("/login");
     },
     onError: (error: Error) => {
+      console.error('Password reset failed:', error); // Added logging
       toast({
         variant: "destructive",
         title: "Failed to reset password",
@@ -126,7 +132,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-primary/5">
-      <div className="w-full max-w-md space-y-8 p-8 bg-background/95 backdrop-blur-sm border border-primary/20 rounded-xl">
+      <div className="w-[99%] sm:w-full max-w-md space-y-8 p-6 sm:p-8 bg-background/95 backdrop-blur-sm border border-primary/20 rounded-xl">
         <div className="text-center">
           <h2 className="text-3xl font-semibold tracking-tight">Reset Password</h2>
           <p className="text-sm text-muted-foreground mt-2">

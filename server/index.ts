@@ -49,11 +49,11 @@ app.use((req, res, next) => {
   next();
 });
 
-// Mount API Router with JSON handling
+// Mount API Router with JSON handling and logging
 console.log('Mounting API router...');
 app.use('/api', (req, res, next) => {
+  console.log(`[API Request] ${req.method} ${req.path}`); // Added logging
   res.type('json');
-  log(`[API Gateway] Processing ${req.method} ${req.path}`);
   next();
 }, apiRouter);
 
@@ -67,6 +67,7 @@ app.use('/api', (err: any, req: Request, res: Response, _next: NextFunction) => 
 
 // API catch-all before Vite setup
 app.use('/api/*', (req, res) => {
+  console.log(`[404] API endpoint not found: ${req.method} ${req.path}`); // Added logging
   res.status(404).json({ error: 'API endpoint not found' });
 });
 

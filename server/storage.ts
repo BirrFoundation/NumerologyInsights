@@ -33,6 +33,7 @@ export interface IStorage {
 
   sessionStore: session.Store;
   updatePassword(userId: number, hashedPassword: string): Promise<void>;
+  invalidateVerificationCode(userId: number, code: string): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -185,6 +186,15 @@ export class MemStorage implements IStorage {
     if (user) {
       user.password = hashedPassword;
       this.users.set(userId, user);
+    }
+  }
+
+  async invalidateVerificationCode(userId: number, code: string): Promise<void> {
+    for (const [id, verificationCode] of this.verificationCodes.entries()) {
+      if (verificationCode.userId === userId && verificationCode.code === code) {
+        this.verificationCodes.delete(id);
+        break;
+      }
     }
   }
 }

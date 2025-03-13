@@ -169,56 +169,92 @@ router.post("/auth/verify-email", async (req, res) => {
   }
 });
 
-router.post("/auth/resend-verification", async (req, res) => {
+// Password Reset Routes
+router.post("/auth/forgot-password", async (req, res) => {
   try {
-    if (!req.body.userId) {
-      return res.status(400).json({ error: "User ID is required" });
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ error: "Email is required" });
     }
 
-    const userId = parseInt(req.body.userId);
-    console.log("Attempting to resend verification code for userId:", userId);
-
-    const user = await storage.getUserById(userId);
+    // Find user
+    const user = await storage.getUserByEmail(email);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // Generate new verification code
+    // Generate reset code
     const code = generateVerificationCode();
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
-    // Save new verification code first
+    // Save reset code
     await storage.createVerificationCode({
       userId: user.id,
       code,
       expiresAt
     });
 
-    // Try to send the verification email
+    // Send reset email
     try {
-      await sendVerificationEmail(user.email, code);
-      console.log('New verification code sent successfully');
+      await sendResetEmail(user.email, code);
       res.json({
-        message: "New verification code sent successfully",
+        message: "Password reset code sent successfully",
+        userId: user.id,
         emailSent: true
       });
     } catch (emailError) {
-      console.error('Failed to send new verification code:', emailError);
-      // Include detailed error message for debugging
+      console.error('Failed to send reset code:', emailError);
       const errorMessage = emailError instanceof Error ? emailError.message : "Unknown error";
       res.status(500).json({
-        error: "Failed to send verification code",
+        error: "Failed to send reset code",
         message: `Email service error: ${errorMessage}. Please try again in a few minutes.`,
-        emailSent: false,
-        details: process.env.NODE_ENV !== 'production' ? errorMessage : undefined
+        emailSent: false
       });
     }
   } catch (error) {
-    console.error("Resend verification error:", error);
-    res.status(500).json({
-      error: "Failed to resend verification code",
-      message: error instanceof Error ? error.message : "Unknown error occurred"
-    });
+    console.error("Password reset error:", error);
+    res.status(500).json({ error: "Failed to process password reset request" });
+  }
+});
+
+router.post("/auth/reset-password", async (req, res) => {
+  try {
+    const { userId, code, newPassword } = req.body;
+    if (!userId || !code || !newPassword) {
+      return res.status(400).json({ error: "User ID, code, and new password are required" });
+    }
+
+    // Find user
+    const user = await storage.getUserById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Verify code
+    const verificationCode = await storage.getLatestVerificationCode(userId);
+    if (!verificationCode || verificationCode.code !== code) {
+      return res.status(400).json({ error: "Invalid reset code" });
+    }
+
+    // Check if code is expired
+    if (new Date() > verificationCode.expiresAt) {
+      return res.status(400).json({ error: "Reset code expired" });
+    }
+
+    // Hash new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Update password
+    await storage.updatePassword(userId, hashedPassword);
+
+    // Invalidate reset code
+    await storage.invalidateVerificationCode(userId, code);
+
+    res.json({ message: "Password reset successfully" });
+  } catch (error) {
+    console.error("Password reset error:", error);
+    res.status(500).json({ error: "Failed to reset password" });
   }
 });
 
@@ -861,7 +897,7 @@ const getPersonalizedCoaching = async (numerologyResult: any, userQuery?: string
 const interpretDream = async (description: string, emotions: string[], symbols: string[], birthdate: string, userName: string) => {
   //Implementation for dream interpretation. Placeholder for now.
   return {
-    interpretation: "This is a placeholder dream interpretation.",
+interpretation: "This is a placeholder dream interpretation.",
     numerologyFactors: {}
   }
 }
