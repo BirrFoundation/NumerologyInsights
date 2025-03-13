@@ -63,7 +63,7 @@ router.post("/auth/signup", async (req, res) => {
 
     // Return user ID and email status
     res.status(201).json({
-      message: emailSent 
+      message: emailSent
         ? "Account created successfully. Please check your email for verification code."
         : `Account created but could not send verification email. Please try requesting a new code. (${emailError})`,
       userId: user.id,
@@ -109,7 +109,7 @@ router.post("/auth/resend-verification", async (req, res) => {
     try {
       await sendVerificationEmail(user.email, code);
       console.log('New verification code sent successfully');
-      res.json({ 
+      res.json({
         message: "New verification code sent successfully",
         emailSent: true
       });
@@ -117,7 +117,7 @@ router.post("/auth/resend-verification", async (req, res) => {
       console.error('Failed to send new verification code:', emailError);
       // Include detailed error message for debugging
       const errorMessage = emailError instanceof Error ? emailError.message : "Unknown error";
-      res.status(500).json({ 
+      res.status(500).json({
         error: "Failed to send verification code",
         message: `Email service error: ${errorMessage}. Please try again in a few minutes.`,
         emailSent: false,
@@ -126,7 +126,7 @@ router.post("/auth/resend-verification", async (req, res) => {
     }
   } catch (error) {
     console.error("Resend verification error:", error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: "Failed to resend verification code",
       message: error instanceof Error ? error.message : "Unknown error occurred"
     });
@@ -198,7 +198,7 @@ router.post("/auth/resend-verification", async (req, res) => {
     try {
       await sendVerificationEmail(user.email, code);
       console.log('New verification code sent successfully');
-      res.json({ 
+      res.json({
         message: "New verification code sent successfully",
         emailSent: true
       });
@@ -206,7 +206,7 @@ router.post("/auth/resend-verification", async (req, res) => {
       console.error('Failed to send new verification code:', emailError);
       // Include detailed error message for debugging
       const errorMessage = emailError instanceof Error ? emailError.message : "Unknown error";
-      res.status(500).json({ 
+      res.status(500).json({
         error: "Failed to send verification code",
         message: `Email service error: ${errorMessage}. Please try again in a few minutes.`,
         emailSent: false,
@@ -215,7 +215,7 @@ router.post("/auth/resend-verification", async (req, res) => {
     }
   } catch (error) {
     console.error("Resend verification error:", error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: "Failed to resend verification code",
       message: error instanceof Error ? error.message : "Unknown error occurred"
     });
@@ -687,61 +687,74 @@ router.get("/healthz", (_req, res) => {
 
 // Numerology calculation helper functions
 function calculateNumerology(name: string, birthdate: string) {
-  // Basic numerology calculations
+  const [year, month, day] = birthdate.split('-').map(Number);
+
+  // Calculate Life Path (sum of all birth date numbers)
+  const lifePath = reduceToSingleDigit(
+    reduceToSingleDigit(year) +
+    reduceToSingleDigit(month) +
+    reduceToSingleDigit(day)
+  );
+
+  // Calculate Name Numbers
   const nameNumber = calculateNameNumber(name);
-  const birthdateNumber = calculateBirthdateNumber(birthdate);
+  const heartDesire = calculateHeartDesire(name);
+  const expression = calculateExpression(name);
+  const personality = calculatePersonality(name);
+
+  // Calculate Attribute (birth month + birth date)
+  const attribute = reduceToSingleDigit(month + day);
 
   return {
-    lifePath: birthdateNumber,
+    lifePath,
     destiny: nameNumber,
-    heartDesire: Math.floor(Math.random() * 9) + 1, // Placeholder
-    expression: Math.floor(Math.random() * 9) + 1, // Placeholder
-    personality: Math.floor(Math.random() * 9) + 1, // Placeholder
-    attribute: Math.floor(Math.random() * 9) + 1, // Placeholder
-    birthDateNum: birthdateNumber
+    heartDesire,
+    expression,
+    personality,
+    attribute,
+    birthDateNum: reduceToSingleDigit(day)
   };
 }
 
 function calculateNameNumber(name: string): number {
   const cleanName = name.toLowerCase().replace(/[^a-z]/g, '');
   const sum = Array.from(cleanName).reduce((acc, char) => {
-    return acc + (char.charCodeAt(0) - 96);
+    return acc + (char.charCodeAt(0) - 96); // a=1, b=2, etc.
   }, 0);
   return reduceToSingleDigit(sum);
 }
 
-function calculateBirthdateNumber(birthdate: string): number {
-  const dateNumbers = birthdate.split('-').map(Number);
-  const sum = dateNumbers.reduce((acc, num) => acc + reduceToSingleDigit(num), 0);
+function calculateHeartDesire(name: string): number {
+  const cleanName = name.toLowerCase().replace(/[^a-z]/g, '');
+  const sum = Array.from(cleanName).reduce((acc, char) => {
+    // Sum only vowels
+    return 'aeiou'.includes(char) ? acc + (char.charCodeAt(0) - 96) : acc;
+  }, 0);
   return reduceToSingleDigit(sum);
 }
 
+function calculateExpression(name: string): number {
+  const cleanName = name.toLowerCase().replace(/[^a-z]/g, '');
+  const sum = Array.from(cleanName).reduce((acc, char) => {
+    // Sum only consonants
+    return !'aeiou'.includes(char) ? acc + (char.charCodeAt(0) - 96) : acc;
+  }, 0);
+  return reduceToSingleDigit(sum);
+}
+
+function calculatePersonality(name: string): number {
+  const cleanName = name.toLowerCase().replace(/[^a-z]/g, '');
+  if (cleanName.length === 0) return 0;
+  // First letter value
+  return reduceToSingleDigit(cleanName.charCodeAt(0) - 96);
+}
+
 function reduceToSingleDigit(num: number): number {
+  if (num === 11 || num === 22 || num === 33) return num; // Master numbers
   while (num > 9) {
     num = String(num).split('').reduce((acc, digit) => acc + Number(digit), 0);
   }
   return num;
-}
-
-async function getInterpretation(numbers: any, name: string) {
-  // Placeholder interpretation
-  return {
-    lifePath: `Your life path number ${numbers.lifePath} indicates your journey.`,
-    destiny: `Your destiny number ${numbers.destiny} reveals your potential.`,
-    heartDesire: "Your heart's desire points to your inner motivation.",
-    expression: "Your expression number shows how you present yourself.",
-    personality: "Your personality number reflects your outer self.",
-    attribute: "Your attribute number indicates natural talents.",
-    birthDateNum: "Your birth date number reveals innate characteristics.",
-    overview: `${name}, your numerological profile suggests a unique path.`,
-    recommendations: {
-      strengths: ["Adaptability", "Creativity"],
-      challenges: ["Patience", "Focus"],
-      growthAreas: ["Communication", "Leadership"],
-      practices: ["Meditation", "Journaling"]
-    },
-    developmentSummary: "Focus on developing your natural strengths while addressing challenges."
-  };
 }
 
 // Keep existing routes and export...
@@ -750,54 +763,54 @@ export default router;
 
 //Helper functions -  These need to be implemented separately.
 const calculateCompatibility = async (name1: string, birthdate1: string, name2: string, birthdate2: string) => {
-    //Implementation for calculating compatibility.  Placeholder for now.
-    return { compatibilityScore: 0.5 };
+  //Implementation for calculating compatibility.  Placeholder for now.
+  return { compatibilityScore: 0.5 };
 }
 
 const calculateWeeklyForecast = async (startDate: Date, latestResult: any) => {
-    //Implementation for calculating weekly forecast. Placeholder for now.
-    return {
-        weekNumber: startDate.getWeekNumber(),
-        summary: "This is a placeholder weekly forecast.",
-        dailyForecasts: [],
-        guidance: "",
-        insights: []
-    }
+  //Implementation for calculating weekly forecast. Placeholder for now.
+  return {
+    weekNumber: startDate.getWeekNumber(),
+    summary: "This is a placeholder weekly forecast.",
+    dailyForecasts: [],
+    guidance: "",
+    insights: []
+  }
 }
 
 
 const calculateMonthlyForecast = async (monthDate: Date, latestResult: any) => {
-    //Implementation for calculating monthly forecast. Placeholder for now.
-    return {
-        month: monthDate.toLocaleString('default', { month: 'long' }),
-        summary: "This is a placeholder monthly forecast.",
-        weeklyForecasts: [],
-        guidance: "",
-        insights: []
-    }
+  //Implementation for calculating monthly forecast. Placeholder for now.
+  return {
+    month: monthDate.toLocaleString('default', { month: 'long' }),
+    summary: "This is a placeholder monthly forecast.",
+    weeklyForecasts: [],
+    guidance: "",
+    insights: []
+  }
 }
 
 const getPersonalizedCoaching = async (numerologyResult: any, userQuery?: string) => {
-    //Implementation for getting personalized coaching. Placeholder for now.
-    return {
-        advice: "This is placeholder personalized coaching advice.",
-        followUpQuestions: ["Question 1", "Question 2"]
-    }
+  //Implementation for getting personalized coaching. Placeholder for now.
+  return {
+    advice: "This is placeholder personalized coaching advice.",
+    followUpQuestions: ["Question 1", "Question 2"]
+  }
 }
 
 const interpretDream = async (description: string, emotions: string[], symbols: string[], birthdate: string, userName: string) => {
-    //Implementation for dream interpretation. Placeholder for now.
-    return {
-        interpretation: "This is a placeholder dream interpretation.",
-        numerologyFactors: {}
-    }
+  //Implementation for dream interpretation. Placeholder for now.
+  return {
+    interpretation: "This is a placeholder dream interpretation.",
+    numerologyFactors: {}
+  }
 }
 
 
 Date.prototype.getWeekNumber = function () {
-    const d = new Date(Date.UTC(this.getFullYear(), this.getMonth(), this.getDate()));
-    const dayNum = d.getUTCDay() || 7;
-    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-    return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+  const d = new Date(Date.UTC(this.getFullYear(), this.getMonth(), this.getDate()));
+  const dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
 };
