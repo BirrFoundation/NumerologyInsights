@@ -757,6 +757,66 @@ function reduceToSingleDigit(num: number): number {
   return num;
 }
 
+// Add the getInterpretation function back
+async function getInterpretation(numbers: any, name: string) {
+  // Mapping for Life Path interpretations
+  const lifePathMeanings = {
+    1: "Leadership and independence",
+    2: "Cooperation and harmony",
+    3: "Creative expression and joy",
+    4: "Stability and hard work",
+    5: "Freedom and adventure",
+    6: "Nurturing and responsibility",
+    7: "Analysis and wisdom",
+    8: "Power and abundance",
+    9: "Humanitarian and compassionate",
+    11: "Spiritual messenger",
+    22: "Master builder",
+    33: "Master teacher"
+  };
+
+  // Get the base number for numbers > 9 that aren't master numbers
+  const getBaseNumber = (num: number) => {
+    if (num === 11 || num === 22 || num === 33) return num;
+    return num % 9 || 9;
+  };
+
+  return {
+    lifePath: `Your Life Path number ${numbers.lifePath} indicates ${lifePathMeanings[getBaseNumber(numbers.lifePath)]}. This is your primary life purpose and the path you're meant to follow.`,
+    destiny: `Your Destiny number ${numbers.destiny} reveals your potential and the talents you possess to achieve your goals. It represents your capacity for achievement.`,
+    heartDesire: `Your Heart's Desire number ${numbers.heartDesire} shows your inner motivation and what truly drives you. It represents your emotional needs and deepest desires.`,
+    expression: `Your Expression number ${numbers.expression} reflects how you present yourself to the world. It shows your natural abilities and how you express yourself.`,
+    personality: `Your Personality number ${numbers.personality} represents how others see you initially. It's your outer personality and first impression.`,
+    attribute: `Your Attribute number ${numbers.attribute} (calculated from your birth month ${numbers.birthDateNum}) indicates your innate talents and natural abilities.`,
+    birthDateNum: `Your Birth Day number ${numbers.birthDateNum} reveals specific talents and abilities you brought into this life.`,
+    overview: `${name}, your numerological profile combines several powerful numbers that create your unique energetic signature. Your Life Path ${numbers.lifePath} and Destiny ${numbers.destiny} numbers work together to shape your journey.`,
+    recommendations: {
+      strengths: [
+        "Natural " + lifePathMeanings[getBaseNumber(numbers.lifePath)].toLowerCase(),
+        "Strong " + lifePathMeanings[getBaseNumber(numbers.destiny)].toLowerCase(),
+        "Inner " + lifePathMeanings[getBaseNumber(numbers.heartDesire)].toLowerCase()
+      ],
+      challenges: [
+        "Balancing material and spiritual aspects",
+        "Managing expectations",
+        "Maintaining focus on goals"
+      ],
+      growthAreas: [
+        "Developing patience",
+        "Strengthening communication",
+        "Building confidence"
+      ],
+      practices: [
+        "Daily meditation or reflection",
+        "Journaling your experiences",
+        "Setting clear intentions",
+        "Regular exercise for energy balance"
+      ]
+    },
+    developmentSummary: `Focus on developing your ${lifePathMeanings[getBaseNumber(numbers.lifePath)].toLowerCase()} while nurturing your inner ${lifePathMeanings[getBaseNumber(numbers.heartDesire)].toLowerCase()}. Your path to success lies in embracing your ${lifePathMeanings[getBaseNumber(numbers.destiny)].toLowerCase()}.`
+  };
+}
+
 // Keep existing routes and export...
 
 export default router;
@@ -805,7 +865,6 @@ const interpretDream = async (description: string, emotions: string[], symbols: 
     numerologyFactors: {}
   }
 }
-
 
 Date.prototype.getWeekNumber = function () {
   const d = new Date(Date.UTC(this.getFullYear(), this.getMonth(), this.getDate()));
