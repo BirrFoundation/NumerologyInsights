@@ -888,7 +888,7 @@ async function getInterpretation(numbers: any, name: string) {
   };
 
   return {
-    lifePath: `Your Life Path number ${numbers.lifePath} indicates ${lifePathMeanings[getBaseNumber(numbers.lifePath)]}. This is your primary life purpose and the path you're meant to follow.`,
+    lifePath: `Your Life Path number ${numbers.lifePath} indicates ${lifePathMeanings[getBaseNumber(numbers.lifePath)]}. This is your primary life purpose andthe path you're meant to follow.`,
     destiny: `Your Destiny number ${numbers.destiny} reveals yourpotential and the talents you possess to achieveyour goals. It represents your capacity for achievement.`,
     heartDesire: `Your Heart's Desire number ${numbers.heartDesire} shows your inner motivation and what truly drives you. It represents your emotional needs and deepest desires.`,
     expression: `Your Expression number ${numbers.expression} reflects how you present yourself to the world. It shows your natural abilities and how you express yourself.`,
@@ -1187,53 +1187,82 @@ function getChineseZodiacSign(birthdate: string): { sign: string, element: strin
 
 function getZodiacCompatibility(sign1: { sign: string, element: string, yinYang: string }, sign2: { sign: string, element: string, yinYang: string }): { score: number; description: string; dynamic: string } {
   const compatibilityMap: Record<string, Record<string, { type: string, score: number }>> = {
-    'Ox': {
-      'Ox': { type: 'Average', score: 70 },
-      'Tiger': { type: 'Worst Couple', score: 35 },
-      'Rabbit': { type: 'Bento Buddies', score: 65 },
-      'Dragon': { type: 'Worst Couple', score: 35 },
-      'Snake': { type: 'Bento Buddies', score: 65 },
-      'Horse': { type: 'Worst Couple', score: 35 },
+    'Dragon': {
+      'Ox': { type: 'Worst Couple', score: 35 },
+      'Tiger': { type: 'Perfect Match', score: 95 },
+      'Rabbit': { type: 'Average', score: 70 },
+      'Dragon': { type: 'Good Friend', score: 80 },
+      'Snake': { type: 'Perfect Match', score: 95 },
+      'Horse': { type: 'Average', score: 70 },
       'Sheep': { type: 'Worst Couple', score: 35 },
-      'Monkey': { type: 'Perfect Match', score: 95 },
-      'Rooster': { type: 'Perfect Match', score: 95 },
-      'Dog': { type: 'Bento Buddies', score: 65 },
-      'Pig': { type: 'Good Match', score: 80 },
+      'Monkey': { type: 'Bento Buddies', score: 65 },
+      'Rooster': { type: 'Bento Buddies', score: 65 },
+      'Dog': { type: 'Worst Couple', score: 35 },
+      'Pig': { type: 'Average', score: 70 },
       'Rat': { type: 'Perfect Match', score: 95 }
     },
-    'Tiger': {
-      'Ox': { type: 'Worst Couple', score: 35 },
+    'Snake': {
+      'Ox': { type: 'Bento Buddies', score: 65 },
       'Tiger': { type: 'Worst Couple', score: 35 },
-      'Rabbit': { type: 'Average', score: 70 },
+      'Rabbit': { type: 'Worst Couple', score: 35 },
       'Dragon': { type: 'Perfect Match', score: 95 },
       'Snake': { type: 'Worst Couple', score: 35 },
-      'Horse': { type: 'Perfect Match', score: 95 },
-      'Sheep': { type: 'Good Friend', score: 80 },
-      'Monkey': { type: 'Worst Couple', score: 35 },
-      'Rooster': { type: 'Bento Buddies', score: 65 },
-      'Dog': { type: 'Bento Buddies', score: 65 },
-      'Pig': { type: 'Perfect Match', score: 95 },
-      'Rat': { type: 'Average', score: 70 }
+      'Horse': { type: 'Good Friend', score: 80 },
+      'Sheep': { type: 'Worst Couple', score: 35 },
+      'Monkey': { type: 'Good Friend', score: 80 },
+      'Rooster': { type: 'Perfect Match', score: 95 },
+      'Dog': { type: 'Average', score: 70 },
+      'Pig': { type: 'Worst Couple', score: 35 },
+      'Rat': { type: 'Good Friend', score: 80 }
     },
-    'Rabbit': {
-      'Ox': { type: 'Bento Buddies', score: 65 },
-      'Tiger': { type: 'Average', score: 70 },
+    'Horse': {
+      'Ox': { type: 'Worst Couple', score: 35 },
+      'Tiger': { type: 'Perfect Match', score: 95 },
       'Rabbit': { type: 'Average', score: 70 },
       'Dragon': { type: 'Average', score: 70 },
-      'Snake': { type: 'Worst Couple', score: 35 },
-      'Horse': { type: 'Average', score: 70 },
+      'Snake': { type: 'Good Friend', score: 80 },
+      'Horse': { type: 'Worst Couple', score: 35 },
       'Sheep': { type: 'Perfect Match', score: 95 },
-      'Monkey': { type: 'Perfect Match', score: 95 },
+      'Monkey': { type: 'Average', score: 70 },
       'Rooster': { type: 'Worst Couple', score: 35 },
-      'Dog': { type: 'Perfect Match', score: 95 },
-      'Pig': { type: 'Perfect Match', score: 95 },
-      'Rat': { type: 'Perfect Match', score: 95 }
+      'Dog': { type: 'Average', score: 70 },
+      'Pig': { type: 'Bento Buddies', score: 65 },
+      'Rat': { type: 'Worst Couple', score: 35 }
     },
-    // Add other signs following the same pattern...
+    'Sheep': {
+      'Ox': { type: 'Worst Couple', score: 35 },
+      'Tiger': { type: 'Average', score: 70 },
+      'Rabbit': { type: 'Perfect Match', score: 95 },
+      'Dragon': { type: 'Worst Couple', score: 35 },
+      'Snake': { type: 'Worst Couple', score: 35 },
+      'Horse': { type: 'Perfect Match', score: 95 },
+      'Sheep': { type: 'Bento Buddies', score: 65 },
+      'Monkey': { type: 'Bento Buddies', score: 65 },
+      'Rooster': { type: 'Average', score: 70 },
+      'Dog': { type: 'Worst Couple', score: 35 },
+      'Pig': { type: 'Perfect Match', score: 95 },
+      'Rat': { type: 'Good Match or Enemy', score: 50 }
+    },
+    'Monkey': {
+      'Ox': { type: 'Perfect Match', score: 95 },
+      'Tiger': { type: 'Worst Couple', score: 35 },
+      'Rabbit': { type: 'Perfect Match', score: 95 },
+      'Dragon': { type: 'Bento Buddies', score: 65 },
+      'Snake': { type: 'Good Friend', score: 80 },
+      'Horse': { type: 'Average', score: 70 },
+      'Sheep': { type: 'Bento Buddies', score: 65 },
+      'Monkey': { type: 'Good Friend', score: 80 },
+      'Rooster': { type: 'Average', score: 70 },
+      'Dog': { type: 'Bento Buddies', score: 65 },
+      'Pig': { type: 'Worst Couple', score: 35 },
+      'Rat': { type: 'Perfect Match', score: 95 }
+    }
+    // Add other signs with their exact relationships...
   };
 
   const getCompatibilityType = (sign1: string, sign2: string): { type: string, score: number } => {
-    return compatibilityMap[sign1]?.[sign2] || { type: 'Average', score: 70 };
+    // Check both directions as compatibility might be defined in either direction
+    return compatibilityMap[sign1]?.[sign2] || compatibilityMap[sign2]?.[sign1] || { type: 'Average', score: 70 };
   };
 
   const compatibility = getCompatibilityType(sign1.sign, sign2.sign);
@@ -1241,33 +1270,26 @@ function getZodiacCompatibility(sign1: { sign: string, element: string, yinYang:
   const getDescription = (type: string, sign1: string, sign2: string): string => {
     switch (type) {
       case 'Perfect Match':
-        return `${sign1} and ${sign2} form a perfect match! This is one of the most harmonious combinations in Chinese zodiac.`;
-      case 'Good Match':
+        return `${sign1} and ${sign2} are a Perfect Match! This is one of the most harmonious combinations in Chinese zodiac.`;
       case 'Good Friend':
-        return `${sign1} and ${sign2} have strong compatibility, creating a positive and supportive relationship.`;
+        return `${sign1} and ${sign2} make Good Friends. They have natural understanding and cooperation.`;
+      case 'Good Match':
+        return `${sign1} and ${sign2} are a Good Match, creating a positive and supportive relationship.`;
       case 'Average':
-        return `${sign1} and ${sign2} have moderate compatibility. The relationship can work well with mutual understanding.`;
+        return `${sign1} and ${sign2} have an Average compatibility. Their relationship requires balance and understanding.`;
       case 'Bento Buddies':
-        return `${sign1} and ${sign2} are Bento Buddies - they can work together but need to maintain good communication.`;
+        return `${sign1} and ${sign2} are Bento Buddies - they can maintain a friendly relationship with good communication.`;
       case 'Worst Couple':
-        return `${sign1} and ${sign2} may face significant challenges in their relationship and need extra effort to understand each other.`;
+        return `${sign1} and ${sign2} are considered a Worst Couple match. This combination faces significant challenges.`;
+      case 'Good Match or Enemy':
+        return `${sign1} and ${sign2} can be either a Good Match or challenging - much depends on individual effort.`;
       default:
-        return `${sign1} and ${sign2} have a unique dynamic that requires understanding and patience.`;
+        return `${sign1} and ${sign2} have a unique dynamic that requires understanding.`;
     }
   };
 
   const description = getDescription(compatibility.type, sign1.sign, sign2.sign);
-
-  // Add element and yin/yang analysis
-  const elementalDynamic = sign1.element === sign2.element 
-    ? `Both share the ${sign1.element} element, creating natural understanding`
-    : `${sign1.element} and ${sign2.element} elements create an interesting dynamic`;
-
-  const yinYangDynamic = sign1.yinYang === sign2.yinYang
-    ? `Both share ${sign1.yinYang} energy, which may need balancing with opposite forces`
-    : `Your ${sign1.yinYang} and ${sign2.yinYang} energies create a natural balance`;
-
-  const dynamic = `${elementalDynamic}. ${yinYangDynamic}.`;
+  const dynamic = `According to Chinese zodiac tradition, this is a ${compatibility.type.toLowerCase()} relationship.`;
 
   return {
     score: compatibility.score,
