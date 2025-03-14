@@ -429,11 +429,21 @@ router.post("/compatibility", async (req, res) => {
       aspects: [
         ...generateCompatibilityAspects(person1, person2),
         `${data.name1} is a ${zodiac1.sign} (${zodiac1.element} energy, ${zodiac1.yinYang} polarity)`,
-        `${data.name2} is a ${zodiac2.sign} (${zodiac2.element}, ${zodiac2.yinYang} polarity)`,
+        `${data.name2} is a ${zodiac2.sign} (${zodiac2.element} energy, ${zodiac2.yinYang} polarity)`,
         zodiacCompatibility.description
       ],
-      dynamics: analyzeRelationshipDynamics(zodiac1.sign, zodiac2.sign, zodiacCompatibility.type),
-      growthAreas: generateGrowthAreas(zodiac1.sign, zodiac2.sign, zodiacCompatibility.type),
+      dynamics: [
+        ...analyzeRelationshipDynamics(person1, person2),
+        `Your zodiac signs create a ${zodiacCompatibility.score >= 80 ? 'harmonious' :
+          zodiacCompatibility.score >= 60 ? 'balanced' : 'challenging'} interaction`,
+        zodiacCompatibility.dynamic
+      ],
+      growthAreas: [
+        ...identifyGrowthAreas(person1, person2),
+        zodiacCompatibility.score < 60
+          ? `Learn to balance the different energies of ${zodiac1.sign} (${zodiac1.element}) and ${zodiac2.sign} (${zodiac2.element})`
+          : `Harness the natural harmony between your ${zodiac1.sign} and ${zodiac2.sign} energies`
+      ],
       relationshipTypes: calculateRelationshipTypeScores(person1, person2)
     };
 
@@ -879,10 +889,11 @@ async function getInterpretation(numbers: any, name: string) {
 
   return {
     lifePath: `Your Life Path number ${numbers.lifePath} indicates ${lifePathMeanings[getBaseNumber(numbers.lifePath)]}. This is your primary life purpose andthe path you're meant to follow.`,
-    destiny: `Your Destiny number ${numbers.destiny} reveals yourpotential and the talents you possess to achieveyour goals. Itrepresents your capacity for achievement.`,
+    destiny: `Your Destiny number ${numbers.destiny} reveals yourpotential and the talents you possess to achieveyour goals. It represents your capacity for achievement.`,
     heartDesire: `Your Heart's Desire number ${numbers.heartDesire} shows your inner motivation and what truly drives you. It represents your emotional needs and deepest desires.`,
     expression: `Your Expression number ${numbers.expression} reflects how you present yourself to the world. It shows your natural abilities and how you express yourself.`,
-    personality: `Your Personality number ${numbers.personality} represents how others see you initially. It's your outer personality and first impression.`,    attribute: `Your Attribute number ${numbers.attribute} (calculated from your birth month ${numbers.birthDateNum})indicates yourinnate talents and natural abilities.`,
+    personality: `Your Personality number ${numbers.personality} represents how others see you initially. It's your outer personality and first impression.`,
+    attribute: `Your Attribute number ${numbers.attribute} (calculated from your birth month ${numbers.birthDateNum}) indicates your innate talents and natural abilities.`,
     birthDateNum: `Your Birth Day number ${numbers.birthDateNum} reveals specific talents and abilities you brought into this life.`,
     overview: `${name}, your numerological profile combines several powerful numbers that create your unique energetic signature. Your Life Path ${numbers.lifePath} and Destiny ${numbers.destiny} numbers work together to shape your journey.`,
     recommendations: {
@@ -1255,11 +1266,30 @@ function getZodiacCompatibility(sign1: { sign: string, element: string, yinYang:
   };
 
   const compatibility = getCompatibilityType(sign1.sign, sign2.sign);
-  const description = getDescription(compatibility.type, sign1.sign, sign2.sign);
 
-  // Generate dynamics based on compatibility type
-  const dynamics = analyzeRelationshipDynamics(sign1.sign, sign2.sign, compatibility.type);
-  const dynamic = dynamics.join('. ');
+  const getDescription = (type: string, sign1: string, sign2: string): string => {
+    switch (type) {
+      case 'Perfect Match':
+        return `${sign1} and ${sign2} are a Perfect Match! This is one of the most harmonious combinations in Chinese zodiac.`;
+      case 'Good Friend':
+        return `${sign1} and ${sign2} make Good Friends. They have natural understanding and cooperation.`;
+      case 'Good Match':
+        return `${sign1} and ${sign2} are a Good Match, creating a positive and supportive relationship.`;
+      case 'Average':
+        return `${sign1} and ${sign2} have an Average compatibility. Their relationship requires balance and understanding.`;
+      case 'Bento Buddies':
+        return `${sign1} and ${sign2} are Bento Buddies - they can maintain a friendly relationship with good communication.`;
+      case 'Worst Couple':
+        return `${sign1} and ${sign2} are considered a Worst Couple match. This combination faces significant challenges.`;
+      case 'Good Match or Enemy':
+        return `${sign1} and ${sign2} can be either a Good Match or challenging - much depends on individual effort.`;
+      default:
+        return `${sign1} and ${sign2} have a unique dynamic that requires understanding.`;
+    }
+  };
+
+  const description = getDescription(compatibility.type, sign1.sign, sign2.sign);
+  const dynamic = `According to Chinese zodiac tradition, this is a ${compatibility.type.toLowerCase()} relationship.`;
 
   return {
     score: compatibility.score,
@@ -1277,139 +1307,14 @@ function calculateYearDifferenceCompatibility(birthdate1: string, birthdate2: st
   return { score, description };
 }
 
-// Update the dynamics analysis function
-function analyzeRelationshipDynamics(sign1: string, sign2: string, compatibilityType: string): string[] {
-  // Special case for Dragon and Dog
-  if ((sign1 === 'Dragon' && sign2 === 'Dog') || (sign1 === 'Dog' && sign2 === 'Dragon')) {
-    return [
-      "Dragon's independent and ambitious nature directly conflicts with Dog's need for loyalty and stability",
-      "Dog's cautious and protective approach clashes with Dragon's bold and adventurous spirit",
-      "Their opposing views on authority and freedom create fundamental tension"
-    ];
-  }
-
-  // Handle other combinations based on compatibility type
-  switch (compatibilityType) {
-    case 'Perfect Match':
-      return [
-        `${sign1} and ${sign2} naturally complement each other's energies`,
-        "Their core values and life approaches align harmoniously",
-        "They create a balanced and supportive partnership"
-      ];
-    case 'Good Match':
-      return [
-        `${sign1} and ${sign2} share positive energy and understanding`,
-        "They can build a strong foundation through mutual respect",
-        "Their differences tend to complement rather than conflict"
-      ];
-    case 'Bento Buddies':
-      return [
-        `${sign1} and ${sign2} maintain a comfortable connection`,
-        "They respect each other's independence while sharing common interests",
-        "Their relationship thrives on mutual understanding and space"
-      ];
-    case 'Average':
-      return [
-        `${sign1} and ${sign2} have a moderate connection`,
-        "Their relationship requires effort but can be rewarding",
-        "Balance can be achieved through conscious communication"
-      ];
-    case 'Worst Couple':
-      return [
-        `${sign1} and ${sign2} face significant compatibility challenges`,
-        "Their core values and approaches often conflict",
-        "The relationship requires substantial effort and understanding"
-      ];
-    default:
-      return [
-        `${sign1} and ${sign2} have unique interaction patterns`,
-        "Their relationship benefits from open communication",
-        "Success depends on mutual respect and understanding"
-      ];
-  }
+function analyzeRelationshipDynamics(person1: any, person2: any): string[] {
+  // Placeholder implementation; replace with actual analysis logic
+  return ["Dynamic 1", "Dynamic 2"];
 }
-
-function generateGrowthAreas(sign1: string, sign2: string, compatibilityType: string): string[] {
-  // Special case for Dragon and Dog
-  if ((sign1 === 'Dragon' && sign2 === 'Dog') || (sign1 === 'Dog' && sign2 === 'Dragon')) {
-    return [
-      "Learn to balance Dragon's need for independence with Dog's desire for security",
-      "Develop mutual respect for different approaches to loyalty and trust",
-      "Find common ground between Dragon's ambition and Dog's practicality",
-      "Practice patience and understanding when viewpoints naturally conflict"
-    ];
-  }
-
-  // Handle other combinations based on compatibility type
-  switch (compatibilityType) {
-    case 'Perfect Match':
-      return [
-        "Maintain individual growth while nurturing your natural connection",
-        "Build on your shared strengths and values",
-        "Keep communication open and honest"
-      ];
-    case 'Good Match':
-      return [
-        "Focus on appreciating your complementary qualities",
-        "Build deeper understanding through shared experiences",
-        "Maintain the positive aspects of your connection"
-      ];
-    case 'Bento Buddies':
-      return [
-        "Respect and maintain healthy boundaries",
-        "Cultivate friendship while honoring independence",
-        "Focus on shared interests and activities"
-      ];
-    case 'Average':
-      return [
-        "Work on understanding each other's perspectives",
-        "Develop effective communication strategies",
-        "Find ways to turn differences into strengths"
-      ];
-    case 'Worst Couple':
-      return [
-        "Focus on developing patience and understanding",
-        "Learn to appreciate and respect your differences",
-        "Work on finding common ground despite challenges"
-      ];
-    default:
-      return [
-        "Build mutual respect and understanding",
-        "Practice active listening and empathy",
-        "Focus on effective communication"
-      ];
-  }
-}
-
-function getDescription(type: string, sign1: string, sign2: string): string {
-  switch (type) {
-    case 'Perfect Match':
-      return `${sign1} and ${sign2} are a Perfect Match! This is one of the most harmonious combinations in Chinese zodiac.`;
-    case 'Good Friend':
-      return `${sign1} and ${sign2} make Good Friends. They have natural understanding and cooperation.`;
-    case 'Good Match':
-      return `${sign1} and ${sign2} are a Good Match, creating a positive and supportive relationship.`;
-    case 'Average':
-      return `${sign1} and ${sign2} have an Average compatibility. Their relationship requires balance and understanding.`;
-    case 'Bento Buddies':
-      return `${sign1} and ${sign2} are Bento Buddies - they can maintain a friendly relationship with good communication.`;
-    case 'Worst Couple':
-      return `${sign1} and ${sign2} are considered a Worst Couple match. This combination faces significant challenges.`;
-    case 'Good Match or Enemy':
-      return `${sign1} and ${sign2} can be either a Good Match or challenging - much depends on individual effort.`;
-    default:
-      return `${sign1} and ${sign2} have a unique dynamic that requires understanding.`;
-  }
-}
-
 
 function identifyGrowthAreas(person1: any, person2: any): string[] {
   // Placeholder implementation; replace with actual analysis logic
-  return [
-    `Focus on understanding each other's core values and motivations`,
-    `Practice active listening and open communication`,
-    `Build trust through consistent actions and respect`
-  ];
+  return ["Growth Area 1", "Growth Area 2"];
 }
 
 function calculateRelationshipTypeScores(person1: any, person2: any): any {
