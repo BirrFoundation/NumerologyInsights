@@ -25,7 +25,7 @@ interface Props {
 
 interface CoachingResponse {
   advice: string;
-  followUpQuestions: string[];
+  suggestions: string[];
 }
 
 const getPersonalInsight = (lifePath: number): string => {
@@ -63,7 +63,7 @@ const getPersonalInsight = (lifePath: number): string => {
 
 export default function AICoach({ result }: Props) {
   const [userQuery, setUserQuery] = useState("");
-  const [selectedQuestion, setSelectedQuestion] = useState<string | null>(null);
+  const [selectedSuggestion, setSelectedSuggestion] = useState<string | null>(null);
   const { toast } = useToast();
 
   const getCoaching = async (query?: string) => {
@@ -94,7 +94,7 @@ export default function AICoach({ result }: Props) {
     mutationFn: (query: string) => getCoaching(query),
     onSuccess: () => {
       setUserQuery("");
-      setSelectedQuestion(null);
+      setSelectedSuggestion(null);
     },
     onError: (error: Error) => {
       toast({
@@ -106,15 +106,15 @@ export default function AICoach({ result }: Props) {
   });
 
   const handleAskQuestion = () => {
-    if (!userQuery && !selectedQuestion) return;
-    const queryToAsk = selectedQuestion || userQuery;
+    if (!userQuery && !selectedSuggestion) return;
+    const queryToAsk = selectedSuggestion || userQuery;
     coachingMutation.mutate(queryToAsk);
   };
 
-  const handleQuestionClick = (question: string) => {
-    setSelectedQuestion(question);
+  const handleSuggestionClick = (suggestion: string) => {
+    setSelectedSuggestion(suggestion);
     setUserQuery("");
-    coachingMutation.mutate(question);
+    coachingMutation.mutate(suggestion);
   };
 
   // When AI service is unavailable, show personalized recommendations
@@ -219,17 +219,17 @@ export default function AICoach({ result }: Props) {
             </div>
 
             <div className="space-y-2">
-              <p className="text-sm font-medium text-primary">Explore Further:</p>
+              <p className="text-sm font-medium text-primary">Suggestions:</p>
               <div className="flex flex-wrap gap-2">
-                {initialCoaching.followUpQuestions.map((question, index) => (
+                {initialCoaching.suggestions.map((suggestion, index) => (
                   <Button
                     key={index}
                     variant="outline"
                     size="sm"
-                    className={`text-xs ${selectedQuestion === question ? "bg-primary/10" : ""}`}
-                    onClick={() => handleQuestionClick(question)}
+                    className={`text-xs ${selectedSuggestion === suggestion ? "bg-primary/10" : ""}`}
+                    onClick={() => handleSuggestionClick(suggestion)}
                   >
-                    {question}
+                    {suggestion}
                   </Button>
                 ))}
               </div>
@@ -243,13 +243,13 @@ export default function AICoach({ result }: Props) {
             value={userQuery}
             onChange={(e) => {
               setUserQuery(e.target.value);
-              setSelectedQuestion(null);
+              setSelectedSuggestion(null);
             }}
             className="flex-1"
           />
           <Button
             onClick={handleAskQuestion}
-            disabled={(!userQuery && !selectedQuestion) || coachingMutation.isPending}
+            disabled={(!userQuery && !selectedSuggestion) || coachingMutation.isPending}
           >
             <AnimatePresence mode="wait">
               {coachingMutation.isPending ? (
