@@ -953,8 +953,8 @@ function getWorkStrengths(profile1: ReturnType<typeof calculateNumerology>, prof
   const strengths = [];
 
   // Leadership dynamics
-  if ([1, 8].includes(profile1.lifePath) && [2, 6].includes`profile2.lifePath)) {
-    strengths.push("Excellent leadership-support dynamic with clear roles");
+  if ([1, 8].includes(profile1.lifePath) && [2, 6].includes(profile2.lifePath)) {
+    strengths.push("Excellentleadership-support dynamic with clear roles");
     strengths.push("One naturally leadswhilethe otherprovides essential support");
   }
 
@@ -1307,69 +1307,74 @@ function calculateFamilyCompatibility(profile1: ReturnType<typeof calculateNumer
   return Math.min(100, Math.max(40, score));
 }
 
-function calculateCompatibility(name1: string, birthdate1: string, name2: string, birthdate2: string): {
-  score: number;
-  aspects: string[];
-  lifePathScore: number;
-  expressionScore: number;
-  heartDesireScore: number;
-  dynamics: string[];
-  growthAreas: string[];
-  relationshipTypes: {
-    work: {
-      score: number;
-      strengths: string[];
-      challenges: string[];
-    };
-    business: {
-      score: number;
-      strengths: string[];
-      challenges: string[];
-    };
-    friendship: {
-      score: number;
-      strengths: string[];
-      challenges: string[];
-    };
-    family: {
-      score: number;
-      strengths: string[];
-      challenges: string[];
-    };
-  };
-} {
-  const profile1 = calculateNumerology(name1, birthdate1);
-  const profile2 = calculateNumerology(name2, birthdate2);
+function calculateCompatibility(name1: string, birthdate1: string, name2: string, birthdate2: string) {
+  // Get individual numerology calculations
+  const person1 = calculateNumerology(name1, birthdate1);
+  const person2 = calculateNumerology(name2, birthdate2);
 
-  // Calculate individual scores
-  const lifePathScore = calculateNumberCompatibility(profile1.lifePath, profile2.lifePath);
-  const expressionScore = calculateNumberCompatibility(profile1.expression, profile2.expression);
-  const heartDesireScore = calculateNumberCompatibility(profile1.heartDesire, profile2.heartDesire);
+  // Calculate birth years
+  const year1 = new Date(birthdate1).getFullYear();
+  const year2 = new Date(birthdate2).getFullYear();
 
-  // Calculate overall compatibility score
-  const score = Math.round((lifePathScore + expressionScore + heartDesireScore) / 3);
+  // Get zodiac signs and their descriptions
+  const zodiacSign1 = getChineseZodiacSign(birthdate1);
+  const zodiacSign2 = getChineseZodiacSign(birthdate2);
 
-  // Generate compatibility aspects
-  const aspects = generateCompatibilityAspects(profile1, profile2);
+  // Get detailed descriptions for each sign
+  const zodiacDescription1 = getDetailedZodiacDescription(zodiacSign1);
+  const zodiacDescription2 = getDetailedZodiacDescription(zodiacSign2);
 
-  // Analyze relationship dynamics
-  const dynamics = analyzeRelationshipDynamics(profile1, profile2);
+  // Calculate zodiac compatibility
+  const zodiacCompatibilityResult = getZodiacCompatibility(zodiacSign1, zodiacSign2);
+  const yearDiffCompatibilityResult = calculateYearDifferenceCompatibility(birthdate1, birthdate2);
 
-  // Identify growth areas
-  const growthAreas = identifyGrowthAreas(profile1, profile2);
+  // Calculate numerology scores
+  const numerologyScore = (
+    calculateNumberCompatibility(person1.lifePath, person2.lifePath) +
+    calculateNumberCompatibility(person1.expression, person2.expression) +
+    calculateNumberCompatibility(person1.heartDesire, person2.heartDesire)
+  ) / 3;
 
-  // Calculate relationship type scores
-  const relationshipTypes = calculateRelationshipTypeScores(profile1, profile2);
+  // Calculate weighted final score
+  const finalScore = Math.round(
+    (numerologyScore * 0.6) +    // Numerology has 60% weight
+    (zodiacCompatibilityResult.score * 0.25) +    // Zodiac compatibility has 25% weight
+    (yearDiffCompatibilityResult.score * 0.15)    // Year difference has 15% weight
+  );
 
   return {
-    score,
-    aspects,
-    lifePathScore,
-    expressionScore,
-    heartDesireScore,
-    dynamics,
-    growthAreas,
-    relationshipTypes
+    score: finalScore,
+    lifePathScore: calculateNumberCompatibility(person1.lifePath, person2.lifePath),
+    expressionScore: calculateNumberCompatibility(person1.expression, person2.expression),
+    heartDesireScore: calculateNumberCompatibility(person1.heartDesire, person2.heartDesire),
+    zodiacCompatibility: {
+      person1: zodiacSign1,
+      person2: zodiacSign2,
+      score: zodiacCompatibilityResult.score,
+      description: zodiacCompatibilityResult.description,
+      dynamic: zodiacCompatibilityResult.dynamic
+    },
+    zodiacDescription: {
+      person1: zodiacDescription1,
+      person2: zodiacDescription2
+    },
+    yearDifference: yearDiffCompatibilityResult,
+    aspects: [
+      ...generateCompatibilityAspects(person1, person2),
+      `${name1} is a ${zodiacSign1} and ${name2} is a ${zodiacSign2} in Chinese Zodiac`,
+      zodiacCompatibilityResult.description
+    ],
+    dynamics: [
+      ...generateDynamics(person1, person2),
+      zodiacCompatibilityResult.dynamic
+    ],
+    growthAreas: [
+      ...generateGrowthAreas(person1, person2),
+      zodiacCompatibilityResult.score < 60 
+        ? `Learn to balance your different zodiac energies (${zodiacSign1} and ${zodiacSign2})`
+        : `Harness the natural harmony between your ${zodiacSign1} and ${zodiacSign2} signs`
+    ],
+    relationshipTypes: calculateRelationshipTypeScores(person1, person2)
   };
 }
 
@@ -1401,6 +1406,23 @@ interface CompatibilityResult extends ReturnType<typeof calculateNumerology> {
       challenges: string[];
     };
   };
+  zodiacCompatibility: {
+    person1: string;
+    person2: string;
+    score: number;
+    description: string;
+    dynamic: string;
+  };
+  yearDifferenceScore: number;
+  zodiacDescription: {
+    person1: string;
+    person2: string;
+  };
+  yearDifference: {
+    score: number;
+    description: string;
+  };
+  aspects: string[];
 }
 
 function getWeeklyTheme(essence: number, profile: ReturnType<typeof calculateNumerology>): string {
@@ -1835,7 +1857,7 @@ function calculateYearDifferenceCompatibility(date1: string, date2: string): {
 
   // Calculate general compatibility based on cycle proximity
   const cycleDiff = diff % 12;
-const score = Math.max(60, 85 - (cycleDiff * 5));
+  const score = Math.max(60, 85 - (cycleDiff * 5));
 
   return {
     score,
@@ -1861,45 +1883,32 @@ function calculateCompatibility(name1: string, birthdate1: string, name2: string
   const year1 = new Date(birthdate1).getFullYear();
   const year2 = new Date(birthdate2).getFullYear();
 
-  // Get zodiac signs
+  // Get zodiac signs and their descriptions
   const zodiacSign1 = getChineseZodiacSign(birthdate1);
   const zodiacSign2 = getChineseZodiacSign(birthdate2);
 
-  // Calculate various compatibility scores
+  // Get detailed descriptions for each sign
+  const zodiacDescription1 = getDetailedZodiacDescription(zodiacSign1);
+  const zodiacDescription2 = getDetailedZodiacDescription(zodiacSign2);
+
+  // Calculate zodiac compatibility
+  const zodiacCompatibilityResult = getZodiacCompatibility(zodiacSign1, zodiacSign2);
+  const yearDiffCompatibilityResult = calculateYearDifferenceCompatibility(birthdate1, birthdate2);
+
+  // Calculate numerology scores
   const numerologyScore = (
     calculateNumberCompatibility(person1.lifePath, person2.lifePath) +
     calculateNumberCompatibility(person1.expression, person2.expression) +
     calculateNumberCompatibility(person1.heartDesire, person2.heartDesire)
   ) / 3;
 
-  const zodiacCompatibilityResult = getZodiacCompatibility(zodiacSign1, zodiacSign2);
-  const zodiacScore = zodiacCompatibilityResult.score;
-  const yearDiffCompatibilityResult = calculateYearDifferenceCompatibility(birthdate1, birthdate2);
-  const yearDiffScore = yearDiffCompatibilityResult.score;
-
   // Calculate weighted final score
   const finalScore = Math.round(
-    (numerologyScore * 0.6) + // Numerology has 60% weight
-    (zodiacScore * 0.25) +    // Zodiac compatibility has 25% weight
-    (yearDiffScore * 0.15)    // Year difference has 15% weight
+    (numerologyScore * 0.6) +    // Numerology has 60% weight
+    (zodiacCompatibilityResult.score * 0.25) +    // Zodiac compatibility has 25% weight
+    (yearDiffCompatibilityResult.score * 0.15)    // Year difference has 15% weight
   );
 
-  // Generate compatibility aspects including zodiac information
-  const aspects = [
-    ...generateCompatibilityAspects(person1, person2),
-    `${name1} is a ${zodiacSign1} and ${name2} is a ${zodiacSign2} in Chinese Zodiac`,
-    zodiacCompatibilityResult.description,
-    yearDiffCompatibilityResult.description
-  ];
-
-  // Generate relationship dynamics
-  const dynamics = [
-    ...generateDynamics(person1, person2),
-    `Chinese Zodiac influence: ${zodiacSign1} and ${zodiacSign2} energy interaction - ${zodiacCompatibilityResult.dynamic}`,
-
-  ];
-
-  // Return the enhanced compatibility result
   return {
     score: finalScore,
     lifePathScore: calculateNumberCompatibility(person1.lifePath, person2.lifePath),
@@ -1908,17 +1917,29 @@ function calculateCompatibility(name1: string, birthdate1: string, name2: string
     zodiacCompatibility: {
       person1: zodiacSign1,
       person2: zodiacSign2,
-      score: zodiacScore,
+      score: zodiacCompatibilityResult.score,
       description: zodiacCompatibilityResult.description,
       dynamic: zodiacCompatibilityResult.dynamic
     },
-    yearDifferenceScore: yearDiffScore,
-    aspects,
-    dynamics,
+    zodiacDescription: {
+      person1: zodiacDescription1,
+      person2: zodiacDescription2
+    },
+    yearDifference: yearDiffCompatibilityResult,
+    aspects: [
+      ...generateCompatibilityAspects(person1, person2),
+      `${name1} is a ${zodiacSign1} and ${name2} is a ${zodiacSign2} in Chinese Zodiac`,
+      zodiacCompatibilityResult.description
+    ],
+    dynamics: [
+      ...generateDynamics(person1, person2),
+      zodiacCompatibilityResult.dynamic
+    ],
     growthAreas: [
       ...generateGrowthAreas(person1, person2),
-      zodiacScore < 60 ? `Learn to balance your different zodiac energies` :
-        `Harness the natural harmony between your zodiac signs`
+      zodiacCompatibilityResult.score < 60
+        ? `Learn to balance your different zodiac energies (${zodiacSign1} and ${zodiacSign2})`
+        : `Harness the natural harmony between your ${zodiacSign1} and ${zodiacSign2} signs`
     ],
     relationshipTypes: calculateRelationshipTypeScores(person1, person2)
   };
@@ -1960,6 +1981,15 @@ interface CompatibilityResult extends ReturnType<typeof calculateNumerology> {
     dynamic: string;
   };
   yearDifferenceScore: number;
+  zodiacDescription: {
+    person1: string;
+    person2: string;
+  };
+  yearDifference: {
+    score: number;
+    description: string;
+  };
+  aspects: string[];
 }
 
 function getWeeklyTheme(essence: number, profile: ReturnType<typeof calculateNumerology>): string {
