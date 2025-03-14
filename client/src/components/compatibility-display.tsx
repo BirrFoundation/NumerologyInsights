@@ -34,6 +34,12 @@ export default function CompatibilityDisplay({ result, onReset }: Props) {
   const lifePathScore = result?.lifePathScore ?? 0;
   const expressionScore = result?.expressionScore ?? 0;
   const heartDesireScore = result?.heartDesireScore ?? 0;
+  const zodiacScore = result?.zodiacCompatibility?.score ?? 0;
+  const yearDiffScore = result?.yearDifferenceScore ?? 0;
+
+  // Get zodiac signs
+  const zodiacSign1 = result?.zodiacCompatibility?.person1 ?? '';
+  const zodiacSign2 = result?.zodiacCompatibility?.person2 ?? '';
 
   // Ensure relationship types exist with default values
   const relationshipTypes = result?.relationshipTypes ?? {
@@ -66,6 +72,69 @@ export default function CompatibilityDisplay({ result, onReset }: Props) {
 
       {/* Main Grid */}
       <div className="grid gap-6 md:grid-cols-2">
+        {/* Chinese Zodiac Compatibility */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg font-medium flex items-center gap-2">
+              <Star className="h-5 w-5 text-primary" />
+              Chinese Zodiac Compatibility
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex justify-between items-center">
+              <div className="text-sm">
+                <p>Person 1: {zodiacSign1}</p>
+                <p>Person 2: {zodiacSign2}</p>
+              </div>
+              <div className="text-right">
+                <span className="text-sm font-medium">{zodiacScore}%</span>
+              </div>
+            </div>
+            <Progress value={zodiacScore} className="h-2" />
+            <div>
+              <p className="text-sm font-medium mb-2">Year Difference Analysis:</p>
+              <div className="flex justify-between items-center">
+                <span className="text-sm">Cycle Harmony</span>
+                <span className="text-sm font-medium">{yearDiffScore}%</span>
+              </div>
+              <Progress value={yearDiffScore} className="h-2 mt-1" />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Compatibility Metrics */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg font-medium flex items-center gap-2">
+              <Zap className="h-5 w-5 text-primary" />
+              Numerology Compatibility
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <div className="flex justify-between mb-1">
+                <span className="text-sm font-medium">Life Path Harmony</span>
+                <span className="text-sm text-muted-foreground">{lifePathScore}%</span>
+              </div>
+              <Progress value={lifePathScore} className="h-2" />
+            </div>
+            <div>
+              <div className="flex justify-between mb-1">
+                <span className="text-sm font-medium">Expression Match</span>
+                <span className="text-sm text-muted-foreground">{expressionScore}%</span>
+              </div>
+              <Progress value={expressionScore} className="h-2" />
+            </div>
+            <div>
+              <div className="flex justify-between mb-1">
+                <span className="text-sm font-medium">Emotional Connection</span>
+                <span className="text-sm text-muted-foreground">{heartDesireScore}%</span>
+              </div>
+              <Progress value={heartDesireScore} className="h-2" />
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Compatibility Aspects */}
         {aspects.length > 0 && (
           <Card>
@@ -93,39 +162,6 @@ export default function CompatibilityDisplay({ result, onReset }: Props) {
             </CardContent>
           </Card>
         )}
-
-        {/* Compatibility Metrics */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg font-medium flex items-center gap-2">
-              <Zap className="h-5 w-5 text-primary" />
-              Compatibility Metrics
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <div className="flex justify-between mb-1">
-                <span className="text-sm font-medium">Life Path Harmony</span>
-                <span className="text-sm text-muted-foreground">{lifePathScore}%</span>
-              </div>
-              <Progress value={lifePathScore} className="h-2" />
-            </div>
-            <div>
-              <div className="flex justify-between mb-1">
-                <span className="text-sm font-medium">Expression Match</span>
-                <span className="text-sm text-muted-foreground">{expressionScore}%</span>
-              </div>
-              <Progress value={expressionScore} className="h-2" />
-            </div>
-            <div>
-              <div className="flex justify-between mb-1">
-                <span className="text-sm font-medium">Emotional Connection</span>
-                <span className="text-sm text-muted-foreground">{heartDesireScore}%</span>
-              </div>
-              <Progress value={heartDesireScore} className="h-2" />
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Relationship Types Grid */}
         <Card className="md:col-span-2">

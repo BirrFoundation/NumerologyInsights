@@ -1666,6 +1666,489 @@ function getMonthlyFocusAreas(essence: number, profile: ReturnType<typeof calcul
          baseFocusAreas[reduceToSingleDigit(essence)];
 }
 
+function getChineseZodiacSign(year: number): string {
+  const animals = ['Rat', 'Ox', 'Tiger', 'Rabbit', 'Dragon', 'Snake', 'Horse', 'Goat', 'Monkey', 'Rooster', 'Dog', 'Pig'];
+  return animals[(year - 4) % 12];
+}
+
+function getZodiacCompatibility(sign1: string, sign2: string): number {
+  const compatibilityMap: Record<string, { best: string[], good: string[], bad: string[], worst: string[] }> = {
+    'Rat': {
+      best: ['Dragon', 'Monkey'],
+      good: ['Ox', 'Tiger', 'Snake', 'Horse', 'Goat', 'Pig'],
+      bad: ['Rabbit'],
+      worst: ['Horse', 'Rooster']
+    },
+    'Ox': {
+      best: ['Snake', 'Rooster'],
+      good: ['Rat', 'Tiger', 'Rabbit', 'Monkey', 'Dog', 'Pig'],
+      bad: ['Horse'],
+      worst: ['Goat', 'Dragon']
+    },
+    'Tiger': {
+      best: ['Horse', 'Dog'],
+      good: ['Rat', 'Ox', 'Rabbit', 'Dragon', 'Snake', 'Rooster'],
+      bad: ['Monkey'],
+      worst: ['Snake']
+    },
+    'Rabbit': {
+      best: ['Goat', 'Pig'],
+      good: ['Ox', 'Tiger', 'Snake', 'Horse', 'Monkey', 'Dog'],
+      bad: ['Rat'],
+      worst: ['Dragon', 'Rooster']
+    },
+    'Dragon': {
+      best: ['Rat', 'Monkey'],
+      good: ['Tiger', 'Snake', 'Horse', 'Goat', 'Rooster', 'Pig'],
+      bad: ['Dog'],
+      worst: ['Ox', 'Rabbit']
+    },
+    'Snake': {
+      best: ['Ox', 'Rooster'],
+      good: ['Rat', 'Rabbit', 'Dragon', 'Horse', 'Goat', 'Pig'],
+      bad: ['Tiger'],
+      worst: ['Monkey']
+    },
+    'Horse': {
+      best: ['Tiger', 'Dog'],
+      good: ['Rat', 'Rabbit', 'Dragon', 'Snake', 'Monkey', 'Pig'],
+      bad: ['Ox'],
+      worst: ['Rat', 'Rooster']
+    },
+    'Goat': {
+      best: ['Rabbit', 'Pig'],
+      good: ['Rat', 'Tiger', 'Dragon', 'Snake', 'Horse', 'Monkey'],
+      bad: ['Ox'],
+      worst: ['Ox', 'Dog']
+    },
+    'Monkey': {
+      best: ['Rat', 'Dragon'],
+      good: ['Ox', 'Rabbit', 'Horse', 'Goat', 'Dog', 'Pig'],
+      bad: ['Tiger'],
+      worst: ['Snake']
+    },
+    'Rooster': {
+      best: ['Ox', 'Snake'],
+      good: ['Tiger', 'Dragon', 'Horse', 'Monkey', 'Dog', 'Pig'],
+      bad: ['Rabbit'],
+      worst: ['Rat', 'Horse']
+    },
+    'Dog': {
+      best: ['Tiger', 'Horse'],
+      good: ['Ox', 'Rabbit', 'Dragon', 'Monkey', 'Rooster', 'Pig'],
+      bad: ['Dragon'],
+      worst: ['Goat']
+    },
+    'Pig': {
+      best: ['Rabbit', 'Goat'],
+      good: ['Rat', 'Tiger', 'Dragon', 'Snake', 'Horse', 'Monkey'],
+      bad: ['Snake'],
+      worst: ['Snake', 'Pig']
+    }
+  };
+
+  if (sign1 === sign2) return 90; // Same sign compatibility
+  if (compatibilityMap[sign1].best.includes(sign2)) return 100;
+  if (compatibilityMap[sign1].good.includes(sign2)) return 80;
+  if (compatibilityMap[sign1].bad.includes(sign2)) return 40;
+  if (compatibilityMap[sign1].worst.includes(sign2)) return 20;
+  return 60; // Neutral compatibility
+}
+
+function calculateYearDifferenceCompatibility(year1: number, year2: number): number {
+  const diff = Math.abs(year1 - year2);
+
+  // 12 years difference (same zodiac sign) is considered very compatible
+  if (diff % 12 === 0) return 100;
+
+  // 6 years difference is traditionally considered challenging
+  if (diff % 6 === 0) return 30;
+
+  // Other differences are neutral
+  return 70;
+}
+
+function generateDynamics(profile1: ReturnType<typeof calculateNumerology>, profile2: ReturnType<typeof calculateNumerology>): string[] {
+  return analyzeRelationshipDynamics(profile1, profile2);
+}
+
+function generateGrowthAreas(profile1: ReturnType<typeof calculateNumerology>, profile2: ReturnType<typeof calculateNumerology>): string[] {
+  return identifyGrowthAreas(profile1, profile2);
+}
+
+
+function calculateCompatibility(name1: string, birthdate1: string, name2: string, birthdate2: string) {
+  // Get individual numerology calculations
+  const person1 = calculateNumerology(name1, birthdate1);
+  const person2 = calculateNumerology(name2, birthdate2);
+
+  // Calculate birth years
+  const year1 = new Date(birthdate1).getFullYear();
+  const year2 = new Date(birthdate2).getFullYear();
+
+  // Get zodiac signs
+  const zodiacSign1 = getChineseZodiacSign(year1);
+  const zodiacSign2 = getChineseZodiacSign(year2);
+
+  // Calculate various compatibility scores
+  const numerologyScore = (
+    calculateNumberCompatibility(person1.lifePath, person2.lifePath) +
+    calculateNumberCompatibility(person1.expression, person2.expression) +
+    calculateNumberCompatibility(person1.heartDesire, person2.heartDesire)
+  ) / 3;
+
+  const zodiacScore = getZodiacCompatibility(zodiacSign1, zodiacSign2);
+  const yearDiffScore = calculateYearDifferenceCompatibility(year1, year2);
+
+  // Calculate weighted final score
+  const finalScore = Math.round(
+    (numerologyScore * 0.6) + // Numerology has 60% weight
+    (zodiacScore * 0.25) +    // Zodiac compatibility has 25% weight
+    (yearDiffScore * 0.15)    // Year difference has 15% weight
+  );
+
+  // Generate compatibility aspects including zodiac information
+  const aspects = [
+    ...generateCompatibilityAspects(person1, person2),
+    `${name1} is a ${zodiacSign1} and ${name2} is a ${zodiacSign2} in Chinese Zodiac`,
+    zodiacScore >= 80 ? `Your zodiac signs have excellent compatibility` :
+    zodiacScore >= 60 ? `Your zodiac signs have good compatibility` :
+    `Your zodiac signs may face some challenges`,
+    yearDiffScore >= 90 ? `Your 12-year zodiac cycle alignment is very favorable` :
+    yearDiffScore <= 40 ? `Your 6-year zodiac cycle difference may present some challenges` :
+    `Your age difference creates a balanced dynamic`
+  ];
+
+  // Generate relationship dynamics
+  const dynamics = [
+    ...generateDynamics(person1, person2),
+    `Chinese Zodiac influence: ${zodiacSign1} and ${zodiacSign2} energy interaction`,
+    zodiacScore >= 80 ? `Your zodiac signs naturally enhance each other's strengths` :
+    `Working on understanding each other's zodiac traits will strengthen your connection`
+  ];
+
+  // Return the enhanced compatibility result
+  return {
+    score: finalScore,
+    lifePathScore: calculateNumberCompatibility(person1.lifePath, person2.lifePath),
+    expressionScore: calculateNumberCompatibility(person1.expression, person2.expression),
+    heartDesireScore:calculateNumberCompatibility(person1.heartDesire, person2.heartDesire),
+    zodiacCompatibility: {
+      person1: zodiacSign1,
+      person2: zodiacSign2,
+      score: zodiacScore
+    },
+    yearDifferenceScore: yearDiffScore,
+    aspects,
+    dynamics,
+    growthAreas: [
+      ...generateGrowthAreas(person1, person2),
+      zodiacScore < 60 ? `Learn to balance your different zodiac energies` :
+      `Harness the natural harmony between your zodiac signs`
+    ],
+    relationshipTypes: calculateRelationshipTypeScores(person1, person2)
+  };
+}
+
+interface CompatibilityResult extends ReturnType<typeof calculateNumerology> {
+  lifePathScore: number;
+  expressionScore: number;
+  heartDesireScore: number;
+  dynamics: string[];
+  growthAreas: string[];
+  relationshipTypes: {
+    work: {
+      score: number;
+      strengths: string[];
+      challenges: string[];
+    };
+    business: {
+      score: number;
+      strengths: string[];
+      challenges: string[];
+    };
+    friendship: {
+      score: number;
+      strengths: string[];
+      challenges: string[];
+    };
+    family: {
+      score: number;
+      strengths: string[];
+      challenges: string[];
+    };
+  };
+  zodiacCompatibility: {
+    person1: string;
+    person2: string;
+    score: number;
+  };
+  yearDifferenceScore: number;
+}
+
+function getWeeklyTheme(essence: number, profile: ReturnType<typeof calculateNumerology>): string {
+  const themes = {
+    1: "Week of New Beginnings - Perfect for starting new projects and taking initiative",
+    2: "Week of Cooperation - Focus on partnerships and diplomatic solutions",
+    3: "Week of Creative Expression - Ideal for artistic pursuits and communication",
+    4: "Week of Foundation Building - Time to organize and establish structure",
+    5: "Week of Change - Embrace new opportunities and adventure",
+    6: "Week of Balance - Focus on harmony in relationships and responsibilities",
+    7: "Week of Reflection - Ideal for research and spiritual growth",
+    8: "Week of Manifestation - Focus on achievement and material goals",
+    9: "Week of Completion - Time to finish projects and release what no longer serves",
+    11: "Week of Inspiration - Heightened intuition and spiritual awareness",
+    22: "Week of Master Building - Manifest your highest visions"
+  };
+
+  return themes[essence as keyof typeof themes] || themes[reduceToSingleDigit(essence)];
+}
+
+function getWeeklyOpportunities(essence: number): string[] {
+  const baseOpportunities = {
+    1: ["Start new projects", "Take leadership roles", "Show initiative"],
+    2: ["Build partnerships", "Mediate conflicts", "Focus on details"],
+    3: ["Express creativity", "Communicate ideas", "Socialize"],
+    4: ["Organize systems", "Build foundations", "Create structure"],
+    5: ["Embrace change", "Travel or explore", "Try new experiences"],
+    6: ["Focus on relationships", "Create harmony", "Take responsibility"],
+    7: ["Research and study", "Meditate", "Plan strategically"],
+    8: ["Focus on business", "Manifest abundance", "Take charge"],
+    9: ["Complete projects", "Let go of old patterns", "Help others"],
+    11: ["Follow intuition", "Inspire others", "Spiritual growth"],
+    22: ["Build large-scale projects", "Manifest dreams", "Create lasting structures"]
+  };
+
+  return baseOpportunities[essence as keyof typeof baseOpportunities] ||
+         baseOpportunities[reduceToSingleDigit(essence)];
+}
+
+function getWeeklyChallenges(essence: number): string[] {
+  const baseChallenges = {
+    1: ["Avoid being too aggressive", "Watch ego", "Don't rush decisions"],
+    2: ["Don't be oversensitive", "Avoid indecision", "Stand up for yourself"],
+    3: ["Stay focused", "Avoid scattered energy", "Don't be superficial"],
+    4: ["Be flexible", "Avoid rigidity", "Don't overwork"],
+    5: ["Maintain focus", "Avoid impulsiveness", "Don't take unnecessary risks"],
+    6: ["Don't overcommit", "Avoid perfectionism", "Balance responsibilities"],
+    7: ["Don't isolate", "Avoid overthinking", "Stay grounded"],
+    8: ["Watch material focus", "Avoid power struggles", "Stay ethical"],
+    9: ["Let go of control", "Complete unfinished tasks", "Don't be dramatic"],
+    11: ["Ground spiritual energy", "Avoid nervous tension", "Balance material/spiritual"],
+    22: ["Don't overwhelm yourself", "Stay practical", "Avoid unrealistic expectations"]
+  };
+
+  return baseChallenges[essence as keyof typeof baseChallenges] ||
+         baseChallenges[reduceToSingleDigit(essence)];
+}
+
+function getMonthlyTheme(essence: number, profile: ReturnType<typeof calculateNumerology>): string {
+  const themes = {
+    1: "Month of Leadership and New Beginnings",
+    2: "Month of Cooperation and Diplomacy",
+    3: "Month of Creative Expression and Joy",
+    4: "Month of Building and Organization",
+    5: "Month of Change and Freedom",
+    6: "Month of Responsibility and Harmony",
+    7: "Month of Wisdom and Inner Growth",
+    8: "Month of Power and Achievement",
+    9: "Month of Completion and Universal Love",
+    11: "Month of Spiritual Mastery",
+    22: "Month of Master Building"
+  };
+
+  return themes[essence as keyof typeof themes] || themes[reduceToSingleDigit(essence)];
+}
+
+function getMonthlyOpportunities(essence: number): string[] {
+  const baseOpportunities = {
+    1: [
+      "Take initiative in major projects",
+      "Establish leadership positions",
+      "Start new ventures with confidence"
+    ],
+    2: [
+      "Build important partnerships",
+      "Focus on diplomatic solutions",
+      "Develop patience and cooperation"
+    ],
+    3: [
+      "Launch creative projects",
+      "Expand social networks",
+      "Express yourself authentically"
+    ],
+    4: [
+      "Build solid foundations",
+      "Organize long-term plans",
+      "Establish reliable systems"
+    ],
+    5: [
+      "Embrace progressive changes",
+      "Explore new territories",
+      "Break free from limitations"
+    ],
+    6: [
+      "Focus on family harmony",
+      "Take on responsibilities",
+      "Create beauty and balance"
+    ],
+    7: [
+      "Deepen spiritual understanding",
+      "Research and analyze",
+      "Develop expertise"
+    ],
+    8: [
+      "Focus on material success",
+      "Build power and influence",
+      "Achieve financial goals"
+    ],
+    9: [
+      "Complete major cycles",
+      "Share wisdom with others",
+      "Embrace universal love"
+    ],
+    11: [
+      "Follow spiritual guidance",
+      "Inspire and teach others",
+      "Channel higher wisdom"
+    ],
+    22: [
+      "Build lasting structures",
+      "Manifest grand visions",
+      "Create practical solutions"
+    ]
+  };
+
+  return baseOpportunities[essence as keyof typeof baseOpportunities] ||
+         baseOpportunities[reduceToSingleDigit(essence)];
+}
+
+function getMonthlyChallenges(essence: number): string[] {
+  const baseChallenges = {
+    1: [
+      "Balance independence with cooperation",
+      "Manage ego and pride",
+      "Avoid dominating others"
+    ],
+    2: [
+      "Overcome sensitivity and doubt",
+      "Make decisions confidently",
+      "Stand up for yourself"
+    ],
+    3: [
+      "Maintain focus and discipline",
+      "Avoid superficiality",
+      "Channel creativity productively"
+    ],
+    4: [
+      "Stay flexible when needed",
+      "Avoid becoming too rigid",
+      "Balance work and rest"
+    ],
+    5: [
+      "Manage restless energy",
+      "Make wise choices",
+      "Stay committed to goals"
+    ],
+    6: [
+      "Balance giving and receiving",
+      "Avoid perfectionism",
+      "Set healthy boundaries"
+    ],
+    7: [
+      "Connect with others",
+      "Stay practical",
+      "Share your wisdom"
+    ],
+    8: [
+      "Use power wisely",
+      "Stay ethical in business",
+      "Balance material and spiritual"
+    ],
+    9: [
+      "Complete unfinished business",
+      "Let go of attachments",
+      "Avoid emotional drama"
+    ],
+    11: [
+      "Ground spiritual energy",
+      "Manage sensitivity",
+      "Balance idealism with practicality"
+    ],
+    22: [
+      "Stay focused on goals",
+      "Manage stress levels",
+      "Delegate when necessary"
+    ]
+  };
+
+  return baseChallenges[essence as keyof typeof baseChallenges] ||
+         baseChallenges[reduceToSingleDigit(essence)];
+}
+
+function getMonthlyFocusAreas(essence: number, profile: ReturnType<typeof calculateNumerology>): string[] {
+  const baseFocusAreas = {
+    1: [
+      "Personal development and independence",
+      "Leadership skills",
+      "Self-confidence"
+    ],
+    2: [
+      "Relationships and partnerships",
+      "Emotional intelligence",
+      "Attention to detail"
+    ],
+    3: [
+      "Creative expression",
+      "Communication",
+      "Social connections"
+    ],
+    4: [
+      "Organization and structure",
+      "Practical matters",
+      "Foundation building"
+    ],
+    5: [
+      "Personal freedom",
+      "Adventure and change",
+      "Adaptability"
+    ],
+    6: [
+      "Family and home",
+      "Responsibility",
+      "Harmony and balance"
+    ],
+    7: [
+      "Spiritual growth",
+      "Inner wisdom",
+      "Technical skills"
+    ],
+    8: [
+      "Business and finance",
+      "Personal power",
+      "Material goals"
+    ],
+    9: [
+      "Completion and release",
+      "Humanitarian efforts",
+      "Universal understanding"
+    ],
+    11: [
+      "Spiritual awareness",
+      "Intuitive development",
+      "Teaching and inspiration"
+    ],
+    22: [
+      "Large-scale projects",
+      "Practical spirituality",
+      "Leadership and service"
+    ]
+  };
+
+  return baseFocusAreas[essence as keyof typeof baseFocusAreas] ||
+         baseFocusAreas[reduceToSingleDigit(essence)];
+}
+
 export {
   calculateNumerology,
   reduceToSingleDigit,
@@ -1677,5 +2160,8 @@ export {
   getFriendshipStrengths,
   getFriendshipChallenges,
   getFamilyStrengths,
-  getFamilyChallenges
+  getFamilyChallenges,
+  getChineseZodiacSign,
+  getZodiacCompatibility,
+  calculateYearDifferenceCompatibility
 };
