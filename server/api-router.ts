@@ -375,67 +375,82 @@ router.post("/calculate", async (req, res) => {
 });
 
 router.post("/compatibility", async (req, res) => {
-  try {
-    const data = compatibilityInputSchema.parse(req.body);
-    console.log('Received compatibility request:', {
-      name1: data.name1,
-      birthdate1: data.birthdate1,
-      name2: data.name2,
-      birthdate2: data.birthdate2
-    });
-
-    // Calculate individual numerology numbers
-    const person1 = calculateNumerology(data.name1, data.birthdate1);
-    const person2 = calculateNumerology(data.name2, data.birthdate2);
-
-    console.log('Individual numerology calculations:', {
-      person1: {
-        lifePath: person1.lifePath,
-        expression: person1.expression,
-        heartDesire: person1.heartDesire
-      },
-      person2: {
-        lifePath: person2.lifePath,
-        expression: person2.expression,
-        heartDesire: person2.heartDesire
-      }
-    });
-
-    const result = calculateCompatibility(
-      data.name1,
-      data.birthdate1,
-      data.name2,
-      data.birthdate2
-    );
-
-    console.log('Calculated compatibility result:', {
-      score: result.score,
-      lifePathScore: result.lifePathScore,
-      expressionScore: result.expressionScore,
-      heartDesireScore: result.heartDesireScore,
-      aspectsCount: result.aspects.length,
-      dynamicsCount: result.dynamics.length,
-      relationshipTypes: Object.keys(result.relationshipTypes).map(type => ({
-        type,
-        score: result.relationshipTypes[type].score
-      }))
-    });
-
-    res.json(result);
-  } catch (error) {
-    console.error('Compatibility calculation error:', error);
-    if (error instanceof z.ZodError) {
-      res.status(400).json({
-        message: "Invalid input data",
-        errors: error.errors
+    try {
+      const data = compatibilityInputSchema.parse(req.body);
+      console.log('Received compatibility request:', {
+        name1: data.name1,
+        birthdate1: data.birthdate1,
+        name2: data.name2,
+        birthdate2: data.birthdate2
       });
-      return;
+
+      // Get individual numerology calculations
+      const person1 = calculateNumerology(data.name1, data.birthdate1);
+      const person2 = calculateNumerology(data.name2, data.birthdate2);
+
+      // Get zodiac signs and their descriptions
+      const zodiacSign1 = getChineseZodiacSign(data.birthdate1);
+      const zodiacSign2 = getChineseZodiacSign(data.birthdate2);
+
+      // Calculate zodiac compatibility
+      const zodiacCompatibility = getZodiacCompatibility(zodiacSign1, zodiacSign2);
+
+      // Calculate year difference compatibility
+      const yearDiff = calculateYearDifferenceCompatibility(data.birthdate1, data.birthdate2);
+
+      // Calculate final compatibility
+      const result = {
+        score: Math.round(
+          (calculateNumberCompatibility(person1.lifePath, person2.lifePath) * 0.3) +
+          (calculateNumberCompatibility(person1.expression, person2.expression) * 0.2) +
+          (calculateNumberCompatibility(person1.heartDesire, person2.heartDesire) * 0.2) +
+          (zodiacCompatibility.score * 0.2) +
+          (yearDiff.score * 0.1)
+        ),
+        lifePathScore: calculateNumberCompatibility(person1.lifePath, person2.lifePath),
+        expressionScore: calculateNumberCompatibility(person1.expression, person2.expression),
+        heartDesireScore: calculateNumberCompatibility(person1.heartDesire, person2.heartDesire),
+        zodiacCompatibility: {
+          person1: zodiacSign1,
+          person2: zodiacSign2,
+          score: zodiacCompatibility.score,
+          description: zodiacCompatibility.description,
+          dynamic: zodiacCompatibility.dynamic
+        },
+        yearDifference: yearDiff,
+        aspects: [
+          ...generateCompatibilityAspects(person1, person2),
+          `${data.name1} (${zodiacSign1}) and ${data.name2} (${zodiacSign2}) in Chinese Zodiac:`,
+          zodiacCompatibility.description
+        ],
+        dynamics: [
+          ...analyzeRelationshipDynamics(person1, person2),
+          zodiacCompatibility.dynamic
+        ],
+        growthAreas: [
+          ...identifyGrowthAreas(person1, person2),
+          zodiacCompatibility.score < 60
+            ? `Learn to balance the different energies of ${zodiacSign1} and ${zodiacSign2}`
+            : `Harness the natural harmony between ${zodiacSign1} and ${zodiacSign2} signs`
+        ],
+        relationshipTypes: calculateRelationshipTypeScores(person1, person2)
+      };
+
+      res.json(result);
+    } catch (error) {
+      console.error('Compatibility calculation error:', error);
+      if (error instanceof z.ZodError) {
+        res.status(400).json({
+          message: "Invalid input data",
+          errors: error.errors
+        });
+        return;
+      }
+      res.status(500).json({
+        message: "Failed to calculate compatibility"
+      });
     }
-    res.status(500).json({
-      message: "Failed to calculate compatibility"
-    });
-  }
-});
+  });
 
 router.post("/coaching", async (req, res) => {
   try {
@@ -897,10 +912,7 @@ async function getInterpretation(numbers: any, name: string) {
   };
 }
 
-// Keep existing routes and export...
-
-//</previous_generation>
-//Helper functions -  These need to be implemented separately.
+// Helper functions -  These need to be implemented separately.
 const calculateCompatibility = (name1: string, birthdate1: string, name2: string, birthdate2: string) => {
   // Calculate individual numerology numbersfor both people
   const person1 = calculateNumerology(name1, birthdate1);
@@ -1141,5 +1153,55 @@ Date.prototype.getWeekNumber = function () {
   const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
   return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
 };
+
+//New functions for zodiac compatibility
+function getChineseZodiacSign(birthdate: string): string {
+  const year = parseInt(birthdate.split('-')[0]);
+  const zodiacs = ['Rat', 'Ox', 'Tiger', 'Rabbit', 'Dragon', 'Snake', 'Horse', 'Goat', 'Monkey', 'Rooster', 'Dog', 'Pig'];
+  return zodiacs[(year - 4) % 12];
+}
+
+function getZodiacCompatibility(sign1: string, sign2: string): { score: number; description: string; dynamic: string } {
+  //Implement zodiac compatibility logic here.  This is a placeholder.
+  const compatibilityScores = {
+    'Rat': { 'Rat': 80, 'Ox': 70, 'Tiger': 90, 'Rabbit': 60, 'Dragon': 70, 'Snake': 80, 'Horse': 70, 'Goat': 60, 'Monkey': 90, 'Rooster': 70, 'Dog': 60, 'Pig': 80 },
+    'Ox': { 'Rat': 70, 'Ox': 80, 'Tiger': 70, 'Rabbit': 90, 'Dragon': 60, 'Snake': 70, 'Horse': 80, 'Goat': 70, 'Monkey': 60, 'Rooster': 90, 'Dog': 70, 'Pig': 60 },
+    // ... add other zodiac combinations ...
+  };
+  const score = compatibilityScores[sign1] ? compatibilityScores[sign1][sign2] || 50 : 50;
+  const description = `Placeholder description for compatibility between ${sign1} and ${sign2}`;
+  const dynamic = `Placeholder dynamic description for ${sign1} and ${sign2}`;
+  return { score, description, dynamic };
+}
+
+function calculateYearDifferenceCompatibility(birthdate1: string, birthdate2: string): { score: number; description: string } {
+  const date1 = new Date(birthdate1);
+  const date2 = new Date(birthdate2);
+  const diff = Math.abs(date1.getFullYear() - date2.getFullYear());
+  let score = 100 - Math.min(diff, 10) * 10; //Simple example; adjust as needed
+  const description = `The age difference might affect compatibility. The difference is ${diff} years`;
+  return { score, description };
+}
+
+
+function analyzeRelationshipDynamics(person1: any, person2: any): string[] {
+  // Placeholder implementation; replace with actual analysis logic
+  return ["Dynamic 1", "Dynamic 2"];
+}
+
+function identifyGrowthAreas(person1: any, person2: any): string[] {
+  // Placeholder implementation; replace with actual analysis logic
+  return ["Growth Area 1", "Growth Area 2"];
+}
+
+function calculateRelationshipTypeScores(person1: any, person2: any): any {
+  // Placeholder implementation; replace with actual scoring logic
+  return {
+    work: { score: 70, strengths: [], challenges: [] },
+    business: { score: 80, strengths: [], challenges: [] },
+    friendship: { score: 90, strengths: [], challenges: [] },
+    family: { score: 60, strengths: [], challenges: [] }
+  };
+}
 
 export default router;
