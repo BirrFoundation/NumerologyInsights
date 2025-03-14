@@ -8,9 +8,11 @@ import { motion } from "framer-motion";
 interface Props {
   result: CompatibilityResult;
   onReset: () => void;
+  person1Name?: string;
+  person2Name?: string;
 }
 
-export default function CompatibilityDisplay({ result, onReset }: Props) {
+export default function CompatibilityDisplay({ result, onReset, person1Name = "Person 1", person2Name = "Person 2" }: Props) {
   const getScoreColor = (score: number) => {
     if (score >= 80) return "text-green-500";
     if (score >= 60) return "text-amber-500";
@@ -40,6 +42,19 @@ export default function CompatibilityDisplay({ result, onReset }: Props) {
   // Get zodiac signs
   const zodiacSign1 = result?.zodiacCompatibility?.person1 ?? '';
   const zodiacSign2 = result?.zodiacCompatibility?.person2 ?? '';
+
+  const getZodiacCompatibilityDescription = (score: number, sign1: string, sign2: string) => {
+    if (score >= 80) return `${sign1} and ${sign2} are highly compatible signs in Chinese astrology, creating a harmonious and balanced relationship.`;
+    if (score >= 60) return `${sign1} and ${sign2} have good compatibility, with complementary energies that can work well together.`;
+    if (score >= 40) return `${sign1} and ${sign2} may face some challenges, but these can be overcome with understanding and patience.`;
+    return `${sign1} and ${sign2} will need to work on understanding each other's different approaches to life.`;
+  };
+
+  const getYearDifferenceDescription = (score: number) => {
+    if (score >= 90) return "Your birth years create an auspicious 12-year cycle alignment, traditionally considered very favorable.";
+    if (score <= 40) return "Your birth years are in a 6-year difference cycle, which traditionally suggests the need for extra understanding and adaptation.";
+    return "Your birth year difference creates an interesting dynamic that can be worked with positively.";
+  };
 
   // Ensure relationship types exist with default values
   const relationshipTypes = result?.relationshipTypes ?? {
@@ -81,23 +96,22 @@ export default function CompatibilityDisplay({ result, onReset }: Props) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex justify-between items-center">
-              <div className="text-sm">
-                <p>Person 1: {zodiacSign1}</p>
-                <p>Person 2: {zodiacSign2}</p>
-              </div>
-              <div className="text-right">
-                <span className="text-sm font-medium">{zodiacScore}%</span>
-              </div>
-            </div>
-            <Progress value={zodiacScore} className="h-2" />
-            <div>
-              <p className="text-sm font-medium mb-2">Year Difference Analysis:</p>
+            <div className="space-y-2">
               <div className="flex justify-between items-center">
-                <span className="text-sm">Cycle Harmony</span>
-                <span className="text-sm font-medium">{yearDiffScore}%</span>
+                <div className="text-sm">
+                  <p><span className="font-medium">{person1Name}:</span> {zodiacSign1} sign</p>
+                  <p><span className="font-medium">{person2Name}:</span> {zodiacSign2} sign</p>
+                </div>
               </div>
-              <Progress value={yearDiffScore} className="h-2 mt-1" />
+              <p className="text-sm text-muted-foreground">
+                {getZodiacCompatibilityDescription(zodiacScore, zodiacSign1, zodiacSign2)}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm font-medium mb-2">Year Cycle Analysis:</p>
+              <p className="text-sm text-muted-foreground mb-2">
+                {getYearDifferenceDescription(yearDiffScore)}
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -214,7 +228,6 @@ export default function CompatibilityDisplay({ result, onReset }: Props) {
           </CardContent>
         </Card>
 
-        {/* Relationship Dynamics */}
         {dynamics.length > 0 && (
           <Card>
             <CardHeader className="pb-3">
@@ -242,7 +255,6 @@ export default function CompatibilityDisplay({ result, onReset }: Props) {
           </Card>
         )}
 
-        {/* Growth Opportunities */}
         {growthAreas.length > 0 && (
           <Card>
             <CardHeader className="pb-3">
