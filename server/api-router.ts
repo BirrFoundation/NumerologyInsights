@@ -816,8 +816,17 @@ function calculateExpression(name: string): number {
 function calculatePersonality(name: string): number {
   const cleanName = name.toLowerCase().replace(/[^a-z]/g, '');
   if (cleanName.length === 0) return 0;
-  // First letter value
-  return reduceToSingleDigit(cleanName.charCodeAt(0) - 96);
+
+  // Only sum consonants (non-vowels)
+  const sum = Array.from(cleanName).reduce((acc, char) => {
+    // Skip vowels
+    if (!'aeiou'.includes(char)) {
+      return acc + (char.charCodeAt(0) - 96); // a=1, b=2, etc.
+    }
+    return acc;
+  }, 0);
+
+  return reduceToSingleDigit(sum);
 }
 
 function reduceToSingleDigit(num: number): number {
