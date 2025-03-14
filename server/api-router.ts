@@ -889,7 +889,7 @@ async function getInterpretation(numbers: any, name: string) {
 
   return {
     lifePath: `Your Life Path number ${numbers.lifePath} indicates ${lifePathMeanings[getBaseNumber(numbers.lifePath)]}. This is your primary life purpose and the path you're meant to follow.`,
-    destiny: `Your Destiny number ${numbers.destiny} reveals your potential and the talents you possess to achieve your goals. It represents your capacity for achievement.`,
+    destiny: `Your Destiny number ${numbers.destiny} reveals your potential and the talents you possess to achieveyour goals. It represents your capacity for achievement.`,
     heartDesire: `Your Heart's Desire number ${numbers.heartDesire} shows your inner motivation and what truly drives you. It represents your emotional needs and deepest desires.`,
     expression: `Your Expression number ${numbers.expression} reflects how you present yourself to the world. It shows your natural abilities and how you express yourself.`,
     personality: `Your Personality number ${numbers.personality} represents how others see you initially. It's your outer personality and first impression.`,
@@ -966,7 +966,7 @@ function calculateNumberCompatibility(num1: number, num2: number): number {
 
   // Special case for master numbers
   if ((num1 === 11 || num1 === 22 || num1 === 33) &&
-      (num2 === 11 || num2 === 22 || num2 === 33)) {
+    (num2 === 11 || num2 === 22 || num2 === 33)) {
     console.log('Master numbers detected, returning 100%');
     return 100;
   }
@@ -1037,7 +1037,7 @@ function generateGrowthAreas(person1: any, person2: any): string[] {
 function calculateWorkCompatibility(person1: any, person2: any) {
   const score = Math.round(
     (calculateNumberCompatibility(person1.expression, person2.expression) +
-    calculateNumberCompatibility(person1.lifePath, person2.lifePath)) / 2
+      calculateNumberCompatibility(person1.lifePath, person2.lifePath)) / 2
   );
 
   return {
@@ -1058,7 +1058,7 @@ function calculateWorkCompatibility(person1: any, person2: any) {
 function calculateBusinessCompatibility(person1: any, person2: any) {
   const score = Math.round(
     (calculateNumberCompatibility(person1.lifePath, person2.lifePath) +
-    calculateNumberCompatibility(person1.attribute, person2.attribute)) / 2
+      calculateNumberCompatibility(person1.attribute, person2.attribute)) / 2
   );
 
   return {
@@ -1079,7 +1079,7 @@ function calculateBusinessCompatibility(person1: any, person2: any) {
 function calculateFriendshipCompatibility(person1: any, person2: any) {
   const score = Math.round(
     (calculateNumberCompatibility(person1.heartDesire, person2.heartDesire) +
-    calculateNumberCompatibility(person1.personality, person2.personality)) / 2
+      calculateNumberCompatibility(person1.personality, person2.personality)) / 2
   );
 
   return {
@@ -1100,7 +1100,7 @@ function calculateFriendshipCompatibility(person1: any, person2: any) {
 function calculateFamilyCompatibility(person1: any, person2: any) {
   const score = Math.round(
     (calculateNumberCompatibility(person1.heartDesire, person2.heartDesire) +
-    calculateNumberCompatibility(person1.expression, person2.expression)) / 2
+      calculateNumberCompatibility(person1.expression, person2.expression)) / 2
   );
 
   return {
@@ -1152,7 +1152,7 @@ const getPersonalizedCoaching = async (numerologyResult: any, userQuery?: string
 const interpretDream = async (description: string, emotions: string[], symbols: string[], birthdate: string, userName: string) => {
   //Implementation for dream interpretation. Placeholder for now.
   return {
-interpretation: "This is a placeholder dream interpretation.",
+    interpretation: "This is a placeholder dream interpretation.",
     numerologyFactors: {}
   }
 }
@@ -1166,45 +1166,180 @@ Date.prototype.getWeekNumber = function () {
 };
 
 //New functions for zodiac compatibility
-function getChineseZodiacSign(birthdate: string): {sign:string, element:string, yinYang:string} {
+function getChineseZodiacSign(birthdate: string): { sign: string, element: string, yinYang: string } {
   const year = parseInt(birthdate.split('-')[0]);
   const zodiacs = [
-    {sign:'Rat', element:'Water', yinYang:'Yang'},
-    {sign:'Ox', element:'Earth', yinYang:'Yin'},
-    {sign:'Tiger', element:'Wood', yinYang:'Yang'},
-    {sign:'Rabbit', element:'Wood', yinYang:'Yin'},
-    {sign:'Dragon', element:'Earth', yinYang:'Yang'},
-    {sign:'Snake', element:'Fire', yinYang:'Yin'},
-    {sign:'Horse', element:'Fire', yinYang:'Yang'},
-    {sign:'Goat', element:'Earth', yinYang:'Yin'},
-    {sign:'Monkey', element:'Metal', yinYang:'Yang'},
-    {sign:'Rooster', element:'Metal', yinYang:'Yin'},
-    {sign:'Dog', element:'Earth', yinYang:'Yang'},
-    {sign:'Pig', element:'Water', yinYang:'Yin'}
+    { sign: 'Rat', element: 'Water', yinYang: 'Yang' },
+    { sign: 'Ox', element: 'Earth', yinYang: 'Yin' },
+    { sign: 'Tiger', element: 'Wood', yinYang: 'Yang' },
+    { sign: 'Rabbit', element: 'Wood', yinYang: 'Yin' },
+    { sign: 'Dragon', element: 'Earth', yinYang: 'Yang' },
+    { sign: 'Snake', element: 'Fire', yinYang: 'Yin' },
+    { sign: 'Horse', element: 'Fire', yinYang: 'Yang' },
+    { sign: 'Goat', element: 'Earth', yinYang: 'Yin' },
+    { sign: 'Monkey', element: 'Metal', yinYang: 'Yang' },
+    { sign: 'Rooster', element: 'Metal', yinYang: 'Yin' },
+    { sign: 'Dog', element: 'Earth', yinYang: 'Yang' },
+    { sign: 'Pig', element: 'Water', yinYang: 'Yin' }
   ];
   return zodiacs[(year - 4) % 12];
 }
 
-function getZodiacCompatibility(sign1: {sign:string, element:string, yinYang:string}, sign2: {sign:string, element:string, yinYang:string}): { score: number; description: string; dynamic: string } {
-  //Implement zodiac compatibility logic here.  This is a placeholder.
+function getZodiacCompatibility(sign1: { sign: string, element: string, yinYang: string }, sign2: { sign: string, element: string, yinYang: string }): { score: number; description: string; dynamic: string } {
   const compatibilityScores = {
-    'Rat': { 'Rat': 80, 'Ox': 70, 'Tiger': 90, 'Rabbit': 60, 'Dragon': 70, 'Snake': 80, 'Horse': 70, 'Goat': 60, 'Monkey': 90, 'Rooster': 70, 'Dog': 60, 'Pig': 80 },
-    'Ox': { 'Rat': 70, 'Ox': 80, 'Tiger': 70, 'Rabbit': 90, 'Dragon': 60, 'Snake': 70, 'Horse': 80, 'Goat': 70, 'Monkey': 60, 'Rooster': 90, 'Dog': 70, 'Pig': 60 },
-    'Tiger': { 'Rat': 90, 'Ox': 70, 'Tiger': 80, 'Rabbit': 70, 'Dragon': 80, 'Snake': 90, 'Horse': 60, 'Goat': 70, 'Monkey': 80, 'Rooster': 70, 'Dog': 60, 'Pig': 70 },
-    'Rabbit': { 'Rat': 60, 'Ox': 90, 'Tiger': 70, 'Rabbit': 80, 'Dragon': 70, 'Snake': 60, 'Horse': 90, 'Goat': 80, 'Monkey': 70, 'Rooster': 60, 'Dog': 80, 'Pig': 70 },
-    'Dragon': { 'Rat': 70, 'Ox': 60, 'Tiger': 80, 'Rabbit': 70, 'Dragon': 80, 'Snake': 70, 'Horse': 70, 'Goat': 60, 'Monkey': 90, 'Rooster': 80, 'Dog': 70, 'Pig': 60 },
-    'Snake': { 'Rat': 80, 'Ox': 70, 'Tiger': 90, 'Rabbit': 60, 'Dragon': 70, 'Snake': 80, 'Horse': 70, 'Goat': 60, 'Monkey': 80, 'Rooster': 70, 'Dog': 60, 'Pig': 90 },
-    'Horse': { 'Rat': 70, 'Ox': 80, 'Tiger': 60, 'Rabbit': 90, 'Dragon': 70, 'Snake': 70, 'Horse': 80, 'Goat': 70, 'Monkey': 70, 'Rooster': 60, 'Dog': 90, 'Pig': 70 },
-    'Goat': { 'Rat': 60, 'Ox': 70, 'Tiger': 70, 'Rabbit': 80, 'Dragon': 60, 'Snake': 60, 'Horse': 70, 'Goat': 80, 'Monkey': 60, 'Rooster': 70, 'Dog': 70, 'Pig': 80 },
-    'Monkey': { 'Rat': 90, 'Ox': 60, 'Tiger': 80, 'Rabbit': 70, 'Dragon': 90, 'Snake': 80, 'Horse': 70, 'Goat': 60, 'Monkey': 80, 'Rooster': 70, 'Dog': 70, 'Pig': 60 },
-    'Rooster': { 'Rat': 70, 'Ox': 90, 'Tiger': 70, 'Rabbit': 60, 'Dragon': 80, 'Snake': 70, 'Horse': 60, 'Goat': 70, 'Monkey': 70, 'Rooster': 80, 'Dog': 60, 'Pig': 70 },
-    'Dog': { 'Rat': 60, 'Ox': 70, 'Tiger': 60, 'Rabbit': 80, 'Dragon': 70, 'Snake': 60, 'Horse': 90, 'Goat': 70, 'Monkey': 70, 'Rooster': 60, 'Dog': 80, 'Pig': 70 },
-    'Pig': { 'Rat': 80, 'Ox': 60, 'Tiger': 70, 'Rabbit': 70, 'Dragon': 60, 'Snake': 90, 'Horse': 70, 'Goat': 80, 'Monkey': 60, 'Rooster': 70, 'Dog': 70, 'Pig': 80 }
+    'Rat': {
+      'Dragon': 95, 'Monkey': 95,  // Best matches
+      'Ox': 75, 'Snake': 75, 'Pig': 75,  // Good matches
+      'Tiger': 60, 'Horse': 60, 'Goat': 60, 'Rooster': 60,  // Neutral
+      'Rabbit': 35, 'Dog': 35  // Challenging
+    },
+    'Ox': {
+      'Snake': 95, 'Rooster': 95,  // Best matches
+      'Rat': 75, 'Monkey': 75,  // Good matches
+      'Tiger': 60, 'Rabbit': 60, 'Dog': 60, 'Pig': 60,  // Neutral
+      'Horse': 35, 'Goat': 35, 'Dragon': 35  // Challenging
+    },
+    'Tiger': {
+      'Horse': 95, 'Dog': 95,  // Best matches
+      'Rabbit': 75, 'Dragon': 75,  // Good matches
+      'Rat': 60, 'Ox': 60, 'Goat': 60, 'Rooster': 60, 'Pig': 60,  // Neutral
+      'Snake': 35, 'Monkey': 35  // Challenging
+    },
+    'Rabbit': {
+      'Goat': 95, 'Pig': 95,  // Best matches
+      'Tiger': 75, 'Dog': 75,  // Good matches
+      'Ox': 60, 'Snake': 60, 'Horse': 60, 'Monkey': 60,  // Neutral
+      'Rat': 35, 'Dragon': 35, 'Rooster': 35  // Challenging
+    },
+    'Dragon': {
+      'Rat': 95, 'Monkey': 95,  // Best matches
+      'Tiger': 75, 'Snake': 75, 'Rooster': 75,  // Good matches
+      'Horse': 60, 'Goat': 60, 'Pig': 60,  // Neutral
+      'Ox': 35, 'Rabbit': 35, 'Dog': 35  // Challenging
+    },
+    'Snake': {
+      'Ox': 95, 'Rooster': 95,  // Best matches
+      'Dragon': 75, 'Monkey': 75,  // Good matches
+      'Rabbit': 60, 'Horse': 60, 'Goat': 60, 'Pig': 60,  // Neutral
+      'Tiger': 35, 'Dog': 35  // Challenging
+    },
+    'Horse': {
+      'Tiger': 95, 'Dog': 95,  // Best matches
+      'Goat': 75, 'Pig': 75,  // Good matches
+      'Rabbit': 60, 'Dragon': 60, 'Snake': 60, 'Monkey': 60,  // Neutral
+      'Rat': 35, 'Ox': 35, 'Rooster': 35  // Challenging
+    },
+    'Goat': {
+      'Rabbit': 95, 'Horse': 95, 'Pig': 95,  // Best matches
+      'Tiger': 75, 'Dragon': 75,  // Good matches
+      'Rat': 60, 'Snake': 60, 'Monkey': 60,  // Neutral
+      'Ox': 35, 'Dog': 35  // Challenging
+    },
+    'Monkey': {
+      'Rat': 95, 'Dragon': 95,  // Best matches
+      'Ox': 75, 'Snake': 75,  // Good matches
+      'Rabbit': 60, 'Horse': 60, 'Goat': 60, 'Rooster': 60, 'Dog': 60,  // Neutral
+      'Tiger': 35, 'Pig': 35  // Challenging
+    },
+    'Rooster': {
+      'Ox': 95, 'Snake': 95,  // Best matches
+      'Dragon': 75, 'Monkey': 75,  // Good matches
+      'Tiger': 60, 'Horse': 60, 'Goat': 60, 'Dog': 60, 'Pig': 60,  // Neutral
+      'Rat': 35, 'Rabbit': 35  // Challenging
+    },
+    'Dog': {
+      'Tiger': 95, 'Horse': 95,  // Best matches
+      'Rabbit': 75, 'Pig': 75,  // Good matches
+      'Ox': 60, 'Monkey': 60, 'Rooster': 60,  // Neutral
+      'Rat': 35, 'Dragon': 35, 'Snake': 35, 'Goat': 35  // Challenging
+    },
+    'Pig': {
+      'Rabbit': 95, 'Goat': 95,  // Best matches
+      'Tiger': 75, 'Horse': 75, 'Dog': 75,  // Good matches
+      'Ox': 60, 'Dragon': 60, 'Snake': 60, 'Rooster': 60,  // Neutral
+      'Rat': 35, 'Monkey': 35  // Challenging
+    }
   };
-  const score = compatibilityScores[sign1.sign] ? compatibilityScores[sign1.sign][sign2.sign] || 50 : 50;
-  const description = `The compatibility between ${sign1.sign} and ${sign2.sign} is ${score >= 80 ? 'very high' : score >=60 ? 'high' : score >=40 ? 'moderate' : 'low'}`;
-  const dynamic = `The interaction between ${sign1.sign} and ${sign2.sign} is characterized by a combination of ${sign1.element} and ${sign2.element} energies, leading to ${score >=80 ? 'a strong connection' : score >=60 ? 'a balanced relationship' : 'potential challenges'}`;
-  return { score, description, dynamic };
+
+  const getCompatibilityDescription = (sign1: string, sign2: string, score: number): string => {
+    if (score >= 90) {
+      return `${sign1} and ${sign2} have excellent compatibility! These signs naturally complement and enhance each other, creating a harmonious and balanced relationship.`;
+    } else if (score >= 75) {
+      return `${sign1} and ${sign2} have good compatibility. Your different qualities can create a balanced and supportive partnership.`;
+    } else if (score >= 60) {
+      return `${sign1} and ${sign2} have neutral compatibility. Success depends on mutual understanding and effort, but there's potential for growth.`;
+    } else {
+      return `${sign1} and ${sign2} may face some challenges in understanding each other's approaches. This pairing requires extra patience and communication.`;
+    }
+  };
+
+  const getElementalDynamic = (element1: string, element2: string): string => {
+    const elementPairs: Record<string, Record<string, string>> = {
+      'Wood': {
+        'Fire': 'Wood feeds Fire, creating energetic growth',
+        'Earth': 'Wood drains Earth, requiring balance',
+        'Metal': 'Metal cuts Wood, creating tension',
+        'Water': 'Water nourishes Wood, fostering growth'
+      },
+      'Fire': {
+        'Earth': 'Fire strengthens Earth, building foundation',
+        'Metal': 'Fire melts Metal, causing transformation',
+        'Water': 'Water extinguishes Fire, creating opposition',
+        'Wood': 'Fire consumes Wood, driving change'
+      },
+      'Earth': {
+        'Metal': 'Earth produces Metal, supporting growth',
+        'Water': 'Earth contains Water, providing structure',
+        'Wood': 'Earth supports Wood with foundation',
+        'Fire': 'Earth is strengthened by Fire'
+      },
+      'Metal': {
+        'Water': 'Metal enriches Water, enhancing flow',
+        'Wood': 'Metal restrains Wood, requiring adaptation',
+        'Fire': 'Metal yields to Fire, demanding flexibility',
+        'Earth': 'Metal is born from Earth, finding support'
+      },
+      'Water': {
+        'Wood': 'Water nurtures Wood, fostering growth',
+        'Fire': 'Water controls Fire, bringing balance',
+        'Earth': 'Water is shaped by Earth, needing structure',
+        'Metal': 'Water is enriched by Metal, gaining strength'
+      }
+    };
+
+    return elementPairs[element1]?.[element2] || 'Your elements create an interesting dynamic requiring understanding';
+  };
+
+  const baseScore = compatibilityScores[sign1.sign]?.[sign2.sign] || 50;
+
+  // Calculate final score considering elements and yin/yang
+  let elementalBonus = 0;
+  if (sign1.element === sign2.element) {
+    elementalBonus = 5; // Same element bonus
+  } else if (
+    (sign1.element === 'Wood' && sign2.element === 'Fire') ||
+    (sign1.element === 'Fire' && sign2.element === 'Earth') ||
+    (sign1.element === 'Earth' && sign2.element === 'Metal') ||
+    (sign1.element === 'Metal' && sign2.element === 'Water') ||
+    (sign1.element === 'Water' && sign2.element === 'Wood')
+  ) {
+    elementalBonus = 10; // Productive cycle bonus
+  }
+
+  // Yin/Yang harmony bonus
+  const yinYangBonus = sign1.yinYang !== sign2.yinYang ? 5 : 0;
+
+  const finalScore = Math.min(100, baseScore + elementalBonus + yinYangBonus);
+
+  const description = getCompatibilityDescription(sign1.sign, sign2.sign, finalScore);
+  const elementalDynamic = getElementalDynamic(sign1.element, sign2.element);
+  const yinYangDynamic = sign1.yinYang !== sign2.yinYang
+    ? "Your Yin and Yang energies create a complementary balance"
+    : "Sharing the same polarity, you may need to seek external balance";
+
+  const dynamic = `${elementalDynamic}. ${yinYangDynamic}.`;
+
+  return { score: finalScore, description, dynamic };
 }
 
 function calculateYearDifferenceCompatibility(birthdate1: string, birthdate2: string): { score: number; description: string } {
@@ -1215,7 +1350,6 @@ function calculateYearDifferenceCompatibility(birthdate1: string, birthdate2: st
   const description = `The age difference might affect compatibility. The difference is ${diff} years`;
   return { score, description };
 }
-
 
 function analyzeRelationshipDynamics(person1: any, person2: any): string[] {
   // Placeholder implementation; replace with actual analysis logic
