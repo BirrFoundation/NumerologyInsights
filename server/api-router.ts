@@ -694,7 +694,7 @@ router.get("/weekly-forecast", async (req, res) => {
     try {
       const aiGuidance = await getPersonalizedCoaching(latestResult);
       weeklyForecast.guidance = aiGuidance.advice;
-      weeklyForecast.insights = aiGuidance.followUpQuestions;
+      weeklyForecast.insights = aiGuidance.suggestions;
     } catch (error) {
       console.log('AI coaching unavailable, using fallback guidance', error);
       weeklyForecast.guidance = "Focus on your weekly themes and trust your intuition.";
@@ -741,7 +741,7 @@ router.get("/monthly-forecast", async (req, res) => {
     try {
       const aiGuidance = await getPersonalizedCoaching(latestResult);
       monthlyForecast.guidance = aiGuidance.advice;
-      monthlyForecast.insights = aiGuidance.followUpQuestions;
+      monthlyForecast.insights = aiGuidance.suggestions;
     } catch (error) {
       console.log('AI coaching unavailable, using fallback guidance', error);
       monthlyForecast.guidance = "Focus on your monthly themes and align with the universal energies.";
@@ -874,7 +874,7 @@ async function getInterpretation(numbers: any, name: string) {
     3: "Creativeexpression and joy",
     4: "Stability andhard work",
     5: "Freedom and adventure",
-    6: "Nurturing and responsibility",
+    6:"Nurturing andresponsibility",
     7: "Analysis and wisdom",
     8: "Power and abundance",
     9: "Humanitarian and compassionate",
@@ -1146,12 +1146,16 @@ const calculateMonthlyForecast = async (monthDate: Date, latestResult: any) => {
 const getPersonalizedCoaching = async (numerologyResult: any, userQuery?: string) => {
   const lifePathMeaning = getLifePathMeaning(numerologyResult.lifePath);
   const destinyMeaning = getLifePathMeaning(numerologyResult.destiny);
+  const heartDesireMeaning = getLifePathMeaning(numerologyResult.heartDesire);
 
   return {
     advice: `Focus on developing your ${lifePathMeaning.toLowerCase()} qualities while working towards your destiny of ${destinyMeaning.toLowerCase()}. Your unique numerological profile suggests a path of personal growth through conscious self-development.`,
-    followUpQuestions: [
-      `How can you better express your Life Path ${numerologyResult.lifePath} energy of ${lifePathMeaning.toLowerCase()} in your daily activities?`,
-      `What steps can you take to align more closely with your Destiny number ${numerologyResult.destiny}'s qualities of ${destinyMeaning.toLowerCase()}?`
+    suggestions: [
+      `Practice ${lifePathMeaning.toLowerCase()} through daily mindfulness and intentional actions`,
+      `Strengthen your ${destinyMeaning.toLowerCase()} qualities in your career and personal projects`,
+      `Cultivate ${heartDesireMeaning.toLowerCase()} in your relationships and personal endeavors`,
+      `Consider joining groups or communities that value ${lifePathMeaning.toLowerCase()}`,
+      `Create a daily practice that aligns with your destiny of ${destinyMeaning.toLowerCase()}`
     ]
   };
 };
