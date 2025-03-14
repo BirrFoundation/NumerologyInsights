@@ -393,7 +393,7 @@ router.post("/compatibility", async (req, res) => {
     const zodiac2 = getChineseZodiacSign(data.birthdate2);
 
     // Calculate zodiac compatibility with enhanced information
-    const zodiacCompatibility = getZodiacCompatibility(zodiac1, zodiac2);
+    const zodiacCompatibility = getZodiacCompatibility(zodiac1, zodiac2, zodiac1.sign, zodiac2.sign, zodiacCompatibility.type);
 
     // Calculate year difference compatibility
     const yearDiff = calculateYearDifferenceCompatibility(data.birthdate1, data.birthdate2);
@@ -432,18 +432,8 @@ router.post("/compatibility", async (req, res) => {
         `${data.name2} is a ${zodiac2.sign} (${zodiac2.element} energy, ${zodiac2.yinYang} polarity)`,
         zodiacCompatibility.description
       ],
-      dynamics: [
-        ...analyzeRelationshipDynamics(person1, person2),
-        `Your zodiac signs create a ${zodiacCompatibility.score >= 80 ? 'harmonious' :
-          zodiacCompatibility.score >= 60 ? 'balanced' : 'challenging'} interaction`,
-        zodiacCompatibility.dynamic
-      ],
-      growthAreas: [
-        ...identifyGrowthAreas(person1, person2),
-        zodiacCompatibility.score < 60
-          ? `Learn to balance the different energies of ${zodiac1.sign} (${zodiac1.element}) and ${zodiac2.sign} (${zodiac2.element})`
-          : `Harness the natural harmony between your ${zodiac1.sign} and ${zodiac2.sign} energies`
-      ],
+      dynamics: analyzeRelationshipDynamics(person1, person2, zodiac1.sign, zodiac2.sign, zodiacCompatibility.type),
+      growthAreas: identifyGrowthAreas(person1, person2, zodiac1.sign, zodiac2.sign, zodiacCompatibility.type),
       relationshipTypes: calculateRelationshipTypeScores(person1, person2)
     };
 
@@ -891,7 +881,7 @@ async function getInterpretation(numbers: any, name: string) {
     lifePath: `Your Life Path number ${numbers.lifePath} indicates ${lifePathMeanings[getBaseNumber(numbers.lifePath)]}. This is your primary life purpose andthe path you're meant to follow.`,
     destiny: `Your Destiny number ${numbers.destiny} reveals yourpotential and the talents you possess to achieveyour goals. It represents your capacity for achievement.`,
     heartDesire: `Your Heart's Desire number ${numbers.heartDesire} shows your inner motivation and what truly drives you. It represents your emotional needs and deepest desires.`,
-    expression: `Your Expression number ${numbers.expression} reflects how you present yourself to the world. It shows your natural abilities and how you express yourself.`,
+    expression: `Your Expression number ${numbers.expression} reflects how you present yourself to theworld. It shows your natural abilities and how you express yourself.`,
     personality: `Your Personality number ${numbers.personality} represents how others see you initially. It's your outer personality and first impression.`,
     attribute: `Your Attribute number ${numbers.attribute} (calculated from your birth month ${numbers.birthDateNum}) indicates your innate talents and natural abilities.`,
     birthDateNum: `Your Birth Day number ${numbers.birthDateNum} reveals specific talents and abilities you brought into this life.`,
@@ -1185,7 +1175,7 @@ function getChineseZodiacSign(birthdate: string): { sign: string, element: strin
   return zodiacs[(year - 4) % 12];
 }
 
-function getZodiacCompatibility(sign1: { sign: string, element: string, yinYang: string }, sign2: { sign: string, element: string, yinYang: string }): { score: number; description: string; dynamic: string } {
+function getZodiacCompatibility(sign1: { sign: string, element: string, yinYang: string }, sign2: { sign: string, element: string, yinYang: string }, zodiac1: string, zodiac2: string, compatibilityType: string): { score: number; description: string; dynamic: string; type: string } {
   const compatibilityMap: Record<string, Record<string, { type: string, score: number }>> = {
     'Dragon': {
       'Ox': { type: 'Worst Couple', score: 35 },
@@ -1294,7 +1284,8 @@ function getZodiacCompatibility(sign1: { sign: string, element: string, yinYang:
   return {
     score: compatibility.score,
     description,
-    dynamic
+    dynamic,
+    type: compatibility.type
   };
 }
 
@@ -1307,14 +1298,133 @@ function calculateYearDifferenceCompatibility(birthdate1: string, birthdate2: st
   return { score, description };
 }
 
-function analyzeRelationshipDynamics(person1: any, person2: any): string[] {
-  // Placeholder implementation; replace with actual analysis logic
-  return ["Dynamic 1", "Dynamic 2"];
+function analyzeRelationshipDynamics(person1: any, person2: any, zodiac1: string, zodiac2: string, compatibility: string): string[] {
+  const dynamics = {
+    'Perfect Match': {
+      'Dragon-Rat': [
+        "Natural leadership dynamic with Dragon's strength and Rat's wisdom",
+        "Strong intellectual connection and shared ambitions",
+        "Mutual support in career and personal growth"
+      ],
+      'Dragon-Tiger': [
+        "Powerful alliance of strong personalities",
+        "Shared love for adventure and challenges",
+        "Natural understanding of each other's independence"
+      ],
+      'Dragon-Snake': [
+        "Deep intuitive understanding between both signs",
+        "Complementary strengths in decision making",
+        "Strong emotional and intellectual bond"
+      ]
+    },
+    'Worst Couple': {
+      'Dragon-Dog': [
+        "Conflicting approaches to loyalty and trust",
+        "Different values in relationships and life",
+        "Communication challenges due to opposing viewpoints"
+      ],
+      'Dragon-Sheep': [
+        "Mismatched expectations in relationship roles",
+        "Different approaches to emotional expression",
+        "Contrasting needs for freedom versus security"
+      ]
+    },
+    'Bento Buddies': {
+      'Dragon-Monkey': [
+        "Good teamwork in professional settings",
+        "Shared intellectual interests",
+        "Respect for each other's capabilities"
+      ],
+      'Dragon-Rooster': [
+        "Practical approach to solving problems together",
+        "Mutual appreciation for directness",
+        "Good balance in work relationships"
+      ]
+    },
+    'Average': {
+      'Dragon-Rabbit': [
+        "Need to balance Dragon's boldness with Rabbit's caution",
+        "Can learn from each other's different approaches",
+        "Moderate understanding of each other's needs"
+      ],
+      'Dragon-Horse': [
+        "Both value independence and freedom",
+        "Need to manage strong personalities",
+        "Can work together with clear boundaries"
+      ]
+    }
+  };
+
+  // Get specific dynamics based on zodiac combination
+  const combinationKey = `${zodiac1}-${zodiac2}`;
+  const reverseCombinationKey = `${zodiac2}-${zodiac1}`;
+
+  return dynamics[compatibility]?.[combinationKey] ||
+         dynamics[compatibility]?.[reverseCombinationKey] ||
+         [
+           `${zodiac1} and ${zodiac2} need to focus on understanding each other's perspectives`,
+           "Building trust through open communication",
+           "Finding common ground in shared interests"
+         ];
 }
 
-function identifyGrowthAreas(person1: any, person2: any): string[] {
-  // Placeholder implementation; replace with actual analysis logic
-  return ["Growth Area 1", "Growth Area 2"];
+function identifyGrowthAreas(person1: any, person2: any, zodiac1: string, zodiac2: string, compatibility: string): string[] {
+  const growthAreas = {
+    'Perfect Match': {
+      'Dragon-Rat': [
+        "Develop shared long-term goals while maintaining individuality",
+        "Balance Dragon's dominance with Rat's need for independence",
+        "Create space for both to pursue personal interests"
+      ],
+      'Dragon-Tiger': [
+        "Learn to channel competitive energy constructively",
+        "Develop patience with each other's strong personalities",
+        "Create stability while maintaining excitement"
+      ]
+    },
+    'Worst Couple': {
+      'Dragon-Dog': [
+        "Work on accepting fundamental differences in values",
+        "Develop mutual respect for different life approaches",
+        "Find common ground despite contrasting personalities"
+      ],
+      'Dragon-Sheep': [
+        "Bridge the gap between practical and emotional needs",
+        "Learn to appreciate different communication styles",
+        "Build trust despite natural incompatibilities"
+      ]
+    },
+    'Bento Buddies': {
+      'Dragon-Monkey': [
+        "Maintain boundaries while working together",
+        "Develop deeper emotional understanding",
+        "Balance competition with cooperation"
+      ],
+      'Dragon-Rooster': [
+        "Build trust through consistent communication",
+        "Respect each other's different approaches",
+        "Find middle ground in decision-making"
+      ]
+    },
+    'Average': {
+      'Dragon-Rabbit': [
+        "Balance boldness with sensitivity",
+        "Develop patience for different paces",
+        "Create safe space for open dialogue"
+      ]
+    }
+  };
+
+  const combinationKey = `${zodiac1}-${zodiac2}`;
+  const reverseCombinationKey = `${zodiac2}-${zodiac1}`;
+
+  return growthAreas[compatibility]?.[combinationKey] ||
+         growthAreas[compatibility]?.[reverseCombinationKey] ||
+         [
+           "Focus on developing mutual understanding and respect",
+           "Work on bridging communication gaps",
+           "Find ways to appreciate each other's unique qualities"
+         ];
 }
 
 function calculateRelationshipTypeScores(person1: any, person2: any): any {
