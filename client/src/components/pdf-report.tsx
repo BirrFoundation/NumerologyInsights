@@ -4,7 +4,7 @@ import { format } from "date-fns";
 
 // Create styles
 const styles = StyleSheet.create({
-  page: {
+ page: {
     flexDirection: 'column',
     backgroundColor: '#ffffff',
     padding: 30,
@@ -101,9 +101,8 @@ export function NumerologyPDFReport({ result, compatibility }: Props) {
     { title: 'Life Path Number', value: result.lifePath, interpretation: result.interpretations.lifePath },
     { title: 'Destiny Number', value: result.destiny, interpretation: result.interpretations.destiny },
     { title: "Heart's Desire", value: result.heartDesire, interpretation: result.interpretations.heartDesire },
-    { title: 'Expression', value: result.expression, interpretation: result.interpretations.expression },
-    { title: 'Personality', value: result.personality, interpretation: result.interpretations.personality },
-    { title: 'Birth Date', value: result.birthDateNum, interpretation: result.interpretations.birthDateNum }
+    { title: 'Birth Date Number', value: result.birthDateNum, interpretation: result.interpretations.birthDateNum },
+    { title: 'Personality', value: result.personality, interpretation: result.interpretations.personality }
   ];
 
   return (

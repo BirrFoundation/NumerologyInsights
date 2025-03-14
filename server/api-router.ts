@@ -899,6 +899,7 @@ async function getInterpretation(numbers: any, name: string) {
 
 // Keep existing routes and export...
 
+//</previous_generation>
 //Helper functions -  These need to be implemented separately.
 const calculateCompatibility = (name1: string, birthdate1: string, name2: string, birthdate2: string) => {
   // Calculate individual numerology numbersfor both people
