@@ -377,7 +377,29 @@ router.post("/calculate", async (req, res) => {
 router.post("/compatibility", async (req, res) => {
   try {
     const data = compatibilityInputSchema.parse(req.body);
-    console.log('Received compatibility data:', data);
+    console.log('Received compatibility request:', {
+      name1: data.name1,
+      birthdate1: data.birthdate1,
+      name2: data.name2,
+      birthdate2: data.birthdate2
+    });
+
+    // Calculate individual numerology numbers
+    const person1 = calculateNumerology(data.name1, data.birthdate1);
+    const person2 = calculateNumerology(data.name2, data.birthdate2);
+
+    console.log('Individual numerology calculations:', {
+      person1: {
+        lifePath: person1.lifePath,
+        expression: person1.expression,
+        heartDesire: person1.heartDesire
+      },
+      person2: {
+        lifePath: person2.lifePath,
+        expression: person2.expression,
+        heartDesire: person2.heartDesire
+      }
+    });
 
     const result = calculateCompatibility(
       data.name1,
@@ -385,6 +407,19 @@ router.post("/compatibility", async (req, res) => {
       data.name2,
       data.birthdate2
     );
+
+    console.log('Calculated compatibility result:', {
+      score: result.score,
+      lifePathScore: result.lifePathScore,
+      expressionScore: result.expressionScore,
+      heartDesireScore: result.heartDesireScore,
+      aspectsCount: result.aspects.length,
+      dynamicsCount: result.dynamics.length,
+      relationshipTypes: Object.keys(result.relationshipTypes).map(type => ({
+        type,
+        score: result.relationshipTypes[type].score
+      }))
+    });
 
     res.json(result);
   } catch (error) {
@@ -855,12 +890,199 @@ async function getInterpretation(numbers: any, name: string) {
 
 // Keep existing routes and export...
 
-export default router;
-
 //Helper functions -  These need to be implemented separately.
-const calculateCompatibility = async (name1: string, birthdate1: string, name2: string, birthdate2: string) => {
-  //Implementation for calculating compatibility.  Placeholder for now.
-  return { compatibilityScore: 0.5 };
+const calculateCompatibility = (name1: string, birthdate1: string, name2: string, birthdate2: string) => {
+  // Calculate individual numerology numbersfor both people
+  const person1 = calculateNumerology(name1, birthdate1);
+  const person2 = calculateNumerology(name2, birthdate2);
+
+  // Calculate compatibility scores
+  const lifePathScore = calculateNumberCompatibility(person1.lifePath, person2.lifePath);
+  const expressionScore = calculateNumberCompatibility(person1.expression, person2.expression);
+  const heartDesireScore = calculateNumberCompatibility(person1.heartDesire, person2.heartDesire);
+
+  // Calculate overall score
+  const score = Math.round((lifePathScore + expressionScore + heartDesireScore) / 3);
+
+  // Generate compatibility aspects
+  const aspects = generateCompatibilityAspects(person1, person2);
+
+  // Calculate relationship type scores and insights
+  const relationshipTypes = {
+    work: calculateWorkCompatibility(person1, person2),
+    business: calculateBusinessCompatibility(person1, person2),
+    friendship: calculateFriendshipCompatibility(person1, person2),
+    family: calculateFamilyCompatibility(person1, person2)
+  };
+
+  return {
+    score,
+    lifePathScore,
+    expressionScore,
+    heartDesireScore,
+    aspects,
+    dynamics: generateDynamics(person1, person2),
+    growthAreas: generateGrowthAreas(person1, person2),
+    relationshipTypes
+  };
+};
+
+// Helper functions for compatibility calculations
+function calculateNumberCompatibility(num1: number, num2: number): number {
+  console.log('Calculating number compatibility:', { num1, num2 });
+
+  // Special case for master numbers
+  if ((num1 === 11 || num1 === 22 || num1 === 33) &&
+      (num2 === 11 || num2 === 22 || num2 === 33)) {
+    console.log('Master numbers detected, returning 100%');
+    return 100;
+  }
+
+  // Reduce to single digits if not master numbers
+  const n1 = (num1 === 11 || num1 === 22 || num1 === 33) ? num1 : reduceToSingleDigit(num1);
+  const n2 = (num2 === 11 || num2 === 22 || num2 === 33) ? num2 : reduceToSingleDigit(num2);
+
+  console.log('Reduced numbers:', { n1, n2 });
+
+  // Calculate base compatibility
+  const diff = Math.abs(n1 - n2);
+  let score = 50;
+
+  if (diff === 0) score = 100;
+  else if (diff === 1 || diff === 8) score = 90;
+  else if (diff === 2 || diff === 7) score = 80;
+  else if (diff === 3 || diff === 6) score = 70;
+  else if (diff === 4 || diff === 5) score = 60;
+
+  console.log('Compatibility score:', { diff, score });
+  return score;
+}
+
+function generateCompatibilityAspects(person1: any, person2: any): string[] {
+  const aspects = [];
+
+  // Life Path compatibility insights
+  if (person1.lifePath === person2.lifePath) {
+    aspects.push("You share the same life path, creating a deep understanding of each other's purpose");
+  }
+
+  // Expression number insights
+  if (calculateNumberCompatibility(person1.expression, person2.expression) >= 80) {
+    aspects.push("Your expression numbers are highly compatible, facilitating excellent communication");
+  }
+
+  // Heart's Desire insights
+  if (calculateNumberCompatibility(person1.heartDesire, person2.heartDesire) >= 80) {
+    aspects.push("Your heart's desires align well, indicating strong emotional compatibility");
+  }
+
+  // Add general aspects
+  aspects.push("You both bring unique strengths that complement each other");
+  aspects.push("There's potential for significant personal growth through this connection");
+
+  return aspects;
+}
+
+function generateDynamics(person1: any, person2: any): string[] {
+  return [
+    "You have a natural ability to understand each other's perspectives",
+    "Your connection promotes mutual growth and development",
+    "You can create a balanced and harmonious relationship",
+    "There's potential for long-term stability and growth"
+  ];
+}
+
+function generateGrowthAreas(person1: any, person2: any): string[] {
+  return [
+    "Develop better communication patterns",
+    "Work on understanding each other's emotional needs",
+    "Focus on building trust and mutual respect",
+    "Learn to appreciate your differences"
+  ];
+}
+
+function calculateWorkCompatibility(person1: any, person2: any) {
+  const score = Math.round(
+    (calculateNumberCompatibility(person1.expression, person2.expression) +
+    calculateNumberCompatibility(person1.lifePath, person2.lifePath)) / 2
+  );
+
+  return {
+    score,
+    strengths: [
+      "Complementary work styles",
+      "Shared professional values",
+      "Effective communication",
+    ],
+    challenges: [
+      "Different approaches to problem-solving",
+      "Balancing individual and shared goals",
+      "Maintaining professional boundaries"
+    ]
+  };
+}
+
+function calculateBusinessCompatibility(person1: any, person2: any) {
+  const score = Math.round(
+    (calculateNumberCompatibility(person1.lifePath, person2.lifePath) +
+    calculateNumberCompatibility(person1.attribute, person2.attribute)) / 2
+  );
+
+  return {
+    score,
+    strengths: [
+      "Combined business acumen",
+      "Shared vision for success",
+      "Complementary skills"
+    ],
+    challenges: [
+      "Different risk tolerances",
+      "Varying business priorities",
+      "Decision-making styles"
+    ]
+  };
+}
+
+function calculateFriendshipCompatibility(person1: any, person2: any) {
+  const score = Math.round(
+    (calculateNumberCompatibility(person1.heartDesire, person2.heartDesire) +
+    calculateNumberCompatibility(person1.personality, person2.personality)) / 2
+  );
+
+  return {
+    score,
+    strengths: [
+      "Natural understanding",
+      "Mutual support",
+      "Shared interests"
+    ],
+    challenges: [
+      "Respecting boundaries",
+      "Managing expectations",
+      "Balancing social needs"
+    ]
+  };
+}
+
+function calculateFamilyCompatibility(person1: any, person2: any) {
+  const score = Math.round(
+    (calculateNumberCompatibility(person1.heartDesire, person2.heartDesire) +
+    calculateNumberCompatibility(person1.expression, person2.expression)) / 2
+  );
+
+  return {
+    score,
+    strengths: [
+      "Deep emotional connection",
+      "Strong family values",
+      "Lasting bond"
+    ],
+    challenges: [
+      "Managing family dynamics",
+      "Balancing independence",
+      "Addressing emotional needs"
+    ]
+  };
 }
 
 const calculateWeeklyForecast = async (startDate: Date, latestResult: any) => {
@@ -909,3 +1131,5 @@ Date.prototype.getWeekNumber = function () {
   const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
   return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
 };
+
+export default router;
