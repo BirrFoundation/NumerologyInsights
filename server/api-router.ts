@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { storage } from "./storage";
 import { log } from "./vite";
-import { userAuthSchema, verificationSchema, numerologyInputSchema, compatibilityInputSchema } from "@shared/schema";
+import { userAuthSchema, verificationSchema, numerologyInputSchema, compatibilityInputSchema, dreamInputSchema } from "@shared/schema";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { sendVerificationEmail, sendResetEmail, generateVerificationCode } from "./email-service";
@@ -552,6 +552,32 @@ router.get("/dreams", async (req, res) => {
   }
 });
 
+function getDailyGuidanceQuestions(personalDayNumber: number, universalDayNumber: number, cosmicNumber: number): string[] {
+  const personalQualities = {
+    1: ["leadership", "independence", "initiative"],
+    2: ["cooperation", "harmony", "diplomacy"],
+    3: ["creativity", "expression", "joy"],
+    4: ["organization", "stability", "practicality"],
+    5: ["change", "freedom", "adventure"],
+    6: ["responsibility", "nurturing", "balance"],
+    7: ["wisdom", "analysis", "spirituality"],
+    8: ["power", "abundance", "achievement"],
+    9: ["compassion", "completion", "universal love"]
+  };
+
+  const personalEnergy = personalQualities[personalDayNumber] || personalQualities[1];
+  const universalEnergy = personalQualities[universalDayNumber] || personalQualities[1];
+  const cosmicEnergy = personalQualities[cosmicNumber] || personalQualities[1];
+
+  return [
+    `How can you embody ${personalEnergy[0]} while maintaining ${personalEnergy[1]} in your interactions today?`,
+    `What opportunities might arise to express ${universalEnergy[0]} and cultivate ${universalEnergy[1]} in your environment?`,
+    `How can you balance your need for ${personalEnergy[2]} with the universal energy of ${universalEnergy[2]}?`,
+    `In what ways can you use today's ${cosmicEnergy[0]} energy to enhance your personal growth?`,
+    `What practical steps can you take to align your actions with the day's ${cosmicEnergy[1]} vibration?`
+  ];
+}
+
 router.get("/daily-forecast", async (req, res) => {
   try {
     const { date, userId } = req.query;
@@ -577,34 +603,8 @@ router.get("/daily-forecast", async (req, res) => {
     // Calculate Cosmic Number (combines both)
     const cosmicNumber = reduceToSingleDigit(personalDayNumber + universalDayNumber);
 
-    let aiGuidance = {
-      advice: "Focus on your inner wisdom and trust your intuition today.",
-      followUpQuestions: [
-        "How can you best utilize today's energies?",
-        "What opportunities are presenting themselves?",
-        "How can you align with today's cosmic vibrations?"
-      ]
-    };
-
-    try {
-      // Try to get AI coaching but use fallback if unavailable
-      aiGuidance = await getPersonalizedCoaching({
-        id: parseInt(userId as string),
-        lifePath: personalDayNumber,
-        destiny: universalDayNumber,
-        birthDateNum: cosmicNumber,
-        name: "Daily Forecast",
-        birthdate: date as string,
-        heartDesire: personalDayNumber,
-        expression: universalDayNumber,
-        personality: cosmicNumber,
-        attribute: reduceToSingleDigit(personalDayNumber + cosmicNumber),
-        userId: parseInt(userId as string),
-        interpretations: {} // Add empty interpretations as required by type
-      });
-    } catch (error) {
-      console.log('AI coaching unavailable, using fallback guidance', error);
-    }
+    // Generate personalized guidance questions
+    const guidanceQuestions = getDailyGuidanceQuestions(personalDayNumber, universalDayNumber, cosmicNumber);
 
     // Generate forecast response
     const forecast = {
@@ -638,8 +638,16 @@ router.get("/daily-forecast", async (req, res) => {
         cosmicNumber === 7 ? "seeking inner wisdom" :
         cosmicNumber === 8 ? "manifesting abundance" :
         "completing cycles"}`,
-      dailyGuidance: aiGuidance.advice,
-      opportunities: aiGuidance.followUpQuestions,
+      dailyGuidance: `Focus on ${personalDayNumber === 1 ? "initiating new projects and showing leadership" :
+        personalDayNumber === 2 ? "cooperation and finding harmony in relationships" :
+        personalDayNumber === 3 ? "creative self-expression and joyful communication" :
+        personalDayNumber === 4 ? "building solid foundations and staying organized" :
+        personalDayNumber === 5 ? "embracing change and seeking adventure" :
+        personalDayNumber === 6 ? "nurturing relationships and taking responsibility" :
+        personalDayNumber === 7 ? "inner reflection and spiritual growth" :
+        personalDayNumber === 8 ? "pursuing goals and manifesting abundance" :
+        "completion and letting go of what no longer serves you"}`,
+      opportunities: guidanceQuestions,
       focusAreas: [
         `Harness ${personalDayNumber} energy for personal growth`,
         `Align with universal ${universalDayNumber} vibrations`,
@@ -863,8 +871,8 @@ async function getInterpretation(numbers: any, name: string) {
   const lifePathMeanings = {
     1: "Leadership and independence",
     2: "Cooperation and harmony",
-    3: "Creative expression and joy",
-    4: "Stability and hard work",
+    3: "Creativeexpression and joy",
+    4: "Stability andhard work",
     5: "Freedom and adventure",
     6: "Nurturing and responsibility",
     7: "Analysis and wisdom",
@@ -1136,11 +1144,42 @@ const calculateMonthlyForecast = async (monthDate: Date, latestResult: any) => {
 }
 
 const getPersonalizedCoaching = async (numerologyResult: any, userQuery?: string) => {
-  //Implementation for getting personalized coaching. Placeholder for now.
+  const lifePathMeaning = getLifePathMeaning(numerologyResult.lifePath);
+  const destinyMeaning = getLifePathMeaning(numerologyResult.destiny);
+
   return {
-    advice: "This is placeholder personalized coaching advice.",
-    followUpQuestions: ["Question 1", "Question 2"]
+    advice: `Focus on developing your ${lifePathMeaning.toLowerCase()} qualities while working towards your destiny of ${destinyMeaning.toLowerCase()}. Your unique numerological profile suggests a path of personal growth through conscious self-development.`,
+    followUpQuestions: [
+      `How can you better express your Life Path ${numerologyResult.lifePath} energy of ${lifePathMeaning.toLowerCase()} in your daily activities?`,
+      `What steps can you take to align more closely with your Destiny number ${numerologyResult.destiny}'s qualities of ${destinyMeaning.toLowerCase()}?`
+    ]
+  };
+};
+
+function getLifePathMeaning(number: number): string {
+  const meanings = {
+    1: "Leadership and independence",
+    2: "Cooperation and harmony",
+    3: "Creative expression and joy",
+    4: "Stability and hard work",
+    5: "Freedom and adventure",
+    6: "Nurturing and responsibility",
+    7: "Analysis and wisdom",
+    8: "Power and abundance",
+    9: "Humanitarian and compassionate",
+    11: "Spiritual messenger",
+    22: "Master builder",
+    33: "Master teacher"
+  };
+
+  // Handle master numbers
+  if ([11, 22, 33].includes(number)) {
+    return meanings[number];
   }
+
+  // Reduce to single digit if not a master number
+  const reduced = number % 9 || 9;
+  return meanings[reduced];
 }
 
 const interpretDream = async (description: string, emotions: string[], symbols: string[], birthdate: string, userName: string) => {
@@ -1208,8 +1247,147 @@ function getZodiacCompatibility(sign1: { sign: string, element: string, yinYang:
       'Dog': { type: 'Bento Buddies', score: 65 },
       'Pig': { type: 'Perfect Match', score: 95 },
       'Rat': { type: 'Average', score: 70 }
+    },
+    'Rabbit': {
+      'Ox': { type: 'Bento Buddies', score: 65 },
+      'Tiger': { type: 'Average', score: 70 },
+      'Rabbit': { type: 'Average', score: 70 },
+      'Dragon': { type: 'Average', score: 70 },
+      'Snake': { type: 'Worst Couple', score: 35 },
+      'Horse': { type: 'Average', score: 70 },
+      'Sheep': { type: 'Perfect Match', score: 95 },
+      'Monkey': { type: 'Perfect Match', score: 95 },
+      'Rooster': { type: 'Worst Couple', score: 35 },
+      'Dog': { type: 'Perfect Match', score: 95 },
+      'Pig': { type: 'Perfect Match', score: 95 },
+      'Rat': { type: 'Perfect Match', score: 95 }
+    },
+    'Dragon': {
+      'Ox': { type: 'Worst Couple', score: 35 },
+      'Tiger': { type: 'Perfect Match', score: 95 },
+      'Rabbit': { type: 'Average', score: 70 },
+      'Dragon': { type: 'Good Friend', score: 80 },
+      'Snake': { type: 'Perfect Match', score: 95 },
+      'Horse': { type: 'Average', score: 70 },
+      'Sheep': { type: 'Worst Couple', score: 35 },
+      'Monkey': { type: 'Bento Buddies', score: 65 },
+      'Rooster': { type: 'Bento Buddies', score: 65 },
+      'Dog': { type: 'Worst Couple', score: 35 },
+      'Pig': { type: 'Average', score: 70 },
+      'Rat': { type: 'Perfect Match', score: 95 }
+    },
+    'Snake': {
+      'Ox': { type: 'Bento Buddies', score: 65 },
+      'Tiger': { type: 'Worst Couple', score: 35 },
+      'Rabbit': { type: 'Worst Couple', score: 35 },
+      'Dragon': { type: 'Perfect Match', score: 95 },
+      'Snake': { type: 'Worst Couple', score: 35 },
+      'Horse': { type: 'Good Friend', score: 80 },
+      'Sheep': { type: 'Worst Couple', score: 35 },
+      'Monkey': { type: 'Good Friend', score: 80 },
+      'Rooster': { type: 'Perfect Match', score: 95 },
+      'Dog': { type: 'Average', score: 70 },
+      'Pig': { type: 'Worst Couple', score: 35 },
+      'Rat': { type: 'Good Friend', score: 80 }
+    },
+    'Horse': {
+      'Ox': { type: 'Worst Couple', score: 35 },
+      'Tiger': { type: 'Perfect Match', score: 95 },
+      'Rabbit': { type: 'Average', score: 70 },
+      'Dragon': { type: 'Average', score: 70 },
+      'Snake': { type: 'Good Friend', score: 80 },
+      'Horse': { type: 'Worst Couple', score: 35 },
+      'Sheep': { type: 'Perfect Match', score: 95 },
+      'Monkey': { type: 'Average', score: 70 },
+      'Rooster': { type: 'Worst Couple', score: 35 },
+      'Dog': { type: 'Average', score: 70 },
+      'Pig': { type: 'Bento Buddies', score: 65 },
+      'Rat': { type: 'Worst Couple', score: 35 }
+    },
+    'Sheep': {
+      'Ox': { type: 'Worst Couple', score: 35 },
+      'Tiger': { type: 'Good Friend', score: 80 },
+      'Rabbit': { type: 'Perfect Match', score: 95 },
+      'Dragon': { type: 'Worst Couple', score: 35 },
+      'Snake': { type: 'Worst Couple', score: 35 },
+      'Horse': { type: 'Perfect Match', score: 95 },
+      'Sheep': { type: 'Bento Buddies', score: 65 },
+      'Monkey': { type: 'Bento Buddies', score: 65 },
+      'Rooster': { type: 'Average', score: 70 },
+      'Dog': { type: 'Worst Couple', score: 35 },
+      'Pig': { type: 'Perfect Match', score: 95 },
+      'Rat': { type: 'Good Match or Enemy', score: 50 }
+    },
+    'Monkey': {
+      'Ox': { type: 'Perfect Match', score: 95 },
+      'Tiger': { type: 'Worst Couple', score: 35 },
+      'Rabbit': { type: 'Perfect Match', score: 95 },
+      'Dragon': { type: 'Bento Buddies', score: 65 },
+      'Snake': { type: 'Good Friend', score: 80 },
+      'Horse': { type: 'Average', score: 70 },
+      'Sheep': { type: 'Bento Buddies', score: 65 },
+      'Monkey': { type: 'Good Friend', score: 80 },
+      'Rooster': { type: 'Average', score: 70 },
+      'Dog': { type: 'Bento Buddies', score: 65 },
+      'Pig': { type: 'Worst Couple', score: 35 },
+      'Rat': { type: 'Perfect Match', score: 95 }
+    },
+    'Rooster': {
+      'Ox': { type: 'Perfect Match', score: 95 },
+      'Tiger': { type: 'Bento Buddies', score: 65 },
+      'Rabbit': { type: 'Worst Couple', score: 35 },
+      'Dragon': { type: 'Bento Buddies', score: 65 },
+      'Snake': { type: 'Perfect Match', score: 95 },
+      'Horse': { type: 'Worst Couple', score: 35 },
+      'Sheep': { type: 'Average', score: 70 },
+      'Monkey': { type: 'Average', score: 70 },
+      'Rooster': { type: 'Worst Couple', score: 35 },
+      'Dog': { type: 'Worst Couple', score: 35 },
+      'Pig': { type: 'Average', score: 70 },
+      'Rat': { type: 'Worst Couple', score: 35 }
+    },
+    'Dog': {
+      'Ox': { type: 'Bento Buddies', score: 65 },
+      'Tiger': { type: 'Bento Buddies', score: 65 },
+      'Rabbit': { type: 'Perfect Match', score: 95 },
+      'Dragon': { type: 'Worst Couple', score: 35 },
+      'Snake': { type: 'Average', score: 70 },
+      'Horse': { type: 'Average', score: 70 },
+      'Sheep': { type: 'Worst Couple', score: 35 },
+      'Monkey': { type: 'Bento Buddies', score: 65 },
+      'Rooster': { type: 'Worst Couple', score: 35 },
+      'Dog': { type: 'Average', score: 70 },
+      'Pig': { type: 'Bento Buddies', score: 65 },
+      'Rat': { type: 'Bento Buddies', score: 65 }
+    },
+    'Pig': {
+      'Ox': { type: 'Good Match', score: 80 },
+      'Tiger': { type: 'Perfect Match', score: 95 },
+      'Rabbit': { type: 'Perfect Match', score: 95 },
+      'Dragon': { type: 'Average', score: 70 },
+      'Snake': { type: 'Worst Couple', score: 35 },
+      'Horse': { type: 'Bento Buddies', score: 65 },
+      'Sheep': { type: 'Perfect Match', score: 95 },
+      'Monkey': { type: 'Worst Couple', score: 35 },
+      'Rooster': { type: 'Average', score: 70 },
+      'Dog': { type: 'Bento Buddies', score: 65 },
+      'Pig': { type: 'Good Friend', score: 80 },
+      'Rat': { type: 'Bento Buddies', score: 65 }
+    },
+    'Rat': {
+      'Ox': { type: 'Perfect Match', score: 95 },
+      'Tiger': { type: 'Average', score: 70 },
+      'Rabbit': { type: 'Perfect Match', score: 95 },
+      'Dragon': { type: 'Perfect Match', score: 95 },
+      'Snake': { type: 'Good Friend', score: 80 },
+      'Horse': { type: 'Worst Couple', score: 35 },
+      'Sheep': { type: 'Good Match or Enemy', score: 50 },
+      'Monkey': { type: 'Perfect Match', score: 95 },
+      'Rooster': { type: 'Worst Couple', score: 35 },
+      'Dog': { type: 'Bento Buddies', score: 65 },
+      'Pig': { type: 'Bento Buddies', score: 65 },
+      'Rat': { type: 'Average', score: 70 }
     }
-    // ... Add the rest of the zodiac signs based on the provided text file
   };
 
   // Get compatibility type and score
@@ -1223,15 +1401,19 @@ function getZodiacCompatibility(sign1: { sign: string, element: string, yinYang:
   const getDescription = (type: string, sign1: string, sign2: string): string => {
     switch (type) {
       case 'Perfect Match':
-        return `${sign1} and ${sign2} are a Perfect Match! This is one of the most harmonious combinations in the Chinese zodiac.`;
+        return `${sign1} and ${sign2} form a Perfect Match! This combination promises deep harmony and understanding.`;
       case 'Good Match':
-        return `${sign1} and ${sign2} form a Good Match, creating a positive and supportive relationship.`;
+        return `${sign1} and ${sign2} make a Good Match, with strong potential for a fulfilling relationship.`;
+      case 'Good Friend':
+        return `${sign1} and ${sign2} are naturally Good Friends, sharing mutual understanding and respect.`;
       case 'Bento Buddies':
-        return `${sign1} and ${sign2} are Bento Buddies - they can maintain a friendly relationship with good communication.`;
+        return `${sign1} and ${sign2} are Bento Buddies - they can maintain a friendly connection with good communication.`;
       case 'Average':
-        return `${sign1} and ${sign2} have Average compatibility. Their relationship requires balance and understanding.`;
+        return `${sign1} and ${sign2} have an Average compatibility - success requires effort and understanding.`;
       case 'Worst Couple':
-        return `${sign1} and ${sign2} are considered a Worst Couple match. This combination faces significant challenges.`;
+        return `${sign1} and ${sign2} face significant challenges as a Worst Couple match - careful consideration is needed.`;
+      case 'Good Match or Enemy':
+        return `${sign1} and ${sign2} have a complex dynamic that could be either very positive or challenging.`;
       default:
         return `${sign1} and ${sign2} have a unique relationship dynamic that requires understanding.`;
     }
@@ -1241,7 +1423,7 @@ function getZodiacCompatibility(sign1: { sign: string, element: string, yinYang:
     score: compatibility.score,
     type: compatibility.type,
     description: getDescription(compatibility.type, sign1.sign, sign2.sign),
-    dynamic: `This is a ${compatibility.type.toLowerCase()} relationship according to Chinese zodiac tradition.`
+    dynamic: `This ${compatibility.type.toLowerCase()} relationship combines ${sign1.element} and ${sign2.element} energies with ${sign1.yinYang} and ${sign2.yinYang} forces.`
   };
 }
 
