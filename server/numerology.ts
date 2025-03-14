@@ -743,10 +743,11 @@ function getPersonalizedRecommendations(result: {
   };
 }
 
-function calculateNumerology(name: string, birthdate: string) {
+function calculateNumerology(name: string, birthdate: string): NumerologyResult {
   const localDate = getLocalDate(birthdate);
   console.log(`\nCalculating numerology for ${name}, born ${localDate}`);
 
+  // Calculate numerology numbers
   const lifePath = getBirthNumber(localDate);
   const destiny = getNameNumber(name);
   const vowels = name.toLowerCase().match(/[aeiou]/g) || [];
@@ -757,6 +758,10 @@ function calculateNumerology(name: string, birthdate: string) {
   const personality = getPersonalityNumber(name);
   const attribute = getAttributeNumber(localDate);
   const birthDateNum = getBirthDateNumber(localDate);
+
+  // Get zodiac information
+  const zodiacInfo = getChineseZodiacSign(birthdate);
+  const zodiacInterpretation = zodiacInterpretations[zodiacInfo.sign];
 
   // Get enhanced personalized recommendations
   const recommendations = getPersonalizedRecommendations({
@@ -780,22 +785,30 @@ function calculateNumerology(name: string, birthdate: string) {
     attribute,
     birthDateNum,
     recommendations,
+    zodiac: {
+      sign: zodiacInfo.sign,
+      element: zodiacInfo.element,
+      yinYang: zodiacInfo.yinYang,
+      traits: zodiacInterpretation.traits,
+      characteristics: zodiacInterpretation.characteristics,
+      compatibility: zodiacInterpretation.compatibility
+    },
     interpretations: {
       developmentSummary: `Your Life Path number ${lifePath} indicates ${
         lifePath === 11 ? "a journey of spiritual mastery and intuitive leadership" :
-          lifePath === 22 ? "a path of practical mastery and material achievement" :
-            lifePath === 33 ? "the highest path of spiritual teaching and healing" :
-              lifePath === 44 ? "a powerful journey of structure and manifestation" :
-                lifePath === 28 ? "a special path of wealth and abundance" :
-                  lifePath === 1 ? "a path of leadership and recognition" :
-                    lifePath === 3 ? "a creative path with potential for rule-breaking" :
-                      lifePath === 4 ? "a path of law-abiding structure" :
-                        lifePath === 5 ? "a path requiring careful management of addictive tendencies" :
-                          lifePath === 7 ? "a path of intellectual mastery and ego management" :
-                            lifePath === 8 ? "a powerful karmic path requiring careful actions" :
-                              lifePath === 9 ? "a path of adaptability and universal reflection" :
-                                "a unique numerological journey"
-      }. Focus on developing your strengths while addressing your challenges for optimal growth.`
+        lifePath === 22 ? "a path of practical mastery and material achievement" :
+        lifePath === 33 ? "the highest path of spiritual teaching and healing" :
+        lifePath === 44 ? "a powerful journey of structure and manifestation" :
+        lifePath === 28 ? "a special path of wealth and abundance" :
+        lifePath === 1 ? "a path of leadership and recognition" :
+        lifePath === 3 ? "a creative path with potential for rule-breaking" :
+        lifePath === 4 ? "a path of law-abiding structure" :
+        lifePath === 5 ? "a path requiring careful management of addictive tendencies" :
+        lifePath === 7 ? "a path of intellectual mastery and ego management" :
+        lifePath === 8 ? "a powerful karmic path requiring careful actions" :
+        lifePath === 9 ? "a path of adaptability and universal reflection" :
+        "a unique numerological journey"
+      }. As a ${zodiacInfo.sign} born in the year of ${zodiacInfo.element} ${zodiacInfo.yinYang}, you possess ${zodiacInterpretation.traits.join(", ")}. ${zodiacInterpretation.characteristics} Focus on developing your strengths while addressing your challenges for optimal growth.`
     }
   };
 
@@ -948,6 +961,79 @@ function calculateRelationshipTypeScores(profile1: ReturnType<typeof calculateNu
   };
 }
 
+interface ZodiacInterpretation {
+  traits: string[];
+  characteristics: string;
+  compatibility: string[];
+}
+
+interface ZodiacInterpretations {
+  [key: string]: ZodiacInterpretation;
+}
+
+const zodiacInterpretations: ZodiacInterpretations = {
+  'Rat': {
+    traits: ['adaptable', 'smart', 'cautious', 'quick-witted', 'resourceful'],
+    characteristics: 'The Rat is an intelligent and adaptable sign that excels at making the most of opportunities.',
+    compatibility: ['Dragon', 'Monkey', 'Ox']
+  },
+  'Ox': {
+    traits: ['diligent', 'dependable', 'strong', 'determined', 'honest'],
+    characteristics: 'The Ox is known for great patience and kind nature mixed with tenacious resolve.',
+    compatibility: ['Rat', 'Snake', 'Rooster'] 
+  },
+  'Tiger': {
+    traits: ['brave', 'confident', 'ambitious', 'charismatic', 'generous'],
+    characteristics: 'The Tiger has natural leadership abilities and inspires confidence in others.',
+    compatibility: ['Horse', 'Dog', 'Pig']
+  },
+  'Rabbit': {
+    traits: ['gentle', 'elegant', 'alert', 'quick', 'skillful'],
+    characteristics: 'The Rabbit possesses gracious manners and a keen eye for beauty in life.',
+    compatibility: ['Goat', 'Dog', 'Pig']
+  },
+  'Dragon': {
+    traits: ['energetic', 'confident', 'ambitious', 'warm-hearted', 'successful'],
+    characteristics: 'The Dragon is filled with vitality and enthusiasm, born with good fortune.',
+    compatibility: ['Rat', 'Monkey', 'Snake']
+  },
+  'Snake': {
+    traits: ['enigmatic', 'intuitive', 'wise', 'graceful', 'materialistic'],
+    characteristics: 'The Snake has deep wisdom and charm, with natural intuition and grace.',
+    compatibility: ['Dragon', 'Rooster', 'Ox']
+  },
+  'Horse': {
+    traits: ['energetic', 'independent', 'impatient', 'cheerful', 'quick-witted'],
+    characteristics: 'The Horse is energetic and independent, always ready for adventure.',
+    compatibility: ['Tiger', 'Dog', 'Goat']
+  },
+  'Goat': {
+    traits: ['gentle', 'shy', 'artistic', 'kind-hearted', 'persistent'],
+    characteristics: 'The Goat has a creative nature and strong sense of justice and kindness.',
+    compatibility: ['Rabbit', 'Horse', 'Pig']
+  },
+  'Monkey': {
+    traits: ['clever', 'intelligent', 'witty', 'curious', 'versatile'],
+    characteristics: 'The Monkey is witty and intelligent, with a magnetic personality.',
+    compatibility: ['Rat', 'Dragon', 'Snake']
+  },
+  'Rooster': {
+    traits: ['honest', 'energetic', 'intelligent', 'confident', 'capable'],
+    characteristics: 'The Rooster is observant and hardworking, with keen insight.',
+    compatibility: ['Ox', 'Snake', 'Dragon']
+  },
+  'Dog': {
+    traits: ['loyal', 'honest', 'amiable', 'kind', 'prudent'],
+    characteristics: 'The Dog is honest and loyal, with a strong sense of duty and justice.',
+    compatibility: ['Tiger', 'Horse', 'Rabbit']
+  },
+  'Pig': {
+    traits: ['honest', 'brave', 'studious', 'gentle', 'optimistic'],
+    characteristics: 'The Pig is diligent and generous, with great concentration and determination.',
+    compatibility: ['Rabbit', 'Goat', 'Tiger']
+  }
+};
+
 type ZodiacSign = {
   sign: string;
   element: string;
@@ -955,6 +1041,7 @@ type ZodiacSign = {
 };
 
 function getChineseZodiacSign(birthdate: string): ZodiacSign {
+  // Returns Chinese zodiac sign based on birth year
   const year = new Date(birthdate).getFullYear();
   const animals = ['Rat', 'Ox', 'Tiger', 'Rabbit', 'Dragon', 'Snake', 'Horse', 'Goat', 'Monkey', 'Rooster', 'Dog', 'Pig'];
   const elements = ['Metal', 'Metal', 'Water', 'Water', 'Wood', 'Wood', 'Fire', 'Fire', 'Earth', 'Earth', 'Metal', 'Metal'];
@@ -1098,31 +1185,31 @@ function getZodiacCompatibility(zodiac1: ZodiacSign, zodiac2: ZodiacSign): Chine
   let baseScore = 0;
   let description = '';
   
-  if (sign1 === sign2) {
+  if (zodiac1.sign === zodiac2.sign) {
     baseScore = 75;
-    description = `Both being ${sign1}, you share many similar traits and understanding.`;
+    description = `Both being ${zodiac1.sign}, you share many similar traits and understanding.`;
   } else {
-    if (compatibilityMap[sign1].best.includes(sign2)) {
+    if (compatibilityMap[zodiac1.sign].best.includes(zodiac2.sign)) {
       baseScore = 95;
-      description = `${sign1} and ${sign2} have excellent compatibility! These signs naturally complement and enhance each other.`;
-    } else if (compatibilityMap[sign1].good.includes(sign2)) {
+      description = `${zodiac1.sign} and ${zodiac2.sign} have excellent compatibility! These signs naturally complement and enhance each other.`;
+    } else if (compatibilityMap[zodiac1.sign].good.includes(zodiac2.sign)) {
       baseScore = 80;
-      description = `${sign1} and ${sign2} have good compatibility. Your different qualities create a balanced partnership.`;
-    } else if (compatibilityMap[sign1].neutral.includes(sign2)) {
+      description = `${zodiac1.sign} and ${zodiac2.sign} have good compatibility. Your different qualities create a balanced partnership.`;
+    } else if (compatibilityMap[zodiac1.sign].neutral.includes(zodiac2.sign)) {
       baseScore = 60;
-      description = `${sign1} and ${sign2} have neutral compatibility. Success depends on mutual understanding and effort.`;
+      description = `${zodiac1.sign} and ${zodiac2.sign} have neutral compatibility. Success depends on mutual understanding and effort.`;
     } else {
       baseScore = 40;
-      description = `${sign1} and ${sign2} may face some challenges in understanding each other's approaches.`;
+      description = `${zodiac1.sign} and ${zodiac2.sign} may face some challenges in understanding each other's approaches.`;
     }
   }
 
   // Get element compatibility
-  const elementComp = getElementCompatibility(element1, element2);
+  const elementComp = getElementCompatibility(zodiac1.element, zodiac2.element);
 
   // Consider Yin/Yang balance
-  const yinYangScore = yinYang1 !== yinYang2 ? 90 : 70;
-  const yinYangDesc = yinYang1 !== yinYang2 
+  const yinYangScore = zodiac1.yinYang !== zodiac2.yinYang ? 90 : 70;
+  const yinYangDesc = zodiac1.yinYang !== zodiac2.yinYang 
     ? "Your Yin and Yang energies create a harmonious balance"
     : "Sharing the same energy polarity, you may need to seek external balance";
 
@@ -1133,13 +1220,10 @@ function getZodiacCompatibility(zodiac1: ZodiacSign, zodiac2: ZodiacSign): Chine
     (yinYangScore * 0.2)     // Yin/Yang balance: 20%
   );
 
-  // Generate dynamic description
-  const dynamic = `${description} ${elementComp.description} ${yinYangDesc}`;
-
   return {
+    zodiacData: zodiac1,
     score: finalScore,
-    description: `As a ${sign1} (${element1}, ${yinYang1}) and ${sign2} (${element2}, ${yinYang2}), ${description}`,
-    dynamic
+    description: `As a ${zodiac1.sign} (${zodiac1.element}, ${zodiac1.yinYang}) and ${zodiac2.sign} (${zodiac2.element}, ${zodiac2.yinYang}), ${description} ${elementComp.description} ${yinYangDesc}`
   };
 }
 
@@ -1191,6 +1275,14 @@ interface NumerologyResult {
     growthAreas: string[];
     practices: string[];
   };
+  zodiac: {
+    sign: string;
+    element: string;
+    yinYang: string;
+    traits: string[];
+    characteristics: string;
+    compatibility: string[];
+  };
   interpretations: {
     developmentSummary: string;
   };
@@ -1200,6 +1292,7 @@ interface ChineseZodiacResult {
   zodiacData: ZodiacSign;
   score: number;
   description: string;
+  dynamic?: string;
 }
 
 interface YearDifferenceResult {
@@ -1210,9 +1303,26 @@ interface YearDifferenceResult {
 interface CompatibilityResult {
   zodiacCompatibility?: ChineseZodiacResult;
   yearDifference?: YearDifferenceResult;
-  score: number;
+  score: number;  
   description: string;
   dynamic?: string;
+}
+
+interface LifePathRecommendations {
+  [key: number]: {
+    strengths: string[];
+    challenges: string[];
+    growthAreas: string[];
+    practices: string[];
+  };
+}
+
+interface NumberMeaning {
+  [key: number]: string;
+}
+
+interface NumberArray {
+  [key: number]: string[];
 }
 
 function calculateWorkCompatibility(profile1: ReturnType<typeof calculateNumerology>, profile2: ReturnType<typeof calculateNumerology>): number {

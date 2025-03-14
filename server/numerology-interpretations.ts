@@ -1,4 +1,18 @@
-// Basic interpretations for when AI service is unavailable
+// Basic interpretations for numerology and zodiac signs
+// Define zodiac types
+export type ZodiacSign = 'Rat' | 'Ox' | 'Tiger' | 'Rabbit' | 'Dragon' | 'Snake' | 'Horse' | 'Sheep' | 'Monkey' | 'Rooster' | 'Dog' | 'Pig';
+
+export type ZodiacInterp = {
+  traits: string[];
+  characteristics: string;
+  compatibility: {
+    best: string;
+    worst: string;
+    description: string;
+  };
+};
+
+// Define interpretations
 export const basicInterpretations = {
   lifePath: (number: number) => {
     const meanings: Record<number, string> = {
@@ -332,5 +346,451 @@ export const basicInterpretations = {
       recommendations: personalDev.recommendations,
       developmentSummary: personalDev.summary
     };
+  }
+};
+
+// Add Chinese Zodiac interpretations
+export type ZodiacSign = 'Rat' | 'Ox' | 'Tiger' | 'Rabbit' | 'Dragon' | 'Snake' | 'Horse' | 'Sheep' | 'Monkey' | 'Rooster' | 'Dog' | 'Pig';
+
+export const zodiacInterpretations: Record<ZodiacSign, {
+  traits: string[],
+  characteristics: string,
+  compatibility: {
+    best: string,
+    worst: string,
+    description: string
+  }
+}> = {
+  'Rat': {
+    traits: ['Frugal', 'ambitious', 'honest', 'charming', 'critical'],
+    characteristics: 'Ambitious, candid, competitive and congenial, Rats are natural leaders. They have strong interpersonal skills and can easily connect with others.',
+    compatibility: {
+      best: 'Dragon, Monkey',
+      worst: 'Horse',
+      description: 'Rats form meaningful relationships with specific Zodiac signs, especially Dragons and Monkeys who complement their ambitious nature.'
+    }
+  },
+  'Ox': {
+    traits: ['Perseverant', 'patient', 'hardworking', 'determined', 'stubborn'],
+    characteristics: "The Ox is a pillar of strength in its communities, recognized for their diligence, dependability, and honesty. Their commitment to their goals and responsibilities sets them apart as reliable and trustworthy individuals.",
+    compatibility: {
+      best: "Rat",
+      worst: "Sheep",
+      description: "The Ox's compatibility with other Zodiac signs, such as the Rat and Rooster, showcases the harmonious relationships that can form based on complementary traits."
+    }
+  },
+  'Tiger': {
+    traits: ['Courageous', 'candid', 'confident', 'adventurous', 'sensitive'],
+    characteristics: "Tigers embody the qualities of courage, charisma, and unpredictability. Tigers are known for their boldness and adventurous spirit, often taking on challenges with unwavering determination.",
+    compatibility: {
+      best: "Pig",
+      worst: "Monkey",
+      description: "Tigers form strong connections with the Pig, admiring their kindness and good-hearted nature, finding in them a reliable and trustworthy partner."
+    }
+  },
+  'Rabbit': {
+    traits: ['Gentle', 'intelligent', 'loving', 'articulate', 'lucky'],
+    characteristics: "Rabbits possess kindness, sensitivity, and creativity, making them compassionate and empathetic individuals. They are known for their gentle and nurturing nature.",
+    compatibility: {
+      best: "Dog", 
+      worst: "Rooster",
+      description: "Rabbits and Dogs share a harmonious and supportive relationship, marked by a shared sense of loyalty."
+    }
+  },
+  'Dragon': {
+    traits: ['Strong', 'independent', 'fortunate', 'ambitious', 'confident'],
+    characteristics: "The Dragon is associated with traits of strength, ambition, and vitality, embodying the spirit of power and success. They are known for their leadership qualities and charismatic presence.",
+    compatibility: {
+      best: "Rooster",
+      worst: "Dog",
+      description: "Dragons and Roosters form a powerful and dynamic partnership. The bold and charismatic Dragon is captivated by the Rooster's diligence and practicality."
+    }
+  },
+  'Snake': {
+    traits: ['Ambitious', 'wise', 'intense', 'determined', 'enigmatic'],
+    characteristics: "The Snake is characterized by wisdom, intuition, and sophistication, making it insightful and perceptive. Snakes possess a deep knowledge of the world around them.",
+    compatibility: {
+      best: "Monkey",
+      worst: "Pig",
+      description: "Snakes and Monkeys are drawn together by an attraction to each other's intelligence and adaptability."
+    }
+  },
+  'Horse': {
+    traits: ['Energetic', 'free', 'popular', 'positive', 'animated'],
+    characteristics: "The Horse is characterized by independence, enthusiasm, and energy, embodying a spirited and free-spirited nature. Horses are known for their zest for life and passion for exploration.",
+    compatibility: {
+      best: "Sheep",
+      worst: "Rat",
+      description: "Horses and Goats enjoy a naturally harmonious relationship, enriched by emotional depth."
+    }
+  },
+  'Goat': {
+    traits: ['Kind', 'patient', 'persuasive', 'gentle', 'calm'],
+    characteristics: "The Goat is known for its gentle and kind nature. People born under this sign are often artistic, creative, and compassionate individuals.",
+    compatibility: {
+      best: "Horse",
+      worst: "Ox",
+      description: "Goats find their most compatible match in the Horse. This pairing is celebrated for its emotional resonance and shared values."
+    }
+  },
+  'Monkey': {
+    traits: ['Intelligent', 'influential', 'curious', 'passionate', 'sharp'],
+    characteristics: "The Monkey is often described as witty, intelligent, and playful. They are known for their quick thinking and adaptability, able to navigate various situations with ease.",
+    compatibility: {
+      best: "Snake",
+      worst: "Tiger",
+      description: "Monkeys and Snakes are an intellectually matched pair that thrives on mental agility and strategic thinking."
+    }
+  },
+  'Rooster': {
+    traits: ['Empathetic', 'creative', 'reliable', 'consistent', 'observant'],
+    characteristics: "The Rooster is confident, hardworking, and detail-oriented. They have a strong sense of responsibility and dedication to their goals.",
+    compatibility: {
+      best: "Dragon",
+      worst: "Rabbit",
+      description: "Roosters find a most compatible partner in the Dragon. The meticulous Rooster is drawn to the Dragon's boldness and strength."
+    }
+  },
+  'Dog': {
+    traits: ['Loyal', 'honest', 'generous', 'playful', 'lovely'],
+    characteristics: "Dogs are often seen as loyal, honest, and compassionate. They are known for their protective nature and loyalty to their loved ones.",
+    compatibility: {
+      best: "Rabbit",
+      worst: "Dragon",
+      description: "Dogs and Rabbits share a strong connection, underscored by shared values and an understanding of each other's needs."
+    }
+  },
+  'Pig': {
+    traits: ['Happy', 'generous', 'logical', 'loving', 'compassionate'],
+    characteristics: "The Pig is kind, generous, and easygoing. They are known for their gentle nature and willingness to help others.",
+    compatibility: {
+      best: "Tiger",
+      worst: "Snake", 
+      description: "Pigs and Tigers form a relationship that is both nurturing and invigorating. The kind-hearted Pig is attracted to the Tiger's courageous and adventurous spirit."
+    }
+  }
+};
+
+// Chinese Zodiac interpretations based on traditional knowledge 
+export const zodiacInterpretations = {
+  'Rat': {
+    traits: ['Frugal', 'ambitious', 'honest', 'charming', 'critical'],
+    characteristics: 'Ambitious, candid, competitive and congenial, Rats are natural leaders. They have strong interpersonal skills and can easily connect with others.',
+    compatibility: {
+      best: 'Dragon, Monkey', 
+      worst: 'Horse',
+      description: 'Rats form meaningful relationships with specific Zodiac signs, especially Dragons and Monkeys who complement their ambitious nature.'
+    }
+  },
+  'Ox': {
+    traits: ['Perseverant', 'patient', 'hardworking', 'determined', 'stubborn'],
+    characteristics: 'Average with Ox, Worst Couple with Tiger, Bento Buddies with Rabbit, Worst Couple with Dragon, Bento Buddies with Snake, Worst Couple with Horse, Worst Couple with Sheep, Perfect Match with Monkey, Perfect Match with Rooster, Bento Buddies with Dog, Good Match with Pig, Perfect Match with Rat.',
+    compatibility: {
+      best: 'Snake, Rooster',
+      worst: 'Sheep', 
+      description: 'The Ox has excellent compatibility with the Snake and Rooster, sharing their dedication and reliability.'
+    }
+  },
+  'Tiger': {
+    traits: ['Courageous', 'candid', 'confident', 'adventurous', 'sensitive'],
+    characteristics: 'Worst Couple With OX, Worst Couple With Tiger, Average With Rabbit, Perfect Match Dragon, Worst Couple With Snake, Perfect Match With Horse, Good Friend With Sheep, Worst Couple With Monkey, Bento Buddies With Rooster, Bento Buddies With Dog, Perfect Match With Rat.',
+    compatibility: {
+      best: 'Horse, Dog',
+      worst: 'Monkey',
+      description: 'Tigers find their strongest connections with Horses and Dogs, who match their adventurous spirit.'
+    }
+  },
+  'Rabbit': {
+    traits: ['Gentle', 'intelligent', 'loving', 'articulate', 'lucky'],
+    characteristics: 'Bento Buddies With OX, Average With Tiger, Average With Rabbit, Average With Dragon, Worst Couple With Snake, Average With Horse, Perfect Match With Sheep, Perfect Match With Monkey, Worst Couple With Rooster, Perfect Match With Dog, Perfect Match With Pig, Perfect Match With Rat.',
+    compatibility: {
+      best: 'Sheep, Dog',
+      worst: 'Rooster',
+      description: 'Rabbits harmonize wonderfully with Sheep and Dogs, creating peaceful and supportive relationships.'
+    }
+  },
+  'Dragon': {
+    traits: ['Strong', 'independent', 'fortunate', 'ambitious', 'confident'],
+    characteristics: 'Worst Couple With OX, Perfect Match With Tiger, Average With Rabbit, Good Friend With Dragon, Perfect Match With Snake, Average With Horse, Worst Couple With Sheep, Bento Buddies With Monkey, Bento Buddies With Rooster, Worst Couple With Dog, Average With Pig, Perfect Match With Rat.',
+    compatibility: {
+      best: 'Rat, Monkey',
+      worst: 'Dog',
+      description: 'Dragons find their best matches with Rats and Monkeys, who appreciate their strength and ambition.'
+    }
+  },
+  'Snake': {
+    traits: ['Ambitious', 'wise', 'intense', 'determined', 'enigmatic'],
+    characteristics: 'Bento Buddies With OX, Worst Couple With Tiger, Worst Couple With Rabbit, Perfect Match With Dragon, Worst Couple With Snake, Good Friend With Horse, Worst Couple With Sheep, Good Friend With Monkey, Perfect Match With Rooster, Average With Dog, Worst Couple With Pig, Good Friend With Rat.',
+    compatibility: {
+      best: 'Dragon, Rooster',
+      worst: 'Pig',
+      description: 'Snakes connect deeply with Dragons and Roosters, sharing their wisdom and determination.'
+    }
+  },
+  'Horse': {
+    traits: ['Energetic', 'free', 'popular', 'positive', 'animated'],
+    characteristics: 'Worst Couple With OX, Perfect Match With Tiger, Average With Rabbit, Average With Dragon, Good Friend With Snake, Worst Couple With Horse, Perfect Match With Sheep, Average With Monkey, Worst Couple With Rooster, Average With Dog, Bento Buddies With Pig, Worst Couple With Rat.',
+    compatibility: {
+      best: 'Tiger, Sheep',
+      worst: 'Rat',
+      description: 'Horses find their perfect matches with Tigers and Sheep, who understand their need for freedom.'
+    }
+  },
+  'Sheep': {
+    traits: ['Kind', 'patient', 'persuasive', 'gentle', 'calm'],
+    characteristics: 'Worst Couple WithOX, Average With Tiger, Perfect Match With Rabbit, Worst Couple With Dragon, Worst Couple With Snake, Perfect Match With Horse, Bento Buddies With Sheep, Bento Buddies With Monkey, Average With Rooster, Worst Couple With Dog, Perfect Match With Pig, Good Match or Enemy With Rat.',
+    compatibility: {
+      best: 'Rabbit, Horse',
+      worst: 'Ox',
+      description: 'Sheep form harmonious bonds with Rabbits and Horses, who appreciate their gentle nature.'
+    }
+  },
+  'Monkey': {
+    traits: ['Intelligent', 'influential', 'curious', 'passionate', 'sharp'],
+    characteristics: 'Perfect Match With OX, Worst Couple With Tiger, Perfect Match With Rabbit, Bento Buddies With Dragon, Good Friend With Snake, Average With Horse, Bento Buddies With Sheep, Good Friend With Monkey, Average With Rooster, Bento Buddies With Dog, Worst Couple With Pig, Perfect Match With Rat.',
+    compatibility: {
+      best: 'Rat, Dragon',
+      worst: 'Tiger',
+      description: 'Monkeys share a special bond with Rats and Dragons, matching their intelligence and wit.'
+    }
+  },
+  'Rooster': {
+    traits: ['Empathetic', 'creative', 'reliable', 'consistent', 'observant'],
+    characteristics: 'Perfect Match WithOX, Bento Buddies With Tiger, Worst Couple With Rabbit, Bento Buddies With Dragon, Perfect Match With Snake, Worst Couple With Horse, Average WithSheep, Average With Monkey, Worst Couple With Rooster, Worst Couple With Dog, Average With Pig, Worst Couple With Rat.',
+    compatibility: {
+      best: 'Ox, Snake',
+      worst: 'Rabbit',
+      description: 'Roosters connect well with Oxen and Snakes, sharing their dedication to hard work.'
+    }
+  },
+  'Dog': {
+    traits: ['Loyal', 'honest', 'generous', 'playful', 'lovely'],
+    characteristics: 'Bento Buddies With Ox, Bento Buddies With Tiger, Perfect Match With Rabbit, Worst Couple With Dragon, Average With Snake, Average With Horse, Worst Couple With Sheep, Bento Buddies With Monkey, Worst Couple With Rooster, Average With Dog, Bento Buddies With Pig, Bento Buddies With Rat.',
+    compatibility: {
+      best: 'Tiger, Rabbit',
+      worst: 'Dragon',
+      description: 'Dogs find their perfect matches with Tigers and Rabbits, who value their loyalty and honesty.'
+    }
+  },
+  'Pig': {
+    traits: ['Happy', 'generous', 'logical', 'loving', 'compassionate'],
+    characteristics: 'Good Match or Enemy With OX, Perfect Match With Tiger, Perfect Match With Rabbit, Good Friend With Dragon, Worst Couple With Snake, Bento Buddies With Horse, Perfect Match With Sheep, Worst Couple With Monkey, Average With Rooster, Bento Buddies With Dog, Good Friend With Pig, Bento Buddies With Rat.',
+    compatibility: {
+      best: 'Tiger, Rabbit',
+      worst: 'Snake',
+      description: 'Pigs have wonderful relationships with Tigers and Rabbits, who appreciate their generous nature.'
+    }
+  }
+};,
+  'Tiger': {
+    traits: ['Courageous', 'candid', 'confident', 'adventurous', 'sensitive'],
+    characteristics: 'Worst Couple With OX, Worst Couple With Tiger, Average With Rabbit, Perfect Match Dragon, Worst Couple With Snake, Perfect Match With Horse, Good Friend With Sheep, Worst Couple With Monkey, Bento Buddies With Rooster, Bento Buddies With Dog, Perfect Match With Rat.',
+    compatibility: {
+      best: 'Horse, Dog',
+      worst: 'Monkey',
+      description: 'Tigers find their strongest connections with Horses and Dogs, who match their adventurous spirit.'
+    }
+  },
+  'Rabbit': {
+    traits: ['Gentle', 'intelligent', 'loving', 'articulate', 'lucky'],
+    characteristics: 'Bento Buddies With OX, Average With Tiger, Average With Rabbit, Average With Dragon, Worst Couple With Snake, Average With Horse, Perfect Match With Sheep, Perfect Match With Monkey, Worst Couple With Rooster, Perfect Match With Dog, Perfect Match With Pig, Perfect Match With Rat.',
+    compatibility: {
+      best: 'Sheep, Dog',
+      worst: 'Rooster',
+      description: 'Rabbits harmonize wonderfully with Sheep and Dogs, creating peaceful and supportive relationships.'
+    }
+  },
+  'Dragon': {
+    traits: ['Strong', 'independent', 'fortunate', 'ambitious', 'confident'],
+    characteristics: 'Worst Couple With OX, Perfect Match With Tiger, Average With Rabbit, Good Friend With Dragon, Perfect Match With Snake, Average With Horse, Worst Couple With Sheep, Bento Buddies With Monkey, Bento Buddies With Rooster, Worst Couple With Dog, Average With Pig, Perfect Match With Rat.',
+    compatibility: {
+      best: 'Rat, Monkey',
+      worst: 'Dog',
+      description: 'Dragons find their best matches with Rats and Monkeys, who appreciate their strength and ambition.'
+    }
+  },
+  'Snake': {
+    traits: ['Ambitious', 'wise', 'intense', 'determined', 'enigmatic'],
+    characteristics: 'Bento Buddies With OX, Worst Couple With Tiger, Worst Couple With Rabbit, Perfect Match With Dragon, Worst Couple With Snake, Good Friend With Horse, Worst Couple With Sheep, Good Friend With Monkey, Perfect Match With Rooster, Average With Dog, Worst Couple With Pig, Good Friend With Rat.',
+    compatibility: {
+      best: 'Dragon, Rooster',
+      worst: 'Pig',
+      description: 'Snakes connect deeply with Dragons and Roosters, sharing their wisdom and determination.'
+    }
+  },
+  'Horse': {
+    traits: ['Energetic', 'free', 'popular', 'positive', 'animated'],
+    characteristics: 'Worst Couple With OX, Perfect Match With Tiger, Average With Rabbit, Average With Dragon, Good Friend With Snake, Worst Couple With Horse, Perfect Match With Sheep, Average With Monkey, Worst Couple With Rooster, Average With Dog, Bento Buddies With Pig, Worst Couple With Rat.',
+    compatibility: {
+      best: 'Tiger, Sheep',
+      worst: 'Rat',
+      description: 'Horses find their perfect matches with Tigers and Sheep, who understand their need for freedom.'
+    }
+  },
+  'Sheep': {
+    traits: ['Kind', 'patient', 'persuasive', 'gentle', 'calm'],
+    characteristics: 'Worst Couple WithOX, Average With Tiger, Perfect Match With Rabbit, Worst Couple With Dragon, Worst Couple With Snake, Perfect Match With Horse, Bento Buddies With Sheep, Bento Buddies With Monkey, Average With Rooster, Worst Couple With Dog, Perfect Match With Pig, Good Match or Enemy With Rat.',
+    compatibility: {
+      best: 'Rabbit, Horse',
+      worst: 'Ox',
+      description: 'Sheep form harmonious bonds with Rabbits and Horses, who appreciate their gentle nature.'
+    }
+  },
+  'Monkey': {
+    traits: ['Intelligent', 'influential', 'curious', 'passionate', 'sharp'],
+    characteristics: 'Perfect Match With OX, Worst Couple With Tiger, Perfect Match With Rabbit, Bento Buddies With Dragon, Good Friend With Snake, Average With Horse, Bento Buddies With Sheep, Good Friend With Monkey, Average With Rooster, Bento Buddies With Dog, Worst Couple With Pig, Perfect Match With Rat.',
+    compatibility: {
+      best: 'Rat, Dragon',
+      worst: 'Tiger',
+      description: 'Monkeys share a special bond with Rats and Dragons, matching their intelligence and wit.'
+    }
+  },
+  'Rooster': {
+    traits: ['Empathetic', 'creative', 'reliable', 'consistent', 'observant'],
+    characteristics: 'Perfect Match WithOX, Bento Buddies With Tiger, Worst Couple With Rabbit, Bento Buddies With Dragon, Perfect Match With Snake, Worst Couple With Horse, Average WithSheep, Average With Monkey, Worst Couple With Rooster, Worst Couple With Dog, Average With Pig, Worst Couple With Rat.',
+    compatibility: {
+      best: 'Ox, Snake',
+      worst: 'Rabbit',
+      description: 'Roosters connect well with Oxen and Snakes, sharing their dedication to hard work.'
+    }
+  },
+  'Dog': {
+    traits: ['Loyal', 'honest', 'generous', 'playful', 'lovely'],
+    characteristics: 'Bento Buddies With Ox, Bento Buddies With Tiger, Perfect Match With Rabbit, Worst Couple With Dragon, Average With Snake, Average With Horse, Worst Couple With Sheep, Bento Buddies With Monkey, Worst Couple With Rooster, Average With Dog, Bento Buddies With Pig, Bento Buddies With Rat.',
+    compatibility: {
+      best: 'Tiger, Rabbit',
+      worst: 'Dragon',
+      description: 'Dogs find their perfect matches with Tigers and Rabbits, who value their loyalty and honesty.'
+    }
+  },
+  'Pig': {
+    traits: ['Happy', 'generous', 'logical', 'loving', 'compassionate'],
+    characteristics: 'Good Match or Enemy With OX, Perfect Match With Tiger, Perfect Match With Rabbit, Good Friend With Dragon, Worst Couple With Snake, Bento Buddies With Horse, Perfect Match With Sheep, Worst Couple With Monkey, Average With Rooster, Bento Buddies With Dog, Good Friend With Pig, Bento Buddies With Rat.',
+    compatibility: {
+      best: 'Tiger, Rabbit',
+      worst: 'Snake',
+      description: 'Pigs have wonderful relationships with Tigers and Rabbits, who appreciate their generous nature.'
+    }
+  }
+};
+
+// Export all interpretations
+// Chinese Zodiac interpretations based on traditional knowledge 
+export const zodiacInterpretations: Record<ZodiacSign, {
+  traits: string[],
+  characteristics: string,
+  compatibility: {
+    best: string,
+    worst: string,
+    description: string
+  }
+}> = {
+  'Rat': {
+    traits: ['Frugal', 'ambitious', 'honest', 'charming', 'critical'],
+    characteristics: 'Ambitious, candid, competitive and congenial, Rats are natural leaders. They have strong interpersonal skills and can easily connect with others.',
+    compatibility: {
+      best: 'Dragon, Monkey',
+      worst: 'Horse',
+      description: 'Rats form meaningful relationships with specific Zodiac signs, especially Dragons and Monkeys who complement their ambitious nature.'
+    }
+  },
+  'Ox': {
+    traits: ['Perseverant', 'patient', 'hardworking', 'determined', 'stubborn'],
+    characteristics: 'The Ox is a pillar of strength in their communities, recognized for their diligence, dependability, and honesty.',
+    compatibility: {
+      best: 'Snake, Rooster',
+      worst: 'Sheep',
+      description: 'Forms excellent partnerships with Snake and Rooster. Average with Ox, Worst with Tiger and Horse, Bento Buddies with Rabbit and Dog.'
+    }
+  },
+  'Tiger': {
+    traits: ['Courageous', 'candid', 'confident', 'adventurous', 'sensitive'],
+    characteristics: 'Worst Couple with Ox and Tiger, Average with Rabbit, Perfect Match with Dragon and Horse, Worst Couple with Snake and Monkey.',
+    compatibility: {
+      best: 'Horse, Dog',
+      worst: 'Monkey',
+      description: 'Tigers find their strongest connections with Horses and Dogs, who match their adventurous spirit.'
+    }
+  },
+  'Rabbit': {
+    traits: ['Gentle', 'intelligent', 'loving', 'articulate', 'lucky'],
+    characteristics: 'Bento Buddies with Ox, Average with Tiger and Dragon, Worst Couple with Snake, Perfect Match with Sheep and Monkey.',
+    compatibility: {
+      best: 'Sheep, Dog',
+      worst: 'Rooster',
+      description: 'Rabbits harmonize wonderfully with Sheep and Dogs, creating peaceful and supportive relationships.'
+    }
+  },
+  'Dragon': {
+    traits: ['Strong', 'independent', 'fortunate', 'ambitious', 'confident'],
+    characteristics: 'Worst Couple with Ox, Perfect Match with Tiger and Snake, Average with Rabbit and Horse, Worst Couple with Sheep and Dog.',
+    compatibility: {
+      best: 'Rat, Monkey',
+      worst: 'Dog',
+      description: 'Dragons find their best matches with Rats and Monkeys, who appreciate their strength and ambition.'
+    }
+  },
+  'Snake': {
+    traits: ['Ambitious', 'wise', 'intense', 'determined', 'enigmatic'],
+    characteristics: 'Bento Buddies with Ox, Worst Couple with Tiger and Rabbit, Perfect Match with Dragon and Rooster, Good Friend with Horse and Monkey.',
+    compatibility: {
+      best: 'Dragon, Rooster',
+      worst: 'Pig',
+      description: 'Snakes connect deeply with Dragons and Roosters, sharing their wisdom and determination.'
+    }
+  },
+  'Horse': {
+    traits: ['Energetic', 'free', 'popular', 'positive', 'animated'],
+    characteristics: 'Worst Couple with Ox and Rat, Perfect Match with Tiger and Sheep, Average with Rabbit and Dragon, Good Friend with Snake.',
+    compatibility: {
+      best: 'Tiger, Sheep',
+      worst: 'Rat',
+      description: 'Horses find their perfect matches with Tigers and Sheep, who understand their need for freedom.'
+    }
+  },
+  'Sheep': {
+    traits: ['Kind', 'patient', 'persuasive', 'gentle', 'calm'],
+    characteristics: 'Worst Couple with Ox and Dragon, Perfect Match with Rabbit and Horse, Bento Buddies with Sheep and Monkey.',
+    compatibility: {
+      best: 'Rabbit, Horse',
+      worst: 'Ox',
+      description: 'Sheep form harmonious bonds with Rabbits and Horses, who appreciate their gentle nature.'
+    }
+  },
+  'Monkey': {
+    traits: ['Intelligent', 'influential', 'curious', 'passionate', 'sharp'],
+    characteristics: 'Perfect Match with Ox and Rabbit, Worst Couple with Tiger, Bento Buddies with Dragon, Good Friend with Snake and Monkey.',
+    compatibility: {
+      best: 'Rat, Dragon',
+      worst: 'Tiger',
+      description: 'Monkeys share a special bond with Rats and Dragons, matching their intelligence and wit.'
+    }
+  },
+  'Rooster': {
+    traits: ['Empathetic', 'creative', 'reliable', 'consistent', 'observant'],
+    characteristics: 'Perfect Match with Ox and Snake, Worst Couple with Rabbit and Horse, Bento Buddies with Tiger and Dragon.',
+    compatibility: {
+      best: 'Ox, Snake',
+      worst: 'Rabbit',
+      description: 'Roosters connect well with Oxen and Snakes, sharing their dedication to hard work.'
+    }
+  },
+  'Dog': {
+    traits: ['Loyal', 'honest', 'generous', 'playful', 'lovely'],
+    characteristics: 'Bento Buddies with Ox and Tiger, Perfect Match with Rabbit, Worst Couple with Dragon, Average with Snake and Horse.',
+    compatibility: {
+      best: 'Tiger, Rabbit',
+      worst: 'Dragon',
+      description: 'Dogs find their perfect matches with Tigers and Rabbits, who value their loyalty and honesty.'
+    }
+  },
+  'Pig': {
+    traits: ['Happy', 'generous', 'logical', 'loving', 'compassionate'],
+    characteristics: 'Good Match or Enemy with Ox, Perfect Match with Tiger and Rabbit, Good Friend with Dragon, Worst Couple with Snake.',
+    compatibility: {
+      best: 'Tiger, Rabbit',
+      worst: 'Snake',
+      description: 'Pigs have wonderful relationships with Tigers and Rabbits, who appreciate their generous nature.'
+    }
   }
 };

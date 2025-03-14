@@ -30,7 +30,9 @@ export const numerologyResults = pgTable("numerology_results", {
   personality: integer("personality").notNull(),
   attribute: integer("attribute").notNull(),
   birthDateNum: integer("birth_date_num").notNull(),
-  interpretations: jsonb("interpretations").notNull()
+  zodiac: jsonb("zodiac").notNull(),
+  interpretations: jsonb("interpretations").notNull(),
+  recommendations: jsonb("recommendations").notNull()
 });
 
 export const dreamRecords = pgTable("dream_records", {
@@ -145,6 +147,20 @@ export interface CompatibilityResult {
     };
   };
 }
+
+export interface ZodiacInfo {
+  sign: string;
+  element: string;
+  yinYang: string;
+  traits: string[];
+  characteristics: string;
+  compatibility: {
+    best: string;
+    worst: string;
+    description: string;
+  };
+}
+
 
 export type NumerologyInterpretation = {
   lifePath: string;
