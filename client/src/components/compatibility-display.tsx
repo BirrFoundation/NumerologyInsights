@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import type { CompatibilityResult } from "@shared/schema";
-import { Heart, Star, ArrowRight, Zap, Users, Sparkles } from "lucide-react";
+import { Heart, Star, ArrowRight, Zap, Users, Sparkles, Briefcase, Building2, UserPlus, Home } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface Props {
