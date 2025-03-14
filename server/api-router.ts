@@ -882,8 +882,7 @@ async function getInterpretation(numbers: any, name: string) {
     destiny: `Your Destiny number ${numbers.destiny} reveals yourpotential and the talents you possess to achieveyour goals. Itrepresents your capacity for achievement.`,
     heartDesire: `Your Heart's Desire number ${numbers.heartDesire} shows your inner motivation and what truly drives you. It represents your emotional needs and deepest desires.`,
     expression: `Your Expression number ${numbers.expression} reflects how you present yourself to the world. It shows your natural abilities and how you express yourself.`,
-    personality: `Your Personality number ${numbers.personality} represents how others see you initially. It's your outer personality and first impression.`,
-    attribute: `Your Attribute number ${numbers.attribute} (calculated from your birth month ${numbers.birthDateNum}) indicates yourinnate talents and natural abilities.`,
+    personality: `Your Personality number ${numbers.personality} represents how others see you initially. It's your outer personality and first impression.`,    attribute: `Your Attribute number ${numbers.attribute} (calculated from your birth month ${numbers.birthDateNum})indicates yourinnate talents and natural abilities.`,
     birthDateNum: `Your Birth Day number ${numbers.birthDateNum} reveals specific talents and abilities you brought into this life.`,
     overview: `${name}, your numerological profile combines several powerful numbers that create your unique energetic signature. Your Life Path ${numbers.lifePath} and Destiny ${numbers.destiny} numbers work together to shape your journey.`,
     recommendations: {
@@ -1280,98 +1279,106 @@ function calculateYearDifferenceCompatibility(birthdate1: string, birthdate2: st
 
 // Update the dynamics analysis function
 function analyzeRelationshipDynamics(sign1: string, sign2: string, compatibilityType: string): string[] {
-  const zodiacTraits: Record<string, { strengths: string[], challenges: string[] }> = {
-    'Dragon': {
-      strengths: ['natural leadership', 'strong ambition', 'charismatic energy'],
-      challenges: ['can be domineering', 'sometimes inflexible', 'may be prideful']
-    },
-    'Dog': {
-      strengths: ['loyalty', 'honesty', 'protective nature'],
-      challenges: ['anxiety prone', 'can be stubborn', 'sometimes pessimistic']
-    }
-    // Add other signs as needed
-  };
-
-  const dynamics = [];
-
-  // Add dynamics based on compatibility type and specific signs
-  switch (compatibilityType) {
-    case 'Worst Couple':
-      dynamics.push(`The ${sign1}'s ${zodiacTraits[sign1]?.strengths[0]} clashes with ${sign2}'s ${zodiacTraits[sign2]?.strengths[0]}`);
-      dynamics.push(`${sign1}'s ${zodiacTraits[sign1]?.challenges[0]} conflicts with ${sign2}'s ${zodiacTraits[sign2]?.challenges[0]}`);
-      dynamics.push(`Both signs have strong but opposing personalities that create natural tension`);
-      break;
-    case 'Perfect Match':
-      dynamics.push(`${sign1}'s strengths naturally complement ${sign2}'s characteristics`);
-      dynamics.push(`These signs create harmony through mutual understanding`);
-      dynamics.push(`Their energies flow together creating a balanced partnership`);
-      break;
-    case 'Bento Buddies':
-      dynamics.push(`${sign1} and ${sign2} maintain a comfortable friendship dynamic`);
-      dynamics.push(`These signs respect each other's boundaries and independence`);
-      dynamics.push(`They work well together while maintaining personal space`);
-      break;
-    case 'Average':
-      dynamics.push(`${sign1} and ${sign2} have moderate understanding of each other`);
-      dynamics.push(`Their relationship benefits from conscious effort and communication`);
-      dynamics.push(`Balance can be achieved through mutual respect`);
-      break;
-    default:
-      dynamics.push(`${sign1} and ${sign2} have unique interaction patterns`);
-      dynamics.push(`Their relationship requires understanding of different perspectives`);
-      dynamics.push(`Success depends on managing their distinct energies`);
-  }
-
-  if (sign1 === 'Dragon' && sign2 === 'Dog' || sign1 === 'Dog' && sign2 === 'Dragon') {
+  // Special case for Dragon and Dog
+  if ((sign1 === 'Dragon' && sign2 === 'Dog') || (sign1 === 'Dog' && sign2 === 'Dragon')) {
     return [
-      "Dragon's desire for freedom conflicts with Dog's need for security and stability",
-      "Dog's skeptical nature may clash with Dragon's confident and sometimes imperious attitude",
-      "Their different approaches to loyalty and commitment create fundamental tension"
+      "Dragon's independent and ambitious nature directly conflicts with Dog's need for loyalty and stability",
+      "Dog's cautious and protective approach clashes with Dragon's bold and adventurous spirit",
+      "Their opposing views on authority and freedom create fundamental tension"
     ];
   }
 
-  return dynamics;
+  // Handle other combinations based on compatibility type
+  switch (compatibilityType) {
+    case 'Perfect Match':
+      return [
+        `${sign1} and ${sign2} naturally complement each other's energies`,
+        "Their core values and life approaches align harmoniously",
+        "They create a balanced and supportive partnership"
+      ];
+    case 'Good Match':
+      return [
+        `${sign1} and ${sign2} share positive energy and understanding`,
+        "They can build a strong foundation through mutual respect",
+        "Their differences tend to complement rather than conflict"
+      ];
+    case 'Bento Buddies':
+      return [
+        `${sign1} and ${sign2} maintain a comfortable connection`,
+        "They respect each other's independence while sharing common interests",
+        "Their relationship thrives on mutual understanding and space"
+      ];
+    case 'Average':
+      return [
+        `${sign1} and ${sign2} have a moderate connection`,
+        "Their relationship requires effort but can be rewarding",
+        "Balance can be achieved through conscious communication"
+      ];
+    case 'Worst Couple':
+      return [
+        `${sign1} and ${sign2} face significant compatibility challenges`,
+        "Their core values and approaches often conflict",
+        "The relationship requires substantial effort and understanding"
+      ];
+    default:
+      return [
+        `${sign1} and ${sign2} have unique interaction patterns`,
+        "Their relationship benefits from open communication",
+        "Success depends on mutual respect and understanding"
+      ];
+  }
 }
 
 function generateGrowthAreas(sign1: string, sign2: string, compatibilityType: string): string[] {
-  const growthAreas = [];
-
-  // Add specific growth areas based on compatibility type and signs
-  switch (compatibilityType) {
-    case 'Worst Couple':
-      growthAreas.push(`Learn to appreciate ${sign1}'s strength while respecting ${sign2}'s perspective`);
-      growthAreas.push(`Practice patience and understanding when viewpoints differ`);
-      growthAreas.push(`Develop strategies to handle conflicts constructively`);
-      break;
-    case 'Perfect Match':
-      growthAreas.push(`Maintain individual identities while nurturing your connection`);
-      growthAreas.push(`Don't take your natural compatibility for granted`);
-      growthAreas.push(`Work on growing together while supporting personal goals`);
-      break;
-    case 'Bento Buddies':
-      growthAreas.push(`Strengthen your friendship through open communication`);
-      growthAreas.push(`Respect and maintain healthy boundaries`);
-      growthAreas.push(`Build trust through consistent interaction`);
-      break;
-    case 'Average':
-      growthAreas.push(`Focus on finding common ground in your differences`);
-      growthAreas.push(`Work on effective communication strategies`);
-      growthAreas.push(`Build mutual understanding through shared experiences`);
-      break;
-    default:
-      growthAreas.push(`Develop mutual respect for different approaches`);
-      growthAreas.push(`Practice active listening and empathy`);
-      growthAreas.push(`Focus on building trust gradually`);
-  }
-  if (sign1 === 'Dragon' && sign2 === 'Dog' || sign1 === 'Dog' && sign2 === 'Dragon') {
+  // Special case for Dragon and Dog
+  if ((sign1 === 'Dragon' && sign2 === 'Dog') || (sign1 === 'Dog' && sign2 === 'Dragon')) {
     return [
-      "Practice mutual respect for different perspectives on security and freedom",
-      "Work on balancing Dragon's need for independence with Dog's loyalty expectations",
-      "Develop communication strategies that bridge their different worldviews",
-      `Learn to appreciate ${sign1}'s strengths while understanding ${sign2}'s concerns`
+      "Learn to balance Dragon's need for independence with Dog's desire for security",
+      "Develop mutual respect for different approaches to loyalty and trust",
+      "Find common ground between Dragon's ambition and Dog's practicality",
+      "Practice patience and understanding when viewpoints naturally conflict"
     ];
   }
-  return growthAreas;
+
+  // Handle other combinations based on compatibility type
+  switch (compatibilityType) {
+    case 'Perfect Match':
+      return [
+        "Maintain individual growth while nurturing your natural connection",
+        "Build on your shared strengths and values",
+        "Keep communication open and honest"
+      ];
+    case 'Good Match':
+      return [
+        "Focus on appreciating your complementary qualities",
+        "Build deeper understanding through shared experiences",
+        "Maintain the positive aspects of your connection"
+      ];
+    case 'Bento Buddies':
+      return [
+        "Respect and maintain healthy boundaries",
+        "Cultivate friendship while honoring independence",
+        "Focus on shared interests and activities"
+      ];
+    case 'Average':
+      return [
+        "Work on understanding each other's perspectives",
+        "Develop effective communication strategies",
+        "Find ways to turn differences into strengths"
+      ];
+    case 'Worst Couple':
+      return [
+        "Focus on developing patience and understanding",
+        "Learn to appreciate and respect your differences",
+        "Work on finding common ground despite challenges"
+      ];
+    default:
+      return [
+        "Build mutual respect and understanding",
+        "Practice active listening and empathy",
+        "Focus on effective communication"
+      ];
+  }
 }
 
 function getDescription(type: string, sign1: string, sign2: string): string {
