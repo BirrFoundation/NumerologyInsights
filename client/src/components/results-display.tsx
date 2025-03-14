@@ -189,7 +189,7 @@ export default function ResultsDisplay({ result, onReset, onCompatibility }: Pro
       attribute: result.attribute,
       birthDateNum: result.birthDateNum
     });
-    return interpretation.overview || 'Your numerological profile reveals a unique combination of energies.';
+    return interpretation || 'Your numerological profile reveals a unique combination of energies.';
   };
 
   const recommendations = {
@@ -320,43 +320,47 @@ export default function ResultsDisplay({ result, onReset, onCompatibility }: Pro
                       </AccordionContent>
                     </AccordionItem>
                   ))}
-                  <AccordionItem value="chinese-zodiac">
-                    <AccordionTrigger>Chinese Zodiac Analysis</AccordionTrigger>
-                    <AccordionContent>
-                      <div className="space-y-6">
-                        <div>
-                          <h4 className="text-lg font-medium mb-2">Your Zodiac Sign: {result.zodiac.sign}</h4>
-                          <p className="text-sm text-muted-foreground mb-4">{result.zodiac.characteristics}</p>
+                  {result.zodiac && (
+                    <AccordionItem value="chinese-zodiac">
+                      <AccordionTrigger>Chinese Zodiac Analysis</AccordionTrigger>
+                      <AccordionContent>
+                        <div className="space-y-6">
+                          <div>
+                            <h4 className="text-lg font-medium mb-2">Your Zodiac Sign: {result.zodiac.sign}</h4>
+                            <p className="text-sm text-muted-foreground mb-4">{result.zodiac.characteristics}</p>
 
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                              <h5 className="font-medium mb-2">Element & Energy</h5>
-                              <p className="text-sm">Element: {result.zodiac.element}</p>
-                              <p className="text-sm">Energy: {result.zodiac.yinYang}</p>
-                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div>
+                                <h5 className="font-medium mb-2">Element & Energy</h5>
+                                <p className="text-sm">Element: {result.zodiac.element}</p>
+                                <p className="text-sm">Energy: {result.zodiac.yinYang}</p>
+                              </div>
 
-                            <div>
-                              <h5 className="font-medium mb-2">Personality Traits</h5>
-                              <ul className="list-disc pl-4">
-                                {result.zodiac.traits.map((trait, index) => (
-                                  <li key={index} className="text-sm">{trait}</li>
-                                ))}
-                              </ul>
+                              <div>
+                                <h5 className="font-medium mb-2">Personality Traits</h5>
+                                <ul className="list-disc pl-4">
+                                  {result.zodiac.traits?.map((trait, index) => (
+                                    <li key={index} className="text-sm">{trait}</li>
+                                  ))}
+                                </ul>
+                              </div>
                             </div>
                           </div>
-                        </div>
 
-                        <div>
-                          <h5 className="font-medium mb-2">Compatibility</h5>
-                          <div className="text-sm space-y-2">
-                            <p>Best Match: {result.zodiac.compatibility.best}</p>
-                            <p>Challenging Match: {result.zodiac.compatibility.worst}</p>
-                            <p className="text-muted-foreground mt-2">{result.zodiac.compatibility.description}</p>
-                          </div>
+                          {result.zodiac.compatibility && (
+                            <div>
+                              <h5 className="font-medium mb-2">Compatibility</h5>
+                              <div className="text-sm space-y-2">
+                                <p>Best Match: {result.zodiac.compatibility.best}</p>
+                                <p>Challenging Match: {result.zodiac.compatibility.worst}</p>
+                                <p className="text-muted-foreground mt-2">{result.zodiac.compatibility.description}</p>
+                              </div>
+                            </div>
+                          )}
                         </div>
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
+                      </AccordionContent>
+                    </AccordionItem>
+                  )}
                 </Accordion>
               </div>
 
