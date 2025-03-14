@@ -179,15 +179,14 @@ export default function ForgotPasswordPage() {
                 control={resetForm.control}
                 name="code"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="space-y-2">
                     <FormLabel>Verification Code</FormLabel>
                     <FormControl>
                       <div className="flex justify-center">
                         <InputOTP
                           maxLength={6}
                           value={field.value}
-                          onChange={field.onChange}
-                          onComplete={field.onChange}
+                          onChange={(value) => field.onChange(value)}
                           render={({ slots }) => (
                             <InputOTPGroup>
                               {slots.map((slot, index) => (
