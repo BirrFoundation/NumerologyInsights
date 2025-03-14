@@ -220,13 +220,15 @@ export default function AICoach({ result }: Props) {
 
             <div className="space-y-2">
               <p className="text-sm font-medium text-primary">Suggestions:</p>
-              <div className="flex flex-wrap gap-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 {initialCoaching.suggestions.map((suggestion, index) => (
                   <Button
                     key={index}
                     variant="outline"
                     size="sm"
-                    className={`text-xs ${selectedSuggestion === suggestion ? "bg-primary/10" : ""}`}
+                    className={`text-xs h-auto min-h-[2.5rem] py-2 px-3 whitespace-normal text-left justify-start ${
+                      selectedSuggestion === suggestion ? "bg-primary/10" : ""
+                    }`}
                     onClick={() => handleSuggestionClick(suggestion)}
                   >
                     {suggestion}
