@@ -953,7 +953,7 @@ function getWorkStrengths(profile1: ReturnType<typeof calculateNumerology>, prof
   const strengths = [];
 
   // Leadership dynamics
-  if ([1, 8].includes(profile1.lifePath) && [2, 6].includes(profile2.lifePath)) {
+  if ([1, 8].includes(profile1.lifePath) && [2, 6].includes`profile2.lifePath)) {
     strengths.push("Excellent leadership-support dynamic with clear roles");
     strengths.push("One naturally leadswhilethe otherprovides essential support");
   }
@@ -1666,106 +1666,181 @@ function getMonthlyFocusAreas(essence: number, profile: ReturnType<typeof calcul
          baseFocusAreas[reduceToSingleDigit(essence)];
 }
 
-function getChineseZodiacSign(year: number): string {
-  const animals = ['Rat', 'Ox', 'Tiger', 'Rabbit', 'Dragon', 'Snake', 'Horse', 'Goat', 'Monkey', 'Rooster', 'Dog', 'Pig'];
+function getChineseZodiacSign(birthdate: string): string {
+  const year = new Date(birthdate).getFullYear();
+  const animals = [
+    'Rat', 'Ox', 'Tiger', 'Rabbit', 'Dragon', 'Snake',
+    'Horse', 'Goat', 'Monkey', 'Rooster', 'Dog', 'Pig'
+  ];
   return animals[(year - 4) % 12];
 }
 
-function getZodiacCompatibility(sign1: string, sign2: string): number {
-  const compatibilityMap: Record<string, { best: string[], good: string[], bad: string[], worst: string[] }> = {
+function getDetailedZodiacDescription(sign: string): string {
+  const descriptions = {
+    'Rat': "Clever, adaptable, and ambitious. Quick-witted problem solver with strong intuition.",
+    'Ox': "Honest, patient, and kind-hearted. Natural leader with strong principles.",
+    'Tiger': "Brave, confident, and unpredictable. Natural leader with strong charisma.",
+    'Rabbit': "Gentle, elegant, and alert. Skillful in diplomacy and building relationships.",
+    'Dragon': "Energetic, fearless, and charismatic. Natural leader with strong ambition.",
+    'Snake': "Enigmatic, intuitive, and wise. Excellent problem solver with deep thoughts.",
+    'Horse': "Energetic, independent, and adventurous. Free spirit with strong passion.",
+    'Goat': "Creative, dependable, and calm. Artistic soul with strong empathy.",
+    'Monkey': "Smart, clever, and inventive. Excellent problem solver with strong curiosity.",
+    'Rooster': "Honest, bright, and ambitious. Natural talent with strong confidence.",
+    'Dog': "Loyal, honest, and kind. Faithful friend with strong principles.",
+    'Pig': "Generous, diligent, and optimistic. Kind soul with strong determination."
+  };
+  return descriptions[sign as keyof typeof descriptions] || "Unknown sign";
+}
+
+function getZodiacCompatibility(sign1: string, sign2: string): {
+  score: number;
+  description: string;
+  dynamic: string;
+} {
+  const compatibilityMap: Record<string, {
+    best: string[];
+    good: string[];
+    neutral: string[];
+    challenging: string[];
+  }> = {
     'Rat': {
       best: ['Dragon', 'Monkey'],
-      good: ['Ox', 'Tiger', 'Snake', 'Horse', 'Goat', 'Pig'],
-      bad: ['Rabbit'],
-      worst: ['Horse', 'Rooster']
+      good: ['Ox', 'Snake', 'Pig'],
+      neutral: ['Tiger', 'Horse', 'Goat', 'Rooster'],
+      challenging: ['Rabbit', 'Dog']
     },
     'Ox': {
       best: ['Snake', 'Rooster'],
-      good: ['Rat', 'Tiger', 'Rabbit', 'Monkey', 'Dog', 'Pig'],
-      bad: ['Horse'],
-      worst: ['Goat', 'Dragon']
+      good: ['Rat', 'Monkey'],
+      neutral: ['Tiger', 'Rabbit', 'Dog', 'Pig'],
+      challenging: ['Horse', 'Goat', 'Dragon']
     },
     'Tiger': {
       best: ['Horse', 'Dog'],
-      good: ['Rat', 'Ox', 'Rabbit', 'Dragon', 'Snake', 'Rooster'],
-      bad: ['Monkey'],
-      worst: ['Snake']
+      good: ['Rabbit', 'Dragon'],
+      neutral: ['Rat', 'Ox', 'Goat', 'Rooster', 'Pig'],
+      challenging: ['Snake', 'Monkey']
     },
     'Rabbit': {
       best: ['Goat', 'Pig'],
-      good: ['Ox', 'Tiger', 'Snake', 'Horse', 'Monkey', 'Dog'],
-      bad: ['Rat'],
-      worst: ['Dragon', 'Rooster']
+      good: ['Tiger', 'Dog'],
+      neutral: ['Ox', 'Snake', 'Horse', 'Monkey'],
+      challenging: ['Rat', 'Dragon', 'Rooster']
     },
     'Dragon': {
       best: ['Rat', 'Monkey'],
-      good: ['Tiger', 'Snake', 'Horse', 'Goat', 'Rooster', 'Pig'],
-      bad: ['Dog'],
-      worst: ['Ox', 'Rabbit']
+      good: ['Tiger', 'Snake', 'Rooster'],
+      neutral: ['Horse', 'Goat', 'Pig'],
+      challenging: ['Ox', 'Rabbit', 'Dog']
     },
     'Snake': {
       best: ['Ox', 'Rooster'],
-      good: ['Rat', 'Rabbit', 'Dragon', 'Horse', 'Goat', 'Pig'],
-      bad: ['Tiger'],
-      worst: ['Monkey']
+      good: ['Dragon', 'Monkey'],
+      neutral: ['Rabbit', 'Horse', 'Goat', 'Pig'],
+      challenging: ['Tiger', 'Dog']
     },
     'Horse': {
       best: ['Tiger', 'Dog'],
-      good: ['Rat', 'Rabbit', 'Dragon', 'Snake', 'Monkey', 'Pig'],
-      bad: ['Ox'],
-      worst: ['Rat', 'Rooster']
+      good: ['Goat', 'Pig'],
+      neutral: ['Rabbit', 'Dragon', 'Snake', 'Monkey'],
+      challenging: ['Rat', 'Ox', 'Rooster']
     },
     'Goat': {
-      best: ['Rabbit', 'Pig'],
-      good: ['Rat', 'Tiger', 'Dragon', 'Snake', 'Horse', 'Monkey'],
-      bad: ['Ox'],
-      worst: ['Ox', 'Dog']
+      best: ['Rabbit', 'Horse', 'Pig'],
+      good: ['Tiger', 'Dragon'],
+      neutral: ['Rat', 'Snake', 'Monkey'],
+      challenging: ['Ox', 'Dog']
     },
     'Monkey': {
       best: ['Rat', 'Dragon'],
-      good: ['Ox', 'Rabbit', 'Horse', 'Goat', 'Dog', 'Pig'],
-      bad: ['Tiger'],
-      worst: ['Snake']
+      good: ['Ox', 'Snake'],
+      neutral: ['Rabbit', 'Horse', 'Goat', 'Rooster', 'Dog'],
+      challenging: ['Tiger', 'Pig']
     },
     'Rooster': {
       best: ['Ox', 'Snake'],
-      good: ['Tiger', 'Dragon', 'Horse', 'Monkey', 'Dog', 'Pig'],
-      bad: ['Rabbit'],
-      worst: ['Rat', 'Horse']
+      good: ['Dragon', 'Monkey'],
+      neutral: ['Tiger', 'Horse', 'Goat', 'Dog', 'Pig'],
+      challenging: ['Rat', 'Rabbit']
     },
     'Dog': {
       best: ['Tiger', 'Horse'],
-      good: ['Ox', 'Rabbit', 'Dragon', 'Monkey', 'Rooster', 'Pig'],
-      bad: ['Dragon'],
-      worst: ['Goat']
+      good: ['Rabbit', 'Pig'],
+      neutral: ['Ox', 'Monkey', 'Rooster'],
+      challenging: ['Rat', 'Dragon', 'Snake', 'Goat']
     },
     'Pig': {
       best: ['Rabbit', 'Goat'],
-      good: ['Rat', 'Tiger', 'Dragon', 'Snake', 'Horse', 'Monkey'],
-      bad: ['Snake'],
-      worst: ['Snake', 'Pig']
+      good: ['Tiger', 'Horse', 'Dog'],
+      neutral: ['Ox', 'Dragon', 'Snake', 'Rooster'],
+      challenging: ['Rat', 'Monkey']
     }
   };
 
-  if (sign1 === sign2) return 90; // Same sign compatibility
-  if (compatibilityMap[sign1].best.includes(sign2)) return 100;
-  if (compatibilityMap[sign1].good.includes(sign2)) return 80;
-  if (compatibilityMap[sign1].bad.includes(sign2)) return 40;
-  if (compatibilityMap[sign1].worst.includes(sign2)) return 20;
-  return 60; // Neutral compatibility
+  let score = 60; // Default neutral score
+  let description = "";
+  let dynamic = "";
+
+  if (sign1 === sign2) {
+    score = 75;
+    description = `Both being ${sign1}, you share many similar traits and understanding.`;
+    dynamic = `You naturally understand each other's approach to life, though you may compete in similar areas.`;
+  } else {
+    if (compatibilityMap[sign1].best.includes(sign2)) {
+      score = 95;
+      description = `${sign1} and ${sign2} have excellent compatibility! These signs naturally complement and enhance each other.`;
+      dynamic = "Your energies work together harmoniously, creating a strong and balanced relationship.";
+    } else if (compatibilityMap[sign1].good.includes(sign2)) {
+      score = 80;
+      description = `${sign1} and ${sign2} have good compatibility. Your different qualities can create a balanced partnership.`;
+      dynamic = "You can learn much from each other's different perspectives and approaches.";
+    } else if (compatibilityMap[sign1].neutral.includes(sign2)) {
+      score = 60;
+      description = `${sign1} and ${sign2} have neutral compatibility. Success depends on mutual understanding and effort.`;
+      dynamic = "With awareness and effort, you can build a strong relationship despite your differences.";
+    } else {
+      score = 40;
+      description = `${sign1} and ${sign2} may face some challenges in understanding each other's approaches.`;
+      dynamic = "Focus on communication and appreciation of your differences to overcome challenges.";
+    }
+  }
+
+  return { score, description, dynamic };
 }
 
-function calculateYearDifferenceCompatibility(year1: number, year2: number): number {
+function calculateYearDifferenceCompatibility(date1: string, date2: string): {
+  score: number;
+  description: string;
+} {
+  const year1 = new Date(date1).getFullYear();
+  const year2 = new Date(date2).getFullYear();
   const diff = Math.abs(year1 - year2);
 
-  // 12 years difference (same zodiac sign) is considered very compatible
-  if (diff % 12 === 0) return 100;
+  // Check for exact 12-year cycle
+  if (diff % 12 === 0) {
+    return {
+      score: 95,
+      description: `Your birth years are ${diff} years apart, creating an auspicious 12-year cycle alignment. In Chinese astrology, this suggests a harmonious relationship with strong mutual understanding.`
+    };
+  }
 
-  // 6 years difference is traditionally considered challenging
-  if (diff % 6 === 0) return 30;
+  // Check for challenging 6-year cycle
+  if (diff % 6 === 0) {
+    return {
+      score: 40,
+      description: `Your birth years are ${diff} years apart (6-year cycle). In Chinese astrology, this suggests potential challenges that require extra understanding and patience.`
+    };
+  }
 
-  // Other differences are neutral
-  return 70;
+  // Calculate general compatibility based on cycle proximity
+  const cycleDiff = diff % 12;
+const score = Math.max(60, 85 - (cycleDiff * 5));
+
+  return {
+    score,
+    description: `Your birth years are ${diff} years apart. This creates an interesting dynamic that can work well with mutual understanding and respect.`
+  };
 }
 
 function generateDynamics(profile1: ReturnType<typeof calculateNumerology>, profile2: ReturnType<typeof calculateNumerology>): string[] {
@@ -1787,8 +1862,8 @@ function calculateCompatibility(name1: string, birthdate1: string, name2: string
   const year2 = new Date(birthdate2).getFullYear();
 
   // Get zodiac signs
-  const zodiacSign1 = getChineseZodiacSign(year1);
-  const zodiacSign2 = getChineseZodiacSign(year2);
+  const zodiacSign1 = getChineseZodiacSign(birthdate1);
+  const zodiacSign2 = getChineseZodiacSign(birthdate2);
 
   // Calculate various compatibility scores
   const numerologyScore = (
@@ -1797,8 +1872,10 @@ function calculateCompatibility(name1: string, birthdate1: string, name2: string
     calculateNumberCompatibility(person1.heartDesire, person2.heartDesire)
   ) / 3;
 
-  const zodiacScore = getZodiacCompatibility(zodiacSign1, zodiacSign2);
-  const yearDiffScore = calculateYearDifferenceCompatibility(year1, year2);
+  const zodiacCompatibilityResult = getZodiacCompatibility(zodiacSign1, zodiacSign2);
+  const zodiacScore = zodiacCompatibilityResult.score;
+  const yearDiffCompatibilityResult = calculateYearDifferenceCompatibility(birthdate1, birthdate2);
+  const yearDiffScore = yearDiffCompatibilityResult.score;
 
   // Calculate weighted final score
   const finalScore = Math.round(
@@ -1811,20 +1888,15 @@ function calculateCompatibility(name1: string, birthdate1: string, name2: string
   const aspects = [
     ...generateCompatibilityAspects(person1, person2),
     `${name1} is a ${zodiacSign1} and ${name2} is a ${zodiacSign2} in Chinese Zodiac`,
-    zodiacScore >= 80 ? `Your zodiac signs have excellent compatibility` :
-    zodiacScore >= 60 ? `Your zodiac signs have good compatibility` :
-    `Your zodiac signs may face some challenges`,
-    yearDiffScore >= 90 ? `Your 12-year zodiac cycle alignment is very favorable` :
-    yearDiffScore <= 40 ? `Your 6-year zodiac cycle difference may present some challenges` :
-    `Your age difference creates a balanced dynamic`
+    zodiacCompatibilityResult.description,
+    yearDiffCompatibilityResult.description
   ];
 
   // Generate relationship dynamics
   const dynamics = [
     ...generateDynamics(person1, person2),
-    `Chinese Zodiac influence: ${zodiacSign1} and ${zodiacSign2} energy interaction`,
-    zodiacScore >= 80 ? `Your zodiac signs naturally enhance each other's strengths` :
-    `Working on understanding each other's zodiac traits will strengthen your connection`
+    `Chinese Zodiac influence: ${zodiacSign1} and ${zodiacSign2} energy interaction - ${zodiacCompatibilityResult.dynamic}`,
+
   ];
 
   // Return the enhanced compatibility result
@@ -1832,11 +1904,13 @@ function calculateCompatibility(name1: string, birthdate1: string, name2: string
     score: finalScore,
     lifePathScore: calculateNumberCompatibility(person1.lifePath, person2.lifePath),
     expressionScore: calculateNumberCompatibility(person1.expression, person2.expression),
-    heartDesireScore:calculateNumberCompatibility(person1.heartDesire, person2.heartDesire),
+    heartDesireScore: calculateNumberCompatibility(person1.heartDesire, person2.heartDesire),
     zodiacCompatibility: {
       person1: zodiacSign1,
       person2: zodiacSign2,
-      score: zodiacScore
+      score: zodiacScore,
+      description: zodiacCompatibilityResult.description,
+      dynamic: zodiacCompatibilityResult.dynamic
     },
     yearDifferenceScore: yearDiffScore,
     aspects,
@@ -1844,7 +1918,7 @@ function calculateCompatibility(name1: string, birthdate1: string, name2: string
     growthAreas: [
       ...generateGrowthAreas(person1, person2),
       zodiacScore < 60 ? `Learn to balance your different zodiac energies` :
-      `Harness the natural harmony between your zodiac signs`
+        `Harness the natural harmony between your zodiac signs`
     ],
     relationshipTypes: calculateRelationshipTypeScores(person1, person2)
   };
@@ -1882,6 +1956,8 @@ interface CompatibilityResult extends ReturnType<typeof calculateNumerology> {
     person1: string;
     person2: string;
     score: number;
+    description: string;
+    dynamic: string;
   };
   yearDifferenceScore: number;
 }
@@ -2163,5 +2239,6 @@ export {
   getFamilyChallenges,
   getChineseZodiacSign,
   getZodiacCompatibility,
-  calculateYearDifferenceCompatibility
+  calculateYearDifferenceCompatibility,
+  getDetailedZodiacDescription
 };

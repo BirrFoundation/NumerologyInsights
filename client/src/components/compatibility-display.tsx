@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import type { CompatibilityResult } from "@shared/schema";
-import { Heart, Star, ArrowRight, Zap, Users, Sparkles, Briefcase, Building2, UserPlus, Home } from "lucide-react";
+import { Heart, Star, ArrowRight, Zap, Users, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface Props {
@@ -19,49 +19,27 @@ export default function CompatibilityDisplay({ result, onReset, person1Name = "P
     return "text-blue-500";
   };
 
-  const getScoreDescription = (score: number) => {
-    if (score >= 80) return "Exceptional Compatibility";
-    if (score >= 60) return "Good Compatibility";
-    if (score >= 40) return "Moderate Compatibility";
-    return "Challenging Compatibility";
-  };
-
-  // Ensure all arrays exist with default empty arrays
+  // Ensure all required data exists with defaults
   const aspects = result?.aspects ?? [];
   const dynamics = result?.dynamics ?? [];
   const growthAreas = result?.growthAreas ?? [];
-
-  // Ensure all scores exist with default 0
   const score = result?.score ?? 0;
   const lifePathScore = result?.lifePathScore ?? 0;
   const expressionScore = result?.expressionScore ?? 0;
   const heartDesireScore = result?.heartDesireScore ?? 0;
-  const zodiacScore = result?.zodiacCompatibility?.score ?? 0;
-  const yearDiffScore = result?.yearDifferenceScore ?? 0;
 
-  // Get zodiac signs
-  const zodiacSign1 = result?.zodiacCompatibility?.person1 ?? '';
-  const zodiacSign2 = result?.zodiacCompatibility?.person2 ?? '';
-
-  const getZodiacCompatibilityDescription = (score: number, sign1: string, sign2: string) => {
-    if (score >= 80) return `${sign1} and ${sign2} are highly compatible signs in Chinese astrology, creating a harmonious and balanced relationship.`;
-    if (score >= 60) return `${sign1} and ${sign2} have good compatibility, with complementary energies that can work well together.`;
-    if (score >= 40) return `${sign1} and ${sign2} may face some challenges, but these can be overcome with understanding and patience.`;
-    return `${sign1} and ${sign2} will need to work on understanding each other's different approaches to life.`;
+  // Get zodiac information
+  const zodiacData = result?.zodiacCompatibility ?? {
+    person1: '',
+    person2: '',
+    score: 0,
+    description: '',
+    dynamic: ''
   };
 
-  const getYearDifferenceDescription = (score: number) => {
-    if (score >= 90) return "Your birth years create an auspicious 12-year cycle alignment, traditionally considered very favorable.";
-    if (score <= 40) return "Your birth years are in a 6-year difference cycle, which traditionally suggests the need for extra understanding and adaptation.";
-    return "Your birth year difference creates an interesting dynamic that can be worked with positively.";
-  };
-
-  // Ensure relationship types exist with default values
-  const relationshipTypes = result?.relationshipTypes ?? {
-    work: { score: 0, strengths: [], challenges: [] },
-    business: { score: 0, strengths: [], challenges: [] },
-    friendship: { score: 0, strengths: [], challenges: [] },
-    family: { score: 0, strengths: [], challenges: [] }
+  const yearDiffData = result?.yearDifference ?? {
+    score: 0,
+    description: ''
   };
 
   return (
@@ -80,9 +58,6 @@ export default function CompatibilityDisplay({ result, onReset, person1Name = "P
             {score}%
           </span>
         </div>
-        <p className="text-lg font-medium text-muted-foreground">
-          {getScoreDescription(score)}
-        </p>
       </motion.div>
 
       {/* Main Grid */}
@@ -92,25 +67,40 @@ export default function CompatibilityDisplay({ result, onReset, person1Name = "P
           <CardHeader className="pb-3">
             <CardTitle className="text-lg font-medium flex items-center gap-2">
               <Star className="h-5 w-5 text-primary" />
-              Chinese Zodiac Compatibility
+              Chinese Zodiac Analysis
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <div className="text-sm">
-                  <p><span className="font-medium">{person1Name}:</span> {zodiacSign1} sign</p>
-                  <p><span className="font-medium">{person2Name}:</span> {zodiacSign2} sign</p>
+            <div>
+              <h4 className="font-medium mb-2">Zodiac Signs</h4>
+              <div className="space-y-2 mb-4">
+                <div>
+                  <p className="text-sm"><span className="font-medium">{person1Name}:</span> {zodiacData.person1}</p>
+                  <p className="text-sm text-muted-foreground ml-4">
+                    {result?.zodiacDescription?.person1 || ''}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm"><span className="font-medium">{person2Name}:</span> {zodiacData.person2}</p>
+                  <p className="text-sm text-muted-foreground ml-4">
+                    {result?.zodiacDescription?.person2 || ''}
+                  </p>
                 </div>
               </div>
+
+              <h4 className="font-medium mb-2">Zodiac Compatibility</h4>
+              <p className="text-sm text-muted-foreground mb-2">
+                {zodiacData.description}
+              </p>
               <p className="text-sm text-muted-foreground">
-                {getZodiacCompatibilityDescription(zodiacScore, zodiacSign1, zodiacSign2)}
+                {zodiacData.dynamic}
               </p>
             </div>
+
             <div>
-              <p className="text-sm font-medium mb-2">Year Cycle Analysis:</p>
-              <p className="text-sm text-muted-foreground mb-2">
-                {getYearDifferenceDescription(yearDiffScore)}
+              <h4 className="font-medium mb-2">Year Cycle Analysis</h4>
+              <p className="text-sm text-muted-foreground">
+                {yearDiffData.description}
               </p>
             </div>
           </CardContent>
@@ -187,7 +177,7 @@ export default function CompatibilityDisplay({ result, onReset, person1Name = "P
           </CardHeader>
           <CardContent>
             <div className="grid gap-6 md:grid-cols-2">
-              {Object.entries(relationshipTypes).map(([type, data], index) => (
+              {Object.entries(result?.relationshipTypes ?? {}).map(([type, data], index) => (
                 <div key={type} className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -197,25 +187,25 @@ export default function CompatibilityDisplay({ result, onReset, person1Name = "P
                       {type === 'family' && <Home className="h-5 w-5 text-primary" />}
                       <h4 className="font-medium capitalize">{type} Compatibility</h4>
                     </div>
-                    <span className="text-sm font-medium">{data.score}%</span>
+                    <span className="text-sm font-medium">{data?.score ?? 0}%</span>
                   </div>
-                  <Progress value={data.score} className="h-2" />
+                  <Progress value={data?.score ?? 0} className="h-2" />
                   <div className="space-y-4">
-                    {data.strengths.length > 0 && (
+                    {(data?.strengths ?? []).length > 0 && (
                       <div>
                         <p className="text-sm font-medium mb-2">Strengths:</p>
                         <ul className="list-disc pl-5">
-                          {data.strengths.map((strength, i) => (
+                          {(data?.strengths ?? []).map((strength, i) => (
                             <li key={i} className="text-sm leading-relaxed">{strength}</li>
                           ))}
                         </ul>
                       </div>
                     )}
-                    {data.challenges.length > 0 && (
+                    {(data?.challenges ?? []).length > 0 && (
                       <div>
                         <p className="text-sm font-medium mb-2">Challenges:</p>
                         <ul className="list-disc pl-5">
-                          {data.challenges.map((challenge, i) => (
+                          {(data?.challenges ?? []).map((challenge, i) => (
                             <li key={i} className="text-sm leading-relaxed">{challenge}</li>
                           ))}
                         </ul>
