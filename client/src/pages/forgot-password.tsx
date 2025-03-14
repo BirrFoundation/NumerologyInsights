@@ -67,8 +67,8 @@ export default function ForgotPasswordPage() {
     onSuccess: (data) => {
       console.log('Reset request successful:', data);
       setUserId(data.userId);
-      resetForm.reset(); // Reset form state before changing step
       setStep("reset");
+      resetForm.reset({ code: "" }); 
       toast({
         title: "Reset code sent",
         description: "Please check your email for the reset code.",
@@ -176,6 +176,7 @@ export default function ForgotPasswordPage() {
         ) : (
           <Form {...resetForm}>
             <form onSubmit={resetForm.handleSubmit(onResetSubmit)} className="space-y-6">
+              <p style={{ display: "none" }}>autoComplete="off"</p>          
               <FormField
                 control={resetForm.control}
                 name="code"
@@ -186,18 +187,20 @@ export default function ForgotPasswordPage() {
                       <div className="flex justify-center">
                         <InputOTP
                           maxLength={6}
-                          value={field.value}
+                          value={field.value || ""} // Force empty value on load
                           onChange={(value) => {
+                            console.log("OTP Input Changed:", value);
                             field.onChange(value);
                             resetForm.clearErrors("code");
                           }}
+                          autoComplete="off"
                           render={({ slots }) => (
                             <InputOTPGroup className="gap-2">
                               {slots.map((slot, index) => (
                                 <InputOTPSlot
                                   key={index}
                                   {...slot}
-                                  className="w-10 h-10 rounded-md border"
+                                  className="rounded-md border"
                                 />
                               ))}
                             </InputOTPGroup>

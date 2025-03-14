@@ -43,7 +43,6 @@ export default function LoginPage() {
       return response.json();
     },
     onSuccess: (data) => {
-      // Only set authenticated and redirect after confirming success
       localStorage.setItem('isAuthenticated', 'true');
       toast({
         title: "Login successful",
@@ -52,7 +51,6 @@ export default function LoginPage() {
       setLocation("/");
     },
     onError: (error: Error) => {
-      // Clear any previous auth state and keep user on login page
       localStorage.removeItem('isAuthenticated');
       setIsLoading(false);
       toast({
@@ -129,19 +127,21 @@ export default function LoginPage() {
                     </div>
                   </FormControl>
                   <FormMessage />
-                  <Button
-                    variant="link"
-                    className="px-0 font-normal text-xs"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setLocation("/forgot-password");
-                    }}
-                  >
-                    Forgot password?
-                  </Button>
                 </FormItem>
               )}
             />
+
+            {/* Moved forgot password link outside the form fields */}
+            <div className="flex justify-end">
+              <Button
+                variant="link"
+                className="px-0 font-normal text-xs"
+                type="button"
+                onClick={() => setLocation("/forgot-password")}
+              >
+                Forgot password?
+              </Button>
+            </div>
 
             <Button
               className="w-full"
@@ -159,6 +159,7 @@ export default function LoginPage() {
             <Button
               variant="link"
               className="p-0 h-auto font-normal"
+              type="button"
               onClick={() => setLocation("/signup")}
             >
               Sign up
