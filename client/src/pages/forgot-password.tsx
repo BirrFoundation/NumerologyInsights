@@ -67,6 +67,7 @@ export default function ForgotPasswordPage() {
     onSuccess: (data) => {
       console.log('Reset request successful:', data);
       setUserId(data.userId);
+      resetForm.reset({ code: "", newPassword: "" }); // Reset form when switching steps
       setStep("reset");
       toast({
         title: "Reset code sent",
@@ -196,7 +197,6 @@ export default function ForgotPasswordPage() {
                                 <InputOTPSlot
                                   key={index}
                                   {...slot}
-                                  className="rounded-md border"
                                 />
                               ))}
                             </InputOTPGroup>
