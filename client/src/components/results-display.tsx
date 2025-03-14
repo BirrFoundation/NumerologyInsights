@@ -244,7 +244,7 @@ export default function ResultsDisplay({ result, onReset, onCompatibility }: Pro
                 <NumberDisplay number={result.lifePath} title="Life Path Number" />
                 <NumberDisplay number={result.destiny} title="Destiny Number" />
                 <NumberDisplay number={result.heartDesire} title="Heart's Desire Number" />
-                <NumberDisplay number={result.expression} title="Expression Number" />
+                <NumberDisplay number={result.birthDateNum} title="Birth Date Number" />
                 <NumberDisplay number={result.personality} title="Personality Number" />
                 <NumberDisplay number={result.attribute} title="Attribute Number" />
               </div>

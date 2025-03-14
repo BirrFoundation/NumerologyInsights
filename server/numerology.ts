@@ -4,11 +4,12 @@ function getLocalDate(dateString: string): Date {
 }
 
 function getNameNumber(name: string): number {
+  // Calculate the numerical value of the name by adding all letters
   const nameValue = name.toLowerCase()
-    .replace(/[^a-z]/g, '')
+    .replace(/[^a-z]/g, '')  // Remove non-letters
     .split('')
     .map(char => {
-      const value = char.charCodeAt(0) - 96;
+      const value = char.charCodeAt(0) - 96;  // Convert a=1, b=2, etc.
       console.log(`Character ${char} = ${value}`);
       return value;
     })
@@ -123,7 +124,8 @@ function getAttributeNumber(date: Date): number {
 }
 
 function getExpressionNumber(name: string): number {
-  return getNameNumber(name); // Same as destiny number
+  // Expression number is calculated the same way as destiny number
+  return getNameNumber(name);
 }
 
 function getPersonalityNumber(name: string): number {
