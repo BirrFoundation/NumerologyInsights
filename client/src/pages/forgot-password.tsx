@@ -186,11 +186,18 @@ export default function ForgotPasswordPage() {
                         <InputOTP
                           maxLength={6}
                           value={field.value}
-                          onChange={(value) => field.onChange(value)}
+                          onChange={(value) => {
+                            field.onChange(value);
+                            resetForm.clearErrors("code");
+                          }}
                           render={({ slots }) => (
-                            <InputOTPGroup>
+                            <InputOTPGroup className="gap-2">
                               {slots.map((slot, index) => (
-                                <InputOTPSlot key={index} {...slot} />
+                                <InputOTPSlot
+                                  key={index}
+                                  {...slot}
+                                  className="rounded-md border"
+                                />
                               ))}
                             </InputOTPGroup>
                           )}
