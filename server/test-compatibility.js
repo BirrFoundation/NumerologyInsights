@@ -1,5 +1,5 @@
 // Simple test script for compatibility functions
-const { analyzeRelationshipDynamics, generateGrowthAreas } = require('./api-router');
+import { analyzeRelationshipDynamics, generateGrowthAreas } from './api-router.ts';
 
 // Test Dragon-Dog compatibility
 const sign1 = 'Dragon';
