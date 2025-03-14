@@ -27,7 +27,7 @@ const requestResetSchema = z.object({
 });
 
 const resetPasswordSchema = z.object({
-  code: z.string().min(6, "Please enter the complete verification code"),
+  code: z.string().length(6, "Please enter the complete verification code"),
   newPassword: z.string().min(8, "Password must be at least 8 characters"),
 });
 
@@ -55,7 +55,7 @@ export default function ForgotPasswordPage() {
 
   const requestResetMutation = useMutation({
     mutationFn: async (data: { email: string }) => {
-      console.log('Sending password reset request:', data); // Added logging
+      console.log('Sending password reset request:', data);
       setIsLoading(true);
       const response = await apiRequest("POST", "/api/auth/forgot-password", data);
       if (!response.ok) {
@@ -65,7 +65,7 @@ export default function ForgotPasswordPage() {
       return response.json();
     },
     onSuccess: (data) => {
-      console.log('Reset request successful:', data); // Added logging
+      console.log('Reset request successful:', data);
       setUserId(data.userId);
       setStep("reset");
       toast({
@@ -74,7 +74,7 @@ export default function ForgotPasswordPage() {
       });
     },
     onError: (error: Error) => {
-      console.error('Reset request failed:', error); // Added logging
+      console.error('Reset request failed:', error);
       toast({
         variant: "destructive",
         title: "Failed to send reset code",
@@ -90,7 +90,7 @@ export default function ForgotPasswordPage() {
     mutationFn: async (data: { code: string; newPassword: string }) => {
       if (!userId) throw new Error("User ID not found");
       setIsLoading(true);
-      console.log('Sending password reset:', { userId, ...data }); // Added logging
+      console.log('Sending password reset:', { userId, ...data });
       const response = await apiRequest("POST", "/api/auth/reset-password", {
         userId,
         ...data,
@@ -102,7 +102,7 @@ export default function ForgotPasswordPage() {
       return response.json();
     },
     onSuccess: () => {
-      console.log('Password reset successful'); // Added logging
+      console.log('Password reset successful');
       toast({
         title: "Password reset successful",
         description: "You can now log in with your new password.",
@@ -110,7 +110,7 @@ export default function ForgotPasswordPage() {
       setLocation("/login");
     },
     onError: (error: Error) => {
-      console.error('Password reset failed:', error); // Added logging
+      console.error('Password reset failed:', error);
       toast({
         variant: "destructive",
         title: "Failed to reset password",
@@ -178,18 +178,18 @@ export default function ForgotPasswordPage() {
               <FormField
                 control={resetForm.control}
                 name="code"
-                render={({ field }) => (
+                render={({ field: { onChange, value } }) => (
                   <FormItem>
                     <FormLabel>Verification Code</FormLabel>
                     <FormControl>
                       <InputOTP
                         maxLength={6}
-                        value={field.value}
-                        onChange={field.onChange}
+                        value={value}
+                        onChange={onChange}
                         render={({ slots }) => (
                           <InputOTPGroup>
                             {slots.map((slot, index) => (
-                              <InputOTPSlot key={index} slot={slot} />
+                              <InputOTPSlot key={index} {...slot} />
                             ))}
                           </InputOTPGroup>
                         )}
