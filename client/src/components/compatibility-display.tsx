@@ -19,29 +19,6 @@ export default function CompatibilityDisplay({ result, onReset, person1Name = "P
     return "text-blue-500";
   };
 
-  // Ensure all required data exists with defaults
-  const aspects = result?.aspects ?? [];
-  const dynamics = result?.dynamics ?? [];
-  const growthAreas = result?.growthAreas ?? [];
-  const score = result?.score ?? 0;
-  const lifePathScore = result?.lifePathScore ?? 0;
-  const expressionScore = result?.expressionScore ?? 0;
-  const heartDesireScore = result?.heartDesireScore ?? 0;
-
-  // Get zodiac information
-  const zodiacData = result?.zodiacCompatibility ?? {
-    person1: '',
-    person2: '',
-    score: 0,
-    description: '',
-    dynamic: ''
-  };
-
-  const yearDiffData = result?.yearDifference ?? {
-    score: 0,
-    description: ''
-  };
-
   return (
     <div className="space-y-8">
       {/* Header with Animation */}
@@ -53,16 +30,16 @@ export default function CompatibilityDisplay({ result, onReset, person1Name = "P
       >
         <h2 className="text-2xl font-semibold">Compatibility Analysis</h2>
         <div className="flex items-center justify-center gap-4">
-          <Heart className={`h-8 w-8 ${getScoreColor(score)}`} />
-          <span className={`text-4xl font-bold ${getScoreColor(score)}`}>
-            {score}%
+          <Heart className={`h-8 w-8 ${getScoreColor(result.score)}`} />
+          <span className={`text-4xl font-bold ${getScoreColor(result.score)}`}>
+            {result.score}%
           </span>
         </div>
       </motion.div>
 
       {/* Main Grid */}
       <div className="grid gap-6 md:grid-cols-2">
-        {/* Chinese Zodiac Compatibility */}
+        {/* Chinese Zodiac Analysis */}
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-lg font-medium flex items-center gap-2">
@@ -73,35 +50,42 @@ export default function CompatibilityDisplay({ result, onReset, person1Name = "P
           <CardContent className="space-y-4">
             <div>
               <h4 className="font-medium mb-2">Zodiac Signs</h4>
-              <div className="space-y-2 mb-4">
-                <div>
-                  <p className="text-sm"><span className="font-medium">{person1Name}:</span> {zodiacData.person1}</p>
-                  <p className="text-sm text-muted-foreground ml-4">
-                    {result?.zodiacDescription?.person1 || ''}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm"><span className="font-medium">{person2Name}:</span> {zodiacData.person2}</p>
-                  <p className="text-sm text-muted-foreground ml-4">
-                    {result?.zodiacDescription?.person2 || ''}
-                  </p>
-                </div>
+              <div className="space-y-2">
+                <p className="text-sm">
+                  <span className="font-medium">{person1Name}:</span> {result.zodiacCompatibility.person1} zodiac
+                </p>
+                <p className="text-sm">
+                  <span className="font-medium">{person2Name}:</span> {result.zodiacCompatibility.person2} zodiac
+                </p>
               </div>
+            </div>
 
+            <div>
               <h4 className="font-medium mb-2">Zodiac Compatibility</h4>
-              <p className="text-sm text-muted-foreground mb-2">
-                {zodiacData.description}
-              </p>
               <p className="text-sm text-muted-foreground">
-                {zodiacData.dynamic}
+                {result.zodiacCompatibility.description}
               </p>
+              <div className="mt-2">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-sm">Compatibility</span>
+                  <span className="text-sm font-medium">{result.zodiacCompatibility.score}%</span>
+                </div>
+                <Progress value={result.zodiacCompatibility.score} className="h-2" />
+              </div>
             </div>
 
             <div>
               <h4 className="font-medium mb-2">Year Cycle Analysis</h4>
               <p className="text-sm text-muted-foreground">
-                {yearDiffData.description}
+                {result.yearDifference.description}
               </p>
+              <div className="mt-2">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-sm">Cycle Harmony</span>
+                  <span className="text-sm font-medium">{result.yearDifference.score}%</span>
+                </div>
+                <Progress value={result.yearDifference.score} className="h-2" />
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -118,29 +102,29 @@ export default function CompatibilityDisplay({ result, onReset, person1Name = "P
             <div>
               <div className="flex justify-between mb-1">
                 <span className="text-sm font-medium">Life Path Harmony</span>
-                <span className="text-sm text-muted-foreground">{lifePathScore}%</span>
+                <span className="text-sm text-muted-foreground">{result.lifePathScore}%</span>
               </div>
-              <Progress value={lifePathScore} className="h-2" />
+              <Progress value={result.lifePathScore} className="h-2" />
             </div>
             <div>
               <div className="flex justify-between mb-1">
                 <span className="text-sm font-medium">Expression Match</span>
-                <span className="text-sm text-muted-foreground">{expressionScore}%</span>
+                <span className="text-sm text-muted-foreground">{result.expressionScore}%</span>
               </div>
-              <Progress value={expressionScore} className="h-2" />
+              <Progress value={result.expressionScore} className="h-2" />
             </div>
             <div>
               <div className="flex justify-between mb-1">
                 <span className="text-sm font-medium">Emotional Connection</span>
-                <span className="text-sm text-muted-foreground">{heartDesireScore}%</span>
+                <span className="text-sm text-muted-foreground">{result.heartDesireScore}%</span>
               </div>
-              <Progress value={heartDesireScore} className="h-2" />
+              <Progress value={result.heartDesireScore} className="h-2" />
             </div>
           </CardContent>
         </Card>
 
         {/* Compatibility Aspects */}
-        {aspects.length > 0 && (
+        {result.aspects.length > 0 && (
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-lg font-medium flex items-center gap-2">
@@ -150,7 +134,7 @@ export default function CompatibilityDisplay({ result, onReset, person1Name = "P
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {aspects.map((aspect, index) => (
+                {result.aspects.map((aspect, index) => (
                   <motion.div
                     key={index}
                     className="flex items-start gap-2"
@@ -177,7 +161,7 @@ export default function CompatibilityDisplay({ result, onReset, person1Name = "P
           </CardHeader>
           <CardContent>
             <div className="grid gap-6 md:grid-cols-2">
-              {Object.entries(result?.relationshipTypes ?? {}).map(([type, data], index) => (
+              {Object.entries(result.relationshipTypes ?? {}).map(([type, data], index) => (
                 <div key={type} className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -218,7 +202,7 @@ export default function CompatibilityDisplay({ result, onReset, person1Name = "P
           </CardContent>
         </Card>
 
-        {dynamics.length > 0 && (
+        {result.dynamics.length > 0 && (
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-lg font-medium flex items-center gap-2">
@@ -228,7 +212,7 @@ export default function CompatibilityDisplay({ result, onReset, person1Name = "P
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {dynamics.map((dynamic, index) => (
+                {result.dynamics.map((dynamic, index) => (
                   <motion.div
                     key={index}
                     className="flex items-center gap-2"
@@ -245,7 +229,7 @@ export default function CompatibilityDisplay({ result, onReset, person1Name = "P
           </Card>
         )}
 
-        {growthAreas.length > 0 && (
+        {result.growthAreas.length > 0 && (
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-lg font-medium flex items-center gap-2">
@@ -255,7 +239,7 @@ export default function CompatibilityDisplay({ result, onReset, person1Name = "P
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {growthAreas.map((area, index) => (
+                {result.growthAreas.map((area, index) => (
                   <motion.div
                     key={index}
                     className="flex items-center gap-2"
