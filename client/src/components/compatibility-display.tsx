@@ -24,6 +24,25 @@ export default function CompatibilityDisplay({ result, onReset }: Props) {
     return "Challenging Compatibility";
   };
 
+  // Ensure all arrays exist with default empty arrays
+  const aspects = result?.aspects ?? [];
+  const dynamics = result?.dynamics ?? [];
+  const growthAreas = result?.growthAreas ?? [];
+
+  // Ensure all scores exist with default 0
+  const score = result?.score ?? 0;
+  const lifePathScore = result?.lifePathScore ?? 0;
+  const expressionScore = result?.expressionScore ?? 0;
+  const heartDesireScore = result?.heartDesireScore ?? 0;
+
+  // Ensure relationship types exist with default values
+  const relationshipTypes = result?.relationshipTypes ?? {
+    work: { score: 0, strengths: [], challenges: [] },
+    business: { score: 0, strengths: [], challenges: [] },
+    friendship: { score: 0, strengths: [], challenges: [] },
+    family: { score: 0, strengths: [], challenges: [] }
+  };
+
   return (
     <div className="space-y-8">
       {/* Header with Animation */}
@@ -35,43 +54,45 @@ export default function CompatibilityDisplay({ result, onReset }: Props) {
       >
         <h2 className="text-2xl font-semibold">Compatibility Analysis</h2>
         <div className="flex items-center justify-center gap-4">
-          <Heart className={`h-8 w-8 ${getScoreColor(result.score)}`} />
-          <span className={`text-4xl font-bold ${getScoreColor(result.score)}`}>
-            {result.score}%
+          <Heart className={`h-8 w-8 ${getScoreColor(score)}`} />
+          <span className={`text-4xl font-bold ${getScoreColor(score)}`}>
+            {score}%
           </span>
         </div>
         <p className="text-lg font-medium text-muted-foreground">
-          {getScoreDescription(result.score)}
+          {getScoreDescription(score)}
         </p>
       </motion.div>
 
       {/* Main Grid */}
       <div className="grid gap-6 md:grid-cols-2">
         {/* Compatibility Aspects */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg font-medium flex items-center gap-2">
-              <Star className="h-5 w-5 text-primary" />
-              Key Compatibility Aspects
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {result.aspects.map((aspect, index) => (
-                <motion.div
-                  key={index}
-                  className="flex items-start gap-2"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <ArrowRight className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                  <p className="text-sm">{aspect}</p>
-                </motion.div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        {aspects.length > 0 && (
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg font-medium flex items-center gap-2">
+                <Star className="h-5 w-5 text-primary" />
+                Key Compatibility Aspects
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {aspects.map((aspect, index) => (
+                  <motion.div
+                    key={index}
+                    className="flex items-start gap-2"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                  >
+                    <ArrowRight className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                    <p className="text-sm">{aspect}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Compatibility Metrics */}
         <Card>
@@ -85,23 +106,23 @@ export default function CompatibilityDisplay({ result, onReset }: Props) {
             <div>
               <div className="flex justify-between mb-1">
                 <span className="text-sm font-medium">Life Path Harmony</span>
-                <span className="text-sm text-muted-foreground">{result.lifePathScore}%</span>
+                <span className="text-sm text-muted-foreground">{lifePathScore}%</span>
               </div>
-              <Progress value={result.lifePathScore} className="h-2" />
+              <Progress value={lifePathScore} className="h-2" />
             </div>
             <div>
               <div className="flex justify-between mb-1">
                 <span className="text-sm font-medium">Expression Match</span>
-                <span className="text-sm text-muted-foreground">{result.expressionScore}%</span>
+                <span className="text-sm text-muted-foreground">{expressionScore}%</span>
               </div>
-              <Progress value={result.expressionScore} className="h-2" />
+              <Progress value={expressionScore} className="h-2" />
             </div>
             <div>
               <div className="flex justify-between mb-1">
                 <span className="text-sm font-medium">Emotional Connection</span>
-                <span className="text-sm text-muted-foreground">{result.heartDesireScore}%</span>
+                <span className="text-sm text-muted-foreground">{heartDesireScore}%</span>
               </div>
-              <Progress value={result.heartDesireScore} className="h-2" />
+              <Progress value={heartDesireScore} className="h-2" />
             </div>
           </CardContent>
         </Card>
@@ -116,180 +137,102 @@ export default function CompatibilityDisplay({ result, onReset }: Props) {
           </CardHeader>
           <CardContent>
             <div className="grid gap-6 md:grid-cols-2">
-              {/* Work Compatibility */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Briefcase className="h-5 w-5 text-primary" />
-                    <h4 className="font-medium">Work Compatibility</h4>
+              {Object.entries(relationshipTypes).map(([type, data], index) => (
+                <div key={type} className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      {type === 'work' && <Briefcase className="h-5 w-5 text-primary" />}
+                      {type === 'business' && <Building2 className="h-5 w-5 text-primary" />}
+                      {type === 'friendship' && <UserPlus className="h-5 w-5 text-primary" />}
+                      {type === 'family' && <Home className="h-5 w-5 text-primary" />}
+                      <h4 className="font-medium capitalize">{type} Compatibility</h4>
+                    </div>
+                    <span className="text-sm font-medium">{data.score}%</span>
                   </div>
-                  <span className="text-sm font-medium">{result.relationshipTypes.work.score}%</span>
-                </div>
-                <Progress value={result.relationshipTypes.work.score} className="h-2" />
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-sm font-medium mb-2">Strengths:</p>
-                    <ul className="list-disc pl-5">
-                      {result.relationshipTypes.work.strengths.map((strength, i) => (
-                        <li key={i} className="text-sm leading-relaxed">{strength}</li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium mb-2">Challenges:</p>
-                    <ul className="list-disc pl-5">
-                      {result.relationshipTypes.work.challenges.map((challenge, i) => (
-                        <li key={i} className="text-sm leading-relaxed">{challenge}</li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </div>
-
-              {/* Business Compatibility */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Building2 className="h-5 w-5 text-primary" />
-                    <h4 className="font-medium">Business Compatibility</h4>
-                  </div>
-                  <span className="text-sm font-medium">{result.relationshipTypes.business.score}%</span>
-                </div>
-                <Progress value={result.relationshipTypes.business.score} className="h-2" />
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-sm font-medium mb-2">Strengths:</p>
-                    <ul className="list-disc pl-5">
-                      {result.relationshipTypes.business.strengths.map((strength, i) => (
-                        <li key={i} className="text-sm leading-relaxed">{strength}</li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium mb-2">Challenges:</p>
-                    <ul className="list-disc pl-5">
-                      {result.relationshipTypes.business.challenges.map((challenge, i) => (
-                        <li key={i} className="text-sm leading-relaxed">{challenge}</li>
-                      ))}
-                    </ul>
+                  <Progress value={data.score} className="h-2" />
+                  <div className="space-y-4">
+                    {data.strengths.length > 0 && (
+                      <div>
+                        <p className="text-sm font-medium mb-2">Strengths:</p>
+                        <ul className="list-disc pl-5">
+                          {data.strengths.map((strength, i) => (
+                            <li key={i} className="text-sm leading-relaxed">{strength}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {data.challenges.length > 0 && (
+                      <div>
+                        <p className="text-sm font-medium mb-2">Challenges:</p>
+                        <ul className="list-disc pl-5">
+                          {data.challenges.map((challenge, i) => (
+                            <li key={i} className="text-sm leading-relaxed">{challenge}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 </div>
-              </div>
-
-              {/* Friendship Compatibility */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <UserPlus className="h-5 w-5 text-primary" />
-                    <h4 className="font-medium">Friendship Compatibility</h4>
-                  </div>
-                  <span className="text-sm font-medium">{result.relationshipTypes.friendship.score}%</span>
-                </div>
-                <Progress value={result.relationshipTypes.friendship.score} className="h-2" />
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-sm font-medium mb-2">Strengths:</p>
-                    <ul className="list-disc pl-5">
-                      {result.relationshipTypes.friendship.strengths.map((strength, i) => (
-                        <li key={i} className="text-sm leading-relaxed">{strength}</li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium mb-2">Challenges:</p>
-                    <ul className="list-disc pl-5">
-                      {result.relationshipTypes.friendship.challenges.map((challenge, i) => (
-                        <li key={i} className="text-sm leading-relaxed">{challenge}</li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </div>
-
-              {/* Family Compatibility */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Home className="h-5 w-5 text-primary" />
-                    <h4 className="font-medium">Family Compatibility</h4>
-                  </div>
-                  <span className="text-sm font-medium">{result.relationshipTypes.family.score}%</span>
-                </div>
-                <Progress value={result.relationshipTypes.family.score} className="h-2" />
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-sm font-medium mb-2">Strengths:</p>
-                    <ul className="list-disc pl-5">
-                      {result.relationshipTypes.family.strengths.map((strength, i) => (
-                        <li key={i} className="text-sm leading-relaxed">{strength}</li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium mb-2">Challenges:</p>
-                    <ul className="list-disc pl-5">
-                      {result.relationshipTypes.family.challenges.map((challenge, i) => (
-                        <li key={i} className="text-sm leading-relaxed">{challenge}</li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </div>
+              ))}
             </div>
           </CardContent>
         </Card>
 
         {/* Relationship Dynamics */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg font-medium flex items-center gap-2">
-              <Users className="h-5 w-5 text-primary" />
-              Relationship Dynamics
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {result.dynamics.map((dynamic, index) => (
-                <motion.div
-                  key={index}
-                  className="flex items-center gap-2"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <Sparkles className="h-4 w-4 text-primary" />
-                  <p className="text-sm">{dynamic}</p>
-                </motion.div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        {dynamics.length > 0 && (
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg font-medium flex items-center gap-2">
+                <Users className="h-5 w-5 text-primary" />
+                Relationship Dynamics
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {dynamics.map((dynamic, index) => (
+                  <motion.div
+                    key={index}
+                    className="flex items-center gap-2"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                  >
+                    <Sparkles className="h-4 w-4 text-primary" />
+                    <p className="text-sm">{dynamic}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Growth Opportunities */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg font-medium flex items-center gap-2">
-              <Star className="h-5 w-5 text-primary" />
-              Growth Opportunities
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {result.growthAreas.map((area, index) => (
-                <motion.div
-                  key={index}
-                  className="flex items-center gap-2"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <ArrowRight className="h-4 w-4 text-primary" />
-                  <p className="text-sm">{area}</p>
-                </motion.div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        {growthAreas.length > 0 && (
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg font-medium flex items-center gap-2">
+                <Star className="h-5 w-5 text-primary" />
+                Growth Opportunities
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {growthAreas.map((area, index) => (
+                  <motion.div
+                    key={index}
+                    className="flex items-center gap-2"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                  >
+                    <ArrowRight className="h-4 w-4 text-primary" />
+                    <p className="text-sm">{area}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       <div className="flex justify-center">
