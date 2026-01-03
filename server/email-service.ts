@@ -2,6 +2,7 @@ import nodemailer from "nodemailer";
 import { scrypt, randomBytes } from "crypto";
 import { promisify } from "util";
 import cryptoRandomString from "crypto-random-string";
+import { Resend } from "resend";
 
 const scryptAsync = promisify(scrypt);
 
@@ -27,7 +28,7 @@ function verifySmtpConfig() {
   return true;
 }
 
-// Create a transporter using environment variables
+// Create a transporter using environment variables (kept for backward compatibility, no longer used by email senders)
 let transporter: nodemailer.Transporter | null = null;
 let lastConnectionAttempt = 0;
 const CONNECTION_RETRY_INTERVAL = 60000; // 1 minute
@@ -90,7 +91,8 @@ async function getTransporter() {
   } catch (error) {
     console.error('SMTP Connection Error:', error);
     transporter = null;
-    throw new Error(`Failed to connect to SMTP server (${error.message}). Please try again later.`);
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(`Failed to connect to SMTP server (${message}). Please try again later.`);
   }
 }
 
@@ -110,22 +112,22 @@ async function retryOperation<T>(operation: () => Promise<T>, maxRetries = 3): P
   throw lastError || new Error("Operation failed after retries");
 }
 
+const resend = new Resend(process.env.RESEND_API_KEY);
+
 export async function sendVerificationEmail(email: string, code: string): Promise<void> {
-  console.log('Attempting to send verification email to:', email);
+  console.log('Attempting to send verification email via Resend to:', email);
+
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error("RESEND_API_KEY is not configured");
+  }
+
+  if (!process.env.RESEND_FROM_EMAIL) {
+    throw new Error("RESEND_FROM_EMAIL is not configured");
+  }
 
   try {
-    // Log current environment for debugging
-    console.log('Environment:', {
-      NODE_ENV: process.env.NODE_ENV,
-      SMTP_HOST: process.env.SMTP_HOST,
-      SMTP_PORT: process.env.SMTP_PORT,
-      SMTP_USER: process.env.SMTP_USER?.substring(0, 3) + '***'
-    });
-
-    const transport = await retryOperation(getTransporter);
-
-    const mailOptions = {
-      from: `"Numerology App" <${process.env.SMTP_USER}>`,
+    const response = await resend.emails.send({
+      from: process.env.RESEND_FROM_EMAIL,
       to: email,
       subject: "Verify Your Numerology Account",
       html: `
@@ -141,45 +143,50 @@ export async function sendVerificationEmail(email: string, code: string): Promis
           <p style="color: #666; font-size: 12px;">This is an automated message, please do not reply.</p>
         </div>
       `
-    };
+    });
 
-    const info = await retryOperation(() => transport.sendMail(mailOptions));
-    console.log('Verification email sent successfully:', info.messageId);
+    console.log('Verification email sent via Resend:', response);
   } catch (error) {
-    console.error('Failed to send verification email:', error);
-    throw new Error(`Failed to send verification email: ${error.message}`);
+    console.error('Failed to send verification email via Resend:', error);
+    throw new Error(error instanceof Error ? `Failed to send verification email: ${error.message}` : 'Failed to send verification email');
   }
 }
 
 export async function sendResetEmail(email: string, code: string): Promise<void> {
-  console.log('Attempting to send reset email to:', email);
+  console.log('Attempting to send reset email via Resend to:', email);
 
-  const mailOptions = {
-    from: `"Numerology App" <${process.env.SMTP_USER}>`,
-    to: email,
-    subject: "Reset Your Numerology Password",
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #333;">Password Reset Request</h2>
-        <p>You have requested to reset your password. Please use the following code to complete the process:</p>
-        <div style="background-color: #f4f4f4; padding: 15px; text-align: center; margin: 20px 0;">
-          <h1 style="color: #6366f1; letter-spacing: 5px; margin: 0;">${code}</h1>
-        </div>
-        <p>This code will expire in 15 minutes.</p>
-        <p>If you didn't request this password reset, please ignore this email and ensure your account is secure.</p>
-        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
-        <p style="color: #666; font-size: 12px;">This is an automated message, please do not reply.</p>
-      </div>
-    `
-  };
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error("RESEND_API_KEY is not configured");
+  }
+
+  if (!process.env.RESEND_FROM_EMAIL) {
+    throw new Error("RESEND_FROM_EMAIL is not configured");
+  }
 
   try {
-    const transport = await retryOperation(getTransporter);
-    const info = await retryOperation(() => transport.sendMail(mailOptions));
-    console.log('Reset email sent successfully:', info.messageId);
+    const response = await resend.emails.send({
+      from: process.env.RESEND_FROM_EMAIL,
+      to: email,
+      subject: "Reset Your Numerology Password",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #333;">Password Reset Request</h2>
+          <p>You have requested to reset your password. Please use the following code to complete the process:</p>
+          <div style="background-color: #f4f4f4; padding: 15px; text-align: center; margin: 20px 0;">
+            <h1 style="color: #6366f1; letter-spacing: 5px; margin: 0;">${code}</h1>
+          </div>
+          <p>This code will expire in 15 minutes.</p>
+          <p>If you didn't request this password reset, please ignore this email and ensure your account is secure.</p>
+          <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+          <p style="color: #666; font-size: 12px;">This is an automated message, please do not reply.</p>
+        </div>
+      `
+    });
+
+    console.log('Reset email sent via Resend:', response);
   } catch (error) {
-    console.error('Failed to send reset email:', error);
-    throw new Error(error instanceof Error ? error.message : "Failed to send reset email");
+    console.error('Failed to send reset email via Resend:', error);
+    throw new Error(error instanceof Error ? error.message : 'Failed to send reset email');
   }
 }
 
